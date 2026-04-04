@@ -28,8 +28,8 @@ yarn-error.log*
 # local env files
 .env*.local
 
-# data (auto-generated)
-/data/*.json
+# data (keep consolidated JSON in repo for Vercel deployment)
+# /data/*.json
 
 # vercel
 .vercel
