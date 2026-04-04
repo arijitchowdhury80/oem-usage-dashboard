@@ -4,6 +4,9 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "Adobe OEM Analytics — Algolia",
   description: "Adobe OEM partnership usage analytics dashboard",
+  icons: {
+    icon: "/favicon.svg",
+  },
 };
 
 export default function RootLayout({
