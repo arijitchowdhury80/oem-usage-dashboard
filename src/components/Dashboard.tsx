@@ -197,28 +197,55 @@ export default function Dashboard() {
   const [tab, setTab] = useState(0);
   const [error, setError] = useState<string | null>(null);
 
+  const reload = () => loadDashboardData().then(setData).catch((e) => setError(e.message));
+
   useEffect(() => {
-    loadDashboardData().then(setData).catch((e) => setError(e.message));
-    // Auto-refresh every 60 seconds
-    const interval = setInterval(() => {
-      loadDashboardData().then(setData).catch(() => {});
-    }, 60000);
-    return () => clearInterval(interval);
+    reload();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (error) return <div style={{ padding: 40, color: "#dc2626" }}>Error: {error}</div>;
   if (!data) return <div style={{ padding: 40, color: "#9ca3af" }}>Loading dashboard...</div>;
 
-  return <DashboardInner data={data} tab={tab} setTab={setTab} />;
+  return <DashboardInner data={data} tab={tab} setTab={setTab} onReload={reload} />;
 }
 
 function DashboardInner({
-  data, tab, setTab,
+  data, tab, setTab, onReload,
 }: {
   data: DashboardData;
   tab: number;
   setTab: (t: number) => void;
+  onReload: () => void;
 }) {
+  const [updating, setUpdating] = useState(false);
+  const [updateMsg, setUpdateMsg] = useState<string | null>(null);
+  const [updateAvailable, setUpdateAvailable] = useState(true);
+
+  const handleUpdate = async () => {
+    setUpdating(true);
+    setUpdateMsg(null);
+    try {
+      const res = await fetch("/api/update", { method: "POST" });
+      const body = await res.json();
+      if (res.status === 403) {
+        setUpdateAvailable(false);
+        return;
+      }
+      if (!res.ok || !body.success) {
+        setUpdateMsg(body.error || "Update failed");
+        return;
+      }
+      onReload();
+      setUpdateMsg("Updated");
+      setTimeout(() => setUpdateMsg(null), 3000);
+    } catch {
+      setUpdateMsg("Network error");
+    } finally {
+      setUpdating(false);
+    }
+  };
+
   const { weeks, months, latest, topByRecords, topBySearches, appDetail, metadata, rates } = data;
   const tabs = ["Executive Summary", "Trends & Growth", "Portfolio Health", "R&D Brief"];
 
@@ -757,9 +784,49 @@ function DashboardInner({
             {CONTRACT.soNumber} · Feb 2026 – Jan 2027 · {weekCount} weeks of data
           </div>
         </div>
-        <div style={{ textAlign: "right" }}>
-          <div className="header-date-label">Data Through</div>
-          <div className="header-date-val">{dataThrough}</div>
+        <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+          {updateAvailable && (
+            <button
+              onClick={handleUpdate}
+              disabled={updating}
+              style={{
+                padding: "5px 14px",
+                fontSize: 13,
+                fontWeight: 500,
+                color: updating ? "#9ca3af" : "#003DFF",
+                background: "transparent",
+                border: "1px solid " + (updating ? "#e5e7eb" : "#003DFF"),
+                borderRadius: 6,
+                cursor: updating ? "not-allowed" : "pointer",
+                display: "flex",
+                alignItems: "center",
+                gap: 6,
+                whiteSpace: "nowrap" as const,
+              }}
+            >
+              {updating ? (
+                <>
+                  <span style={{ display: "inline-block", width: 12, height: 12, border: "2px solid #9ca3af", borderTopColor: "transparent", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
+                  Updating...
+                </>
+              ) : "Update Data"}
+            </button>
+          )}
+          {updateMsg && (
+            <span style={{ fontSize: 13, color: updateMsg === "Updated" ? "#16a34a" : "#dc2626", fontWeight: 500 }}>
+              {updateMsg}
+            </span>
+          )}
+          <div style={{ textAlign: "right" }}>
+            <div className="header-date-label">Data as of</div>
+            <div className="header-date-val">
+              {metadata.generated_at
+                ? new Date(metadata.generated_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) +
+                  " \u00B7 " +
+                  new Date(metadata.generated_at).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: false })
+                : dataThrough}
+            </div>
+          </div>
         </div>
       </div>
 

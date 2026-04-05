@@ -324,3 +324,6 @@ input[type=range]::-webkit-slider-thumb {
 
 /* ═══════ SVG TEXT ═══════ */
 svg text { font-family: 'Sora', -apple-system, sans-serif; }
+
+/* ═══════ SPINNER ═══════ */
+@keyframes spin { to { transform: rotate(360deg); } }

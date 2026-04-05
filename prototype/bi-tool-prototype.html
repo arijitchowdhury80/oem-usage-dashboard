@@ -1,0 +1,1036 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Adobe OEM Analytics — Algolia</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --blue:#003DFF;--navy:#23263B;--text:#36395A;--text2:#484C7A;--muted:#7778AF;--cat:#9698C3;
+  --bg:#f8f9fb;--card:#fff;--border:#e5e7eb;--green:#16a34a;--amber:#d97706;--red:#dc2626;
+  --purple:#7c3aed;--radius:5px;--sidebar-collapsed:56px;--sidebar-expanded:210px;
+}
+html{font-size:14px}
+body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden}
+
+/* SIDEBAR */
+.sidebar{position:fixed;left:0;top:0;bottom:0;width:var(--sidebar-collapsed);background:var(--navy);
+  z-index:100;transition:width .25s ease;overflow:hidden;display:flex;flex-direction:column}
+.sidebar:hover,.sidebar.expanded{width:var(--sidebar-expanded)}
+.sidebar-logo{padding:14px 16px;display:flex;align-items:center;gap:10px;border-bottom:1px solid rgba(255,255,255,.1);min-height:56px}
+.sidebar-logo svg{flex-shrink:0}
+.sidebar-logo span{font-weight:600;color:#fff;font-size:13px;white-space:nowrap;opacity:0;transition:opacity .2s}
+.sidebar:hover .sidebar-logo span,.sidebar.expanded .sidebar-logo span{opacity:1}
+.nav-items{flex:1;padding:8px 0}
+.nav-item{display:flex;align-items:center;gap:12px;padding:11px 16px;cursor:pointer;color:rgba(255,255,255,.55);
+  transition:all .15s;border-left:3px solid transparent;position:relative;white-space:nowrap}
+.nav-item:hover{color:rgba(255,255,255,.85);background:rgba(255,255,255,.05)}
+.nav-item.active{color:#fff;border-left-color:var(--blue);background:rgba(0,61,255,.15)}
+.nav-item svg{flex-shrink:0;width:20px;height:20px}
+.nav-item span{opacity:0;transition:opacity .2s;font-size:12.5px;font-weight:500}
+.sidebar:hover .nav-item span,.sidebar.expanded .nav-item span{opacity:1}
+
+/* TOP BAR */
+.topbar{position:fixed;top:0;left:var(--sidebar-collapsed);right:0;height:56px;background:#fff;
+  border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 24px;z-index:90;gap:16px;
+  transition:left .25s}
+.topbar-title{font-weight:600;font-size:15px;color:var(--navy);white-space:nowrap}
+.topbar-sep{width:1px;height:24px;background:var(--border)}
+.filter-chips{display:flex;gap:8px;flex:1}
+.chip{padding:5px 12px;border-radius:20px;border:1px solid var(--border);font-size:11.5px;color:var(--text2);
+  cursor:pointer;display:flex;align-items:center;gap:5px;transition:all .15s;background:#fff;user-select:none}
+.chip:hover{border-color:var(--blue);color:var(--blue)}
+.chip.active{background:var(--blue);color:#fff;border-color:var(--blue)}
+.chip svg{width:14px;height:14px}
+.chip-dropdown{position:absolute;top:100%;left:0;background:#fff;border:1px solid var(--border);border-radius:var(--radius);
+  padding:6px 0;min-width:180px;box-shadow:0 4px 12px rgba(0,0,0,.1);z-index:200;display:none}
+.chip-dropdown.show{display:block}
+.chip-dropdown label{display:flex;align-items:center;gap:8px;padding:6px 14px;font-size:12px;cursor:pointer;color:var(--text)}
+.chip-dropdown label:hover{background:var(--bg)}
+.topbar-right{font-size:11px;color:var(--muted);white-space:nowrap}
+
+/* MAIN */
+.main{margin-left:var(--sidebar-collapsed);margin-top:56px;padding:24px;transition:margin-left .25s;min-height:calc(100vh - 56px)}
+.lens{display:none}
+.lens.active{display:block}
+
+/* CARDS */
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px}
+.card-title{font-size:12.5px;font-weight:600;color:var(--text);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.row{display:flex;gap:16px;margin-bottom:16px;flex-wrap:wrap}
+.row > *{flex:1;min-width:0}
+
+/* KPI CARDS */
+.kpi-row{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:16px}
+.kpi{background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px}
+.kpi-label{font-size:10px;text-transform:uppercase;letter-spacing:.8px;color:var(--cat);font-weight:600;margin-bottom:6px}
+.kpi-value{font-size:26px;font-weight:700;color:var(--navy);line-height:1.1}
+.kpi-bottom{display:flex;align-items:center;justify-content:space-between;margin-top:8px}
+.kpi-delta{font-size:11px;font-weight:600;padding:2px 8px;border-radius:10px;display:inline-flex;align-items:center;gap:3px}
+.kpi-delta.up{background:#dcfce7;color:var(--green)}
+.kpi-delta.down{background:#fef2f2;color:var(--red)}
+.kpi-delta.neutral{background:#f3f4f6;color:var(--muted)}
+
+/* STATUS BANNER */
+.status-banner{padding:12px 18px;border-radius:var(--radius);margin-bottom:16px;font-size:12.5px;font-weight:500;
+  display:flex;align-items:center;gap:10px}
+.status-banner.warn{background:#fffbeb;border:1px solid #fde68a;color:#92400e}
+.status-banner.ok{background:#f0fdf4;border:1px solid #bbf7d0;color:#166534}
+.status-banner svg{flex-shrink:0}
+
+/* INSIGHT FEED */
+.insight{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)}
+.insight:last-child{border-bottom:none}
+.insight-icon{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.insight-icon.red{background:#fef2f2;color:var(--red)}
+.insight-icon.amber{background:#fffbeb;color:var(--amber)}
+.insight-icon.info{background:#eff6ff;color:var(--blue)}
+.insight-text{font-size:12.5px;color:var(--text2);line-height:1.5}
+.severity{font-size:10px;font-weight:700;text-transform:uppercase;padding:1px 6px;border-radius:3px;margin-right:6px}
+.severity.red{background:#fef2f2;color:var(--red)}
+.severity.amber{background:#fffbeb;color:var(--amber)}
+.severity.info{background:#eff6ff;color:var(--blue)}
+
+/* TABLES */
+table{width:100%;border-collapse:collapse;font-size:12.5px}
+th{text-align:left;font-weight:600;color:var(--cat);text-transform:uppercase;font-size:10px;letter-spacing:.5px;
+  padding:8px 12px;border-bottom:2px solid var(--border);cursor:pointer;user-select:none;white-space:nowrap}
+th:hover{color:var(--blue)}
+th .sort-arrow{margin-left:4px;opacity:.4;font-size:9px}
+th.sorted .sort-arrow{opacity:1;color:var(--blue)}
+td{padding:8px 12px;border-bottom:1px solid var(--border);color:var(--text2)}
+tr:hover td{background:rgba(0,61,255,.02)}
+.mono{font-family:'SF Mono','Fira Code',monospace;font-size:11.5px;color:var(--text)}
+.tag{display:inline-block;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:600;margin-right:3px}
+.tag.prod{background:#dbeafe;color:#1e40af}
+.tag.nonprod{background:#fef3c7;color:#92400e}
+.tag.genstudio{background:#ede9fe;color:#5b21b6}
+.tag.staging{background:#f3f4f6;color:#6b7280}
+.delta-cell.up{color:var(--green);font-weight:600}
+.delta-cell.down{color:var(--red);font-weight:600}
+
+/* STACKED BAR */
+.stacked-bar-row{margin-bottom:12px}
+.stacked-bar-label{font-size:11px;color:var(--text2);margin-bottom:4px;font-weight:500}
+.stacked-bar{display:flex;height:22px;border-radius:3px;overflow:hidden}
+.stacked-bar div{transition:width .3s}
+.bar-legend{display:flex;gap:14px;margin-top:10px;font-size:11px;color:var(--text2)}
+.bar-legend span{display:flex;align-items:center;gap:5px}
+.bar-legend .dot{width:8px;height:8px;border-radius:2px}
+
+/* SVG CHARTS */
+svg text{font-family:'Sora',sans-serif}
+.axis-label{font-size:10px;fill:var(--cat)}
+.grid-line{stroke:var(--border);stroke-width:1}
+.chart-area{fill:var(--blue);opacity:.12}
+.chart-line{fill:none;stroke:var(--blue);stroke-width:2}
+.tooltip-g{pointer-events:none}
+
+/* APP EXPLORER */
+.explorer-layout{display:flex;gap:0;height:calc(100vh - 120px);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;background:#fff}
+.explorer-list{width:42%;border-right:1px solid var(--border);display:flex;flex-direction:column}
+.explorer-search{padding:12px;border-bottom:1px solid var(--border)}
+.explorer-search input{width:100%;padding:8px 12px;border:1px solid var(--border);border-radius:var(--radius);
+  font-family:'Sora',sans-serif;font-size:12.5px;outline:none}
+.explorer-search input:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(0,61,255,.1)}
+.explorer-filters{padding:8px 12px;border-bottom:1px solid var(--border);display:flex;gap:6px;flex-wrap:wrap}
+.explorer-scroll{flex:1;overflow-y:auto}
+.app-row{padding:12px 14px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .1s;display:flex;align-items:center;gap:10px}
+.app-row:hover{background:rgba(0,61,255,.03)}
+.app-row.selected{background:rgba(0,61,255,.06);border-left:3px solid var(--blue)}
+.app-row-main{flex:1;min-width:0}
+.app-row-id{font-family:'SF Mono','Fira Code',monospace;font-size:11px;color:var(--muted)}
+.app-row-name{font-size:12px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
+.app-row-metrics{display:flex;gap:12px;font-size:11px;color:var(--cat);margin-top:4px}
+.explorer-detail{flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:16px}
+.detail-header{border-bottom:1px solid var(--border);padding-bottom:14px}
+.detail-title{font-size:18px;font-weight:700;color:var(--navy)}
+.detail-meta{display:flex;gap:16px;margin-top:6px;font-size:11.5px;color:var(--muted)}
+.detail-meta span{display:flex;align-items:center;gap:4px}
+.empty-detail{display:flex;align-items:center;justify-content:center;flex:1;color:var(--muted);font-size:13px}
+
+/* COMPARISON */
+.compare-controls{display:flex;align-items:center;gap:12px;margin-bottom:20px;flex-wrap:wrap}
+.compare-controls select{padding:8px 12px;border:1px solid var(--border);border-radius:var(--radius);
+  font-family:'Sora',sans-serif;font-size:12.5px;background:#fff;color:var(--text);outline:none}
+.compare-controls select:focus{border-color:var(--blue)}
+.compare-controls .vs{font-weight:700;color:var(--navy);font-size:14px}
+.compare-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:16px}
+.compare-kpi{background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:16px;text-align:center}
+.compare-kpi-label{font-size:10px;text-transform:uppercase;letter-spacing:.8px;color:var(--cat);font-weight:600;margin-bottom:8px}
+.compare-kpi-values{display:flex;justify-content:center;gap:20px}
+.compare-kpi-val{font-size:22px;font-weight:700}
+.compare-kpi-val.a{color:var(--blue)}
+.compare-kpi-val.b{color:var(--amber)}
+.compare-kpi-sub{font-size:10px;color:var(--muted);margin-top:2px}
+
+/* TIME TOGGLE */
+.time-toggle{display:flex;gap:4px;margin-bottom:16px}
+.time-btn{padding:6px 14px;border-radius:var(--radius);border:1px solid var(--border);background:#fff;
+  font-family:'Sora',sans-serif;font-size:11.5px;color:var(--text2);cursor:pointer;font-weight:500}
+.time-btn.active{background:var(--blue);color:#fff;border-color:var(--blue)}
+
+/* TREEMAP */
+.treemap-container{position:relative;width:100%;height:280px;border-radius:var(--radius);overflow:hidden}
+.treemap-rect{position:absolute;display:flex;align-items:center;justify-content:center;text-align:center;
+  padding:4px;font-size:10px;color:#fff;font-weight:600;overflow:hidden;border:1px solid rgba(255,255,255,.3);
+  transition:opacity .15s}
+.treemap-rect:hover{opacity:.85}
+.treemap-rect .tm-label{pointer-events:none;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%}
+.treemap-rect .tm-val{font-size:9px;font-weight:400;opacity:.85;display:block}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:#d1d5db;border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:#9ca3af}
+
+/* RESPONSIVE */
+@media(max-width:1100px){.kpi-row{grid-template-columns:repeat(3,1fr)}}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<nav class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 2L2 7l10 5 10-5-10-5z" fill="#003DFF"/><path d="M2 17l10 5 10-5" stroke="#003DFF" stroke-width="2" fill="none"/><path d="M2 12l10 5 10-5" stroke="#003DFF" stroke-width="2" fill="none" opacity=".5"/></svg>
+    <span>Adobe OEM</span>
+  </div>
+  <div class="nav-items">
+    <div class="nav-item active" data-lens="health" onclick="switchLens('health',this)">
+      <svg viewBox="0 0 20 20" fill="currentColor"><path d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z"/></svg>
+      <span>Portfolio Health</span>
+    </div>
+    <div class="nav-item" data-lens="landscape" onclick="switchLens('landscape',this)">
+      <svg viewBox="0 0 20 20" fill="currentColor"><path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zm6-4a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zm6-3a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z"/></svg>
+      <span>Usage Landscape</span>
+    </div>
+    <div class="nav-item" data-lens="trends" onclick="switchLens('trends',this)">
+      <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M12 7a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0V8.414l-4.293 4.293a1 1 0 01-1.414 0L8 10.414l-4.293 4.293a1 1 0 01-1.414-1.414l5-5a1 1 0 011.414 0L11 10.586 14.586 7H12z" clip-rule="evenodd"/></svg>
+      <span>Trends & Dynamics</span>
+    </div>
+    <div class="nav-item" data-lens="explorer" onclick="switchLens('explorer',this)">
+      <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"/></svg>
+      <span>App Explorer</span>
+    </div>
+    <div class="nav-item" data-lens="compare" onclick="switchLens('compare',this)">
+      <svg viewBox="0 0 20 20" fill="currentColor"><path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/><path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm9.707 5.707a1 1 0 00-1.414-1.414L9 12.586l-1.293-1.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+      <span>Comparison</span>
+    </div>
+  </div>
+</nav>
+
+<!-- TOP BAR -->
+<header class="topbar">
+  <svg width="80" height="20" viewBox="0 0 80 20"><text x="0" y="15" font-family="Sora" font-weight="700" font-size="14" fill="#003DFF">algolia</text></svg>
+  <div class="topbar-sep"></div>
+  <div class="topbar-title">Adobe OEM Analytics</div>
+  <div class="topbar-sep"></div>
+  <div class="filter-chips">
+    <div class="chip" onclick="this.classList.toggle('active')" style="position:relative">
+      <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"/></svg>
+      Last 20 months
+    </div>
+    <div class="chip" id="envChip" onclick="toggleEnvDropdown(event)" style="position:relative">
+      <svg viewBox="0 0 20 20" fill="currentColor"><path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z"/></svg>
+      Environment: All
+      <div class="chip-dropdown" id="envDropdown">
+        <label><input type="checkbox" checked> All (1,390)</label>
+        <label><input type="checkbox"> Production (1,099)</label>
+        <label><input type="checkbox"> Non-Production (343)</label>
+        <label><input type="checkbox"> GenStudio (187)</label>
+        <label><input type="checkbox"> Staging (48)</label>
+      </div>
+    </div>
+    <div class="chip">
+      <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"/></svg>
+      Quick search...
+    </div>
+  </div>
+  <div class="topbar-right">Data through Mar 24, 2026</div>
+</header>
+
+<!-- MAIN CONTENT -->
+<main class="main">
+
+<!-- ============ LENS 1: PORTFOLIO HEALTH ============ -->
+<section class="lens active" id="lens-health">
+  <div class="status-banner warn">
+    <svg width="18" height="18" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
+    Apps quota runway: <strong>1.8 months to ceiling</strong> at current growth rate (+63 apps/mo vs 110 remaining slots)
+  </div>
+
+  <div class="kpi-row">
+    <div class="kpi">
+      <div class="kpi-label">Total Apps</div>
+      <div class="kpi-value">1,390</div>
+      <div class="kpi-bottom">
+        <span class="kpi-delta up">+63 this month</span>
+        <svg width="60" height="22" viewBox="0 0 60 22"><polyline points="0,20 10,18 20,16 30,13 40,9 50,5 60,2" fill="none" stroke="#16a34a" stroke-width="1.5"/></svg>
+      </div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Total Records</div>
+      <div class="kpi-value">39.3M</div>
+      <div class="kpi-bottom">
+        <span class="kpi-delta up">+2.1M MoM</span>
+        <svg width="60" height="22" viewBox="0 0 60 22"><polyline points="0,20 10,19 20,17 30,14 40,10 50,6 60,3" fill="none" stroke="#16a34a" stroke-width="1.5"/></svg>
+      </div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Total Searches</div>
+      <div class="kpi-value">15.8M</div>
+      <div class="kpi-bottom">
+        <span class="kpi-delta up">+1.3M MoM</span>
+        <svg width="60" height="22" viewBox="0 0 60 22"><polyline points="0,18 10,20 20,16 30,14 40,12 50,8 60,4" fill="none" stroke="#16a34a" stroke-width="1.5"/></svg>
+      </div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Active Rate</div>
+      <div class="kpi-value">58.6%</div>
+      <div class="kpi-bottom">
+        <span class="kpi-delta down">-2.1% MoM</span>
+        <svg width="60" height="22" viewBox="0 0 60 22"><polyline points="0,8 10,7 20,8 30,10 40,12 50,14 60,16" fill="none" stroke="#dc2626" stroke-width="1.5"/></svg>
+      </div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">App Growth Rate</div>
+      <div class="kpi-value">+63<span style="font-size:14px;color:var(--muted)">/mo</span></div>
+      <div class="kpi-bottom">
+        <span class="kpi-delta neutral">Stable</span>
+        <svg width="60" height="22" viewBox="0 0 60 22"><polyline points="0,14 10,12 20,8 30,16 40,10 50,11 60,11" fill="none" stroke="#7778AF" stroke-width="1.5"/></svg>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="card">
+      <div class="card-title">
+        <svg width="16" height="16" viewBox="0 0 20 20" fill="var(--amber)"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
+        What Needs Attention
+      </div>
+      <div class="insight">
+        <div class="insight-icon red"><svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92z" clip-rule="evenodd"/></svg></div>
+        <div class="insight-text"><span class="severity red">Critical</span>Apps quota runway: 1.8 months at current pace. 1,390 of 1,500 slots used.</div>
+      </div>
+      <div class="insight">
+        <div class="insight-icon amber"><svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg></div>
+        <div class="insight-text"><span class="severity amber">Warning</span>App 1CMA1NNM6L holds 37.8% of all records (14.5M) -- concentration risk.</div>
+      </div>
+      <div class="insight">
+        <div class="insight-icon amber"><svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg></div>
+        <div class="insight-text"><span class="severity amber">Warning</span>397 apps have search traffic but zero records -- possibly misconfigured.</div>
+      </div>
+      <div class="insight">
+        <div class="insight-icon info"><svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zm-1 4a1 1 0 00-1 1v3a1 1 0 102 0v-3a1 1 0 00-1-1z" clip-rule="evenodd"/></svg></div>
+        <div class="insight-text"><span class="severity info">Info</span>Staging churn: 95% of provisioned staging apps are deleted within 30 days.</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Environment Split</div>
+      <div class="stacked-bar-row">
+        <div class="stacked-bar-label">Apps (1,390 total)</div>
+        <div class="stacked-bar">
+          <div style="width:71%;background:var(--blue)" title="Production: 71%"></div>
+          <div style="width:18%;background:var(--amber)" title="Non-Production: 18%"></div>
+          <div style="width:11%;background:var(--purple)" title="GenStudio: 11%"></div>
+        </div>
+      </div>
+      <div class="stacked-bar-row">
+        <div class="stacked-bar-label">Records (39.3M total)</div>
+        <div class="stacked-bar">
+          <div style="width:83.2%;background:var(--blue)" title="Production: 83.2%"></div>
+          <div style="width:5.3%;background:var(--amber)" title="Non-Production: 5.3%"></div>
+          <div style="width:11.5%;background:var(--purple)" title="GenStudio: 11.5%"></div>
+        </div>
+      </div>
+      <div class="stacked-bar-row">
+        <div class="stacked-bar-label">Searches (15.8M total)</div>
+        <div class="stacked-bar">
+          <div style="width:84.1%;background:var(--blue)" title="Production: 84.1%"></div>
+          <div style="width:2.4%;background:var(--amber)" title="Non-Production: 2.4%"></div>
+          <div style="width:13.5%;background:var(--purple)" title="GenStudio: 13.5%"></div>
+        </div>
+      </div>
+      <div class="bar-legend">
+        <span><span class="dot" style="background:var(--blue)"></span>Production</span>
+        <span><span class="dot" style="background:var(--amber)"></span>Non-Production</span>
+        <span><span class="dot" style="background:var(--purple)"></span>GenStudio</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Top Movers This Month</div>
+    <table id="moversTable">
+      <thead><tr>
+        <th onclick="sortTable('moversTable',0)">App ID <span class="sort-arrow">&#9650;</span></th>
+        <th onclick="sortTable('moversTable',1)">Name <span class="sort-arrow">&#9650;</span></th>
+        <th>Tags</th>
+        <th onclick="sortTable('moversTable',3)">Records <span class="sort-arrow">&#9650;</span></th>
+        <th onclick="sortTable('moversTable',4)">Rec Delta <span class="sort-arrow">&#9650;</span></th>
+        <th onclick="sortTable('moversTable',5)">Searches <span class="sort-arrow">&#9650;</span></th>
+        <th onclick="sortTable('moversTable',6)">Srch Delta <span class="sort-arrow">&#9650;</span></th>
+      </tr></thead>
+      <tbody>
+        <tr><td class="mono">1CMA1NNM6L</td><td>cm-p100417-e924025</td><td><span class="tag prod">prod</span></td><td>14,487,231</td><td class="delta-cell up">+1,203,411</td><td>5,231,002</td><td class="delta-cell up">+412,330</td></tr>
+        <tr><td class="mono">7KBR4MQ92X</td><td>cm-p83021-e711004</td><td><span class="tag prod">prod</span><span class="tag genstudio">genstudio</span></td><td>3,621,440</td><td class="delta-cell up">+890,201</td><td>1,892,110</td><td class="delta-cell up">+231,005</td></tr>
+        <tr><td class="mono">PQ29XN1L3D</td><td>cm-p45200-e392011</td><td><span class="tag nonprod">nonprod</span></td><td>891,200</td><td class="delta-cell down">-234,100</td><td>122,340</td><td class="delta-cell down">-41,200</td></tr>
+        <tr><td class="mono">3ZVW8HMT5A</td><td>cm-p67330-e530088</td><td><span class="tag prod">prod</span></td><td>2,103,900</td><td class="delta-cell up">+502,300</td><td>943,210</td><td class="delta-cell up">+88,400</td></tr>
+        <tr><td class="mono">NK42RL0E9J</td><td>cm-p12009-e100233-cmprd-genstudio</td><td><span class="tag genstudio">genstudio</span></td><td>1,445,600</td><td class="delta-cell up">+312,700</td><td>2,110,300</td><td class="delta-cell up">+540,100</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ============ LENS 2: USAGE LANDSCAPE ============ -->
+<section class="lens" id="lens-landscape">
+  <div class="row">
+    <div class="card" style="flex:1.5">
+      <div class="card-title">Distribution of Records per App (Log Scale)</div>
+      <svg width="100%" height="240" viewBox="0 0 600 240" id="histogramSvg"></svg>
+    </div>
+    <div class="card">
+      <div class="card-title">Concentration (Lorenz Curve)</div>
+      <svg width="100%" height="240" viewBox="0 0 300 240" id="lorenzSvg"></svg>
+    </div>
+  </div>
+  <div class="card" style="margin-bottom:16px">
+    <div class="card-title">Records vs Searches (Log Scale)</div>
+    <svg width="100%" height="320" viewBox="0 0 700 320" id="scatterSvg"></svg>
+  </div>
+  <div class="card">
+    <div class="card-title">Top 20 Apps by Records (Treemap)</div>
+    <div class="treemap-container" id="treemap"></div>
+  </div>
+</section>
+
+<!-- ============ LENS 3: TRENDS & DYNAMICS ============ -->
+<section class="lens" id="lens-trends">
+  <div class="time-toggle">
+    <button class="time-btn" onclick="setTimeBtn(this)">7d</button>
+    <button class="time-btn" onclick="setTimeBtn(this)">30d</button>
+    <button class="time-btn" onclick="setTimeBtn(this)">90d</button>
+    <button class="time-btn" onclick="setTimeBtn(this)">YTD</button>
+    <button class="time-btn active" onclick="setTimeBtn(this)">All</button>
+  </div>
+  <div class="row">
+    <div class="card">
+      <div class="card-title">Application Growth</div>
+      <svg width="100%" height="240" viewBox="0 0 500 240" id="appGrowthSvg"></svg>
+    </div>
+    <div class="card">
+      <div class="card-title">Record Growth</div>
+      <svg width="100%" height="240" viewBox="0 0 500 240" id="recGrowthSvg"></svg>
+    </div>
+  </div>
+  <div class="card" style="margin-bottom:16px">
+    <div class="card-title">Provisioning Waterfall (Monthly)</div>
+    <svg width="100%" height="260" viewBox="0 0 700 260" id="waterfallSvg"></svg>
+  </div>
+  <div class="card">
+    <div class="card-title">Month-over-Month Summary</div>
+    <table id="momTable">
+      <thead><tr>
+        <th onclick="sortTable('momTable',0)">Month <span class="sort-arrow">&#9650;</span></th>
+        <th onclick="sortTable('momTable',1)">Total Apps <span class="sort-arrow">&#9650;</span></th>
+        <th onclick="sortTable('momTable',2)">Prod <span class="sort-arrow">&#9650;</span></th>
+        <th onclick="sortTable('momTable',3)">NonProd <span class="sort-arrow">&#9650;</span></th>
+        <th onclick="sortTable('momTable',4)">GenStudio <span class="sort-arrow">&#9650;</span></th>
+        <th onclick="sortTable('momTable',5)">Records <span class="sort-arrow">&#9650;</span></th>
+        <th onclick="sortTable('momTable',6)">Searches <span class="sort-arrow">&#9650;</span></th>
+      </tr></thead>
+      <tbody>
+        <tr><td>Mar 2026</td><td>1,390</td><td>987</td><td>264</td><td>139</td><td>39.3M</td><td>15.8M</td></tr>
+        <tr><td>Feb 2026</td><td>1,327</td><td>940</td><td>252</td><td>135</td><td>37.2M</td><td>14.5M</td></tr>
+        <tr><td>Jan 2026</td><td>1,264</td><td>893</td><td>241</td><td>130</td><td>35.0M</td><td>13.1M</td></tr>
+        <tr><td>Dec 2025</td><td>1,198</td><td>845</td><td>230</td><td>123</td><td>32.8M</td><td>11.9M</td></tr>
+        <tr><td>Nov 2025</td><td>1,141</td><td>802</td><td>218</td><td>121</td><td>30.9M</td><td>10.8M</td></tr>
+        <tr><td>Oct 2025</td><td>1,082</td><td>762</td><td>205</td><td>115</td><td>28.7M</td><td>9.6M</td></tr>
+        <tr><td>Sep 2025</td><td>1,020</td><td>715</td><td>194</td><td>111</td><td>26.3M</td><td>8.5M</td></tr>
+        <tr><td>Aug 2025</td><td>953</td><td>665</td><td>182</td><td>106</td><td>24.1M</td><td>7.4M</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ============ LENS 4: APP EXPLORER ============ -->
+<section class="lens" id="lens-explorer">
+  <div class="explorer-layout">
+    <div class="explorer-list">
+      <div class="explorer-search">
+        <input type="text" placeholder="Search apps by ID, name, or project..." id="explorerSearch" oninput="filterApps()">
+      </div>
+      <div class="explorer-filters">
+        <div class="chip active" style="font-size:10px;padding:3px 8px" onclick="this.classList.toggle('active')">All</div>
+        <div class="chip" style="font-size:10px;padding:3px 8px" onclick="this.classList.toggle('active')">Prod</div>
+        <div class="chip" style="font-size:10px;padding:3px 8px" onclick="this.classList.toggle('active')">NonProd</div>
+        <div class="chip" style="font-size:10px;padding:3px 8px" onclick="this.classList.toggle('active')">GenStudio</div>
+        <div class="chip" style="font-size:10px;padding:3px 8px" onclick="this.classList.toggle('active')">Growing</div>
+        <div class="chip" style="font-size:10px;padding:3px 8px" onclick="this.classList.toggle('active')">Dormant</div>
+      </div>
+      <div class="explorer-scroll" id="explorerScroll"></div>
+    </div>
+    <div class="explorer-detail" id="explorerDetail">
+      <div class="empty-detail">Select an app from the list to view details</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ LENS 5: COMPARISON ============ -->
+<section class="lens" id="lens-compare">
+  <div class="compare-controls">
+    <span style="font-size:12px;color:var(--text2);font-weight:500">Compare</span>
+    <select id="compareA">
+      <option>Production</option><option>Non-Production</option><option>GenStudio</option><option>Staging</option>
+    </select>
+    <span class="vs">vs</span>
+    <select id="compareB">
+      <option>Non-Production</option><option>Production</option><option>GenStudio</option><option>Staging</option>
+    </select>
+  </div>
+  <div class="compare-kpis">
+    <div class="compare-kpi">
+      <div class="compare-kpi-label">Apps</div>
+      <div class="compare-kpi-values">
+        <div><div class="compare-kpi-val a">1,099</div><div class="compare-kpi-sub">Production</div></div>
+        <div><div class="compare-kpi-val b">343</div><div class="compare-kpi-sub">Non-Production</div></div>
+      </div>
+    </div>
+    <div class="compare-kpi">
+      <div class="compare-kpi-label">Records</div>
+      <div class="compare-kpi-values">
+        <div><div class="compare-kpi-val a">32.7M</div><div class="compare-kpi-sub">Production</div></div>
+        <div><div class="compare-kpi-val b">2.1M</div><div class="compare-kpi-sub">Non-Production</div></div>
+      </div>
+    </div>
+    <div class="compare-kpi">
+      <div class="compare-kpi-label">Searches</div>
+      <div class="compare-kpi-values">
+        <div><div class="compare-kpi-val a">13.3M</div><div class="compare-kpi-sub">Production</div></div>
+        <div><div class="compare-kpi-val b">373K</div><div class="compare-kpi-sub">Non-Production</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="card">
+      <div class="card-title">Records Trend (Indexed to 100)</div>
+      <svg width="100%" height="240" viewBox="0 0 500 240" id="compareRecSvg"></svg>
+    </div>
+    <div class="card">
+      <div class="card-title">Searches Trend (Indexed to 100)</div>
+      <svg width="100%" height="240" viewBox="0 0 500 240" id="compareSrchSvg"></svg>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<script>
+// ====== NAVIGATION ======
+function switchLens(id, el) {
+  document.querySelectorAll('.lens').forEach(l => l.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('lens-' + id).classList.add('active');
+  el.classList.add('active');
+}
+
+// ====== ENVIRONMENT DROPDOWN ======
+function toggleEnvDropdown(e) {
+  e.stopPropagation();
+  document.getElementById('envDropdown').classList.toggle('show');
+}
+document.addEventListener('click', () => { document.getElementById('envDropdown').classList.remove('show'); });
+
+// ====== TIME TOGGLE ======
+function setTimeBtn(el) {
+  el.parentElement.querySelectorAll('.time-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+}
+
+// ====== TABLE SORTING ======
+function sortTable(tableId, col) {
+  const table = document.getElementById(tableId);
+  const tbody = table.querySelector('tbody');
+  const rows = Array.from(tbody.querySelectorAll('tr'));
+  const th = table.querySelectorAll('th')[col];
+  const asc = !th.classList.contains('sorted-asc');
+  table.querySelectorAll('th').forEach(h => { h.classList.remove('sorted','sorted-asc','sorted-desc'); });
+  th.classList.add('sorted', asc ? 'sorted-asc' : 'sorted-desc');
+  rows.sort((a, b) => {
+    let va = a.cells[col].textContent.replace(/[^0-9.\-]/g, '');
+    let vb = b.cells[col].textContent.replace(/[^0-9.\-]/g, '');
+    if (!isNaN(va) && !isNaN(vb)) return asc ? va - vb : vb - va;
+    return asc ? a.cells[col].textContent.localeCompare(b.cells[col].textContent) : b.cells[col].textContent.localeCompare(a.cells[col].textContent);
+  });
+  rows.forEach(r => tbody.appendChild(r));
+}
+
+// ====== SVG HELPERS ======
+function svgEl(tag, attrs) {
+  const el = document.createElementNS('http://www.w3.org/2000/svg', tag);
+  for (const [k, v] of Object.entries(attrs || {})) el.setAttribute(k, v);
+  return el;
+}
+function drawGrid(svg, x0, y0, w, h, xTicks, yTicks) {
+  for (let i = 0; i <= yTicks; i++) {
+    const y = y0 + (h / yTicks) * i;
+    svg.appendChild(svgEl('line', { x1: x0, y1: y, x2: x0 + w, y2: y, stroke: '#e5e7eb', 'stroke-width': 1 }));
+  }
+}
+
+// ====== HISTOGRAM (Landscape) ======
+(function drawHistogram() {
+  const svg = document.getElementById('histogramSvg');
+  if (!svg) return;
+  const x0 = 55, y0 = 15, w = 520, h = 190;
+  const labels = ['1', '10', '100', '1K', '10K', '100K', '1M', '10M'];
+  const counts = [180, 320, 280, 210, 140, 85, 35, 8];
+  const maxC = 350;
+  drawGrid(svg, x0, y0, w, h, 8, 4);
+  // y-axis labels
+  for (let i = 0; i <= 4; i++) {
+    const val = Math.round((maxC / 4) * (4 - i));
+    svg.appendChild(svgEl('text', { x: x0 - 8, y: y0 + (h / 4) * i + 4, 'text-anchor': 'end', 'font-size': '10', fill: '#9698C3' })).textContent = val;
+  }
+  const bw = w / labels.length;
+  labels.forEach((l, i) => {
+    const bh = (counts[i] / maxC) * h;
+    svg.appendChild(svgEl('rect', { x: x0 + i * bw + 8, y: y0 + h - bh, width: bw - 16, height: bh, fill: '#003DFF', opacity: 0.7, rx: 2 }));
+    svg.appendChild(svgEl('text', { x: x0 + i * bw + bw / 2, y: y0 + h + 16, 'text-anchor': 'middle', 'font-size': '10', fill: '#9698C3' })).textContent = l;
+  });
+  // axis label
+  svg.appendChild(svgEl('text', { x: x0 + w / 2, y: y0 + h + 32, 'text-anchor': 'middle', 'font-size': '10', fill: '#7778AF' })).textContent = 'Records per App';
+  // median line
+  const medX = x0 + 2.15 * bw;
+  svg.appendChild(svgEl('line', { x1: medX, y1: y0, x2: medX, y2: y0 + h, stroke: '#d97706', 'stroke-dasharray': '4,3', 'stroke-width': 1.5 }));
+  svg.appendChild(svgEl('text', { x: medX + 4, y: y0 + 12, 'font-size': '9', fill: '#d97706', 'font-weight': '600' })).textContent = 'Median: 142';
+  // p99 line
+  const p99X = x0 + 6.56 * bw;
+  svg.appendChild(svgEl('line', { x1: p99X, y1: y0, x2: p99X, y2: y0 + h, stroke: '#dc2626', 'stroke-dasharray': '4,3', 'stroke-width': 1.5 }));
+  svg.appendChild(svgEl('text', { x: p99X + 4, y: y0 + 12, 'font-size': '9', fill: '#dc2626', 'font-weight': '600' })).textContent = 'P99: 3.6M';
+})();
+
+// ====== LORENZ CURVE ======
+(function drawLorenz() {
+  const svg = document.getElementById('lorenzSvg');
+  if (!svg) return;
+  const x0 = 35, y0 = 15, w = 230, h = 190;
+  drawGrid(svg, x0, y0, w, h, 4, 4);
+  // diagonal
+  svg.appendChild(svgEl('line', { x1: x0, y1: y0 + h, x2: x0 + w, y2: y0, stroke: '#e5e7eb', 'stroke-width': 1.5, 'stroke-dasharray': '4,3' }));
+  // lorenz curve (extreme inequality)
+  const pts = [[0,0],[.1,.001],[.2,.003],[.3,.008],[.4,.018],[.5,.035],[.6,.065],[.7,.12],[.8,.21],[.9,.42],[1,1]];
+  const pathD = pts.map((p, i) => {
+    const px = x0 + p[0] * w, py = y0 + h - p[1] * h;
+    return (i === 0 ? 'M' : 'L') + px + ',' + py;
+  }).join(' ');
+  svg.appendChild(svgEl('path', { d: pathD, fill: 'rgba(0,61,255,.1)', stroke: '#003DFF', 'stroke-width': 2 }));
+  // annotation
+  svg.appendChild(svgEl('text', { x: x0 + w / 2, y: y0 + h - 30, 'text-anchor': 'middle', 'font-size': '10', fill: '#36395A', 'font-weight': '600' })).textContent = 'Top 10 = 71.2%';
+  svg.appendChild(svgEl('text', { x: x0 + w / 2, y: y0 + h - 16, 'text-anchor': 'middle', 'font-size': '10', fill: '#7778AF' })).textContent = 'Gini: 0.982';
+  // axis labels
+  svg.appendChild(svgEl('text', { x: x0, y: y0 + h + 16, 'font-size': '9', fill: '#9698C3' })).textContent = '0%';
+  svg.appendChild(svgEl('text', { x: x0 + w, y: y0 + h + 16, 'text-anchor': 'end', 'font-size': '9', fill: '#9698C3' })).textContent = '100% apps';
+})();
+
+// ====== SCATTER PLOT ======
+(function drawScatter() {
+  const svg = document.getElementById('scatterSvg');
+  if (!svg) return;
+  const x0 = 55, y0 = 15, w = 610, h = 270;
+  drawGrid(svg, x0, y0, w, h, 6, 5);
+  const xLabels = ['1', '100', '10K', '1M', '10M'];
+  const yLabels = ['1', '100', '10K', '1M', '10M'];
+  xLabels.forEach((l, i) => {
+    svg.appendChild(svgEl('text', { x: x0 + (w / (xLabels.length - 1)) * i, y: y0 + h + 18, 'text-anchor': 'middle', 'font-size': '10', fill: '#9698C3' })).textContent = l;
+  });
+  yLabels.forEach((l, i) => {
+    svg.appendChild(svgEl('text', { x: x0 - 8, y: y0 + h - (h / (yLabels.length - 1)) * i + 4, 'text-anchor': 'end', 'font-size': '10', fill: '#9698C3' })).textContent = l;
+  });
+  svg.appendChild(svgEl('text', { x: x0 + w / 2, y: y0 + h + 35, 'text-anchor': 'middle', 'font-size': '10', fill: '#7778AF' })).textContent = 'Records (log)';
+  svg.appendChild(svgEl('text', { x: 12, y: y0 + h / 2, 'text-anchor': 'middle', 'font-size': '10', fill: '#7778AF', transform: 'rotate(-90,12,' + (y0 + h / 2) + ')' })).textContent = 'Searches (log)';
+  // scatter dots
+  const rng = (s) => { let x = Math.sin(s) * 10000; return x - Math.floor(x); };
+  const colors = ['#003DFF', '#d97706', '#7c3aed'];
+  for (let i = 0; i < 220; i++) {
+    const r1 = rng(i * 7.3 + 1), r2 = rng(i * 13.7 + 2), r3 = rng(i * 3.1 + 3);
+    const cx = x0 + r1 * w, cy = y0 + h - r2 * h;
+    const c = colors[r3 < .65 ? 0 : r3 < .85 ? 1 : 2];
+    svg.appendChild(svgEl('circle', { cx, cy, r: 3.5, fill: c, opacity: 0.35 + r1 * 0.4 }));
+  }
+  // legend
+  const lg = [['Production', '#003DFF'], ['Non-Prod', '#d97706'], ['GenStudio', '#7c3aed']];
+  lg.forEach(([label, color], i) => {
+    svg.appendChild(svgEl('circle', { cx: x0 + w - 140 + i * 80, cy: y0 + 5, r: 4, fill: color, opacity: .7 }));
+    svg.appendChild(svgEl('text', { x: x0 + w - 134 + i * 80, y: y0 + 9, 'font-size': '10', fill: '#484C7A' })).textContent = label;
+  });
+})();
+
+// ====== TREEMAP ======
+(function drawTreemap() {
+  const container = document.getElementById('treemap');
+  if (!container) return;
+  const data = [
+    { name: 'cm-p100417-e924025', val: 14.5, pct: 37.8, env: 'prod' },
+    { name: 'cm-p83021-e711004', val: 3.6, pct: 9.4, env: 'prod' },
+    { name: 'cm-p12009-e100233', val: 2.4, pct: 6.3, env: 'genstudio' },
+    { name: 'cm-p67330-e530088', val: 2.1, pct: 5.5, env: 'prod' },
+    { name: 'cm-p45200-e392011', val: 1.8, pct: 4.7, env: 'nonprod' },
+    { name: 'cm-p90100-e800012', val: 1.5, pct: 3.9, env: 'prod' },
+    { name: 'cm-p55030-e420100', val: 1.2, pct: 3.1, env: 'genstudio' },
+    { name: 'cm-p22010-e200044', val: 1.0, pct: 2.6, env: 'prod' },
+    { name: 'cm-p33300-e290010', val: 0.85, pct: 2.2, env: 'prod' },
+    { name: 'cm-p71100-e610030', val: 0.72, pct: 1.9, env: 'nonprod' },
+    { name: 'cm-p88400-e750021', val: 0.65, pct: 1.7, env: 'prod' },
+    { name: 'cm-p14500-e110090', val: 0.58, pct: 1.5, env: 'genstudio' },
+    { name: 'cm-p62200-e510044', val: 0.52, pct: 1.4, env: 'prod' },
+    { name: 'cm-p39900-e330012', val: 0.45, pct: 1.2, env: 'prod' },
+    { name: 'cm-p77600-e660088', val: 0.4, pct: 1.0, env: 'nonprod' },
+    { name: 'cm-p51100-e430021', val: 0.35, pct: 0.9, env: 'prod' },
+    { name: 'cm-p19800-e160033', val: 0.3, pct: 0.8, env: 'genstudio' },
+    { name: 'cm-p84200-e720055', val: 0.28, pct: 0.7, env: 'prod' },
+    { name: 'cm-p60500-e500011', val: 0.24, pct: 0.6, env: 'prod' },
+    { name: 'cm-p43700-e370099', val: 0.2, pct: 0.5, env: 'nonprod' },
+  ];
+  const colors = { prod: '#003DFF', nonprod: '#d97706', genstudio: '#7c3aed' };
+  const total = data.reduce((s, d) => s + d.val, 0);
+  const cw = container.offsetWidth || 800, ch = 280;
+  // simple treemap: row-based squarify approximation
+  let rects = [];
+  let y = 0;
+  let idx = 0;
+  while (idx < data.length) {
+    let rowItems = [];
+    let rowVal = 0;
+    const remaining = data.slice(idx).reduce((s, d) => s + d.val, 0);
+    const rowH = Math.max(30, (remaining / total) * ch);
+    // fill row
+    let rowTarget = remaining > total * 0.5 ? data[idx].val : remaining;
+    let bestAr = Infinity;
+    for (let i = idx; i < data.length; i++) {
+      rowItems.push(data[i]);
+      rowVal += data[i].val;
+      const rh = (rowVal / total) * ch;
+      const ar = rowItems.reduce((worst, it) => {
+        const iw = (it.val / rowVal) * cw;
+        const ratio = Math.max(iw / rh, rh / iw);
+        return Math.max(worst, ratio);
+      }, 0);
+      if (ar > bestAr && rowItems.length > 1) { rowItems.pop(); rowVal -= data[i].val; break; }
+      bestAr = ar;
+    }
+    const rh = (rowVal / total) * ch;
+    let x = 0;
+    rowItems.forEach(it => {
+      const rw = (it.val / rowVal) * cw;
+      rects.push({ x, y, w: rw, h: rh, ...it });
+      x += rw;
+    });
+    y += rh;
+    idx += rowItems.length;
+  }
+  rects.forEach(r => {
+    const div = document.createElement('div');
+    div.className = 'treemap-rect';
+    div.style.cssText = `left:${r.x}px;top:${r.y}px;width:${r.w}px;height:${r.h}px;background:${colors[r.env]}`;
+    if (r.w > 60 && r.h > 24) {
+      div.innerHTML = `<div><span class="tm-label">${r.name}</span><span class="tm-val">${r.val}M (${r.pct}%)</span></div>`;
+    }
+    container.appendChild(div);
+  });
+})();
+
+// ====== AREA CHARTS (Trends) ======
+function drawAreaChart(svgId, dataPoints, quota, yLabel, color2, color3) {
+  const svg = document.getElementById(svgId);
+  if (!svg) return;
+  const x0 = 50, y0 = 15, w = 420, h = 190;
+  const maxVal = quota * 1.1;
+  drawGrid(svg, x0, y0, w, h, dataPoints.length - 1, 4);
+  // y-axis
+  for (let i = 0; i <= 4; i++) {
+    const val = Math.round((maxVal / 4) * (4 - i));
+    const label = val >= 1000000 ? (val / 1000000).toFixed(0) + 'M' : val >= 1000 ? (val / 1000).toFixed(0) + 'K' : val;
+    svg.appendChild(svgEl('text', { x: x0 - 8, y: y0 + (h / 4) * i + 4, 'text-anchor': 'end', 'font-size': '9', fill: '#9698C3' })).textContent = label;
+  }
+  // quota line
+  const qy = y0 + h - (quota / maxVal) * h;
+  svg.appendChild(svgEl('line', { x1: x0, y1: qy, x2: x0 + w, y2: qy, stroke: '#dc2626', 'stroke-dasharray': '6,3', 'stroke-width': 1.5 }));
+  svg.appendChild(svgEl('text', { x: x0 + w + 4, y: qy + 4, 'font-size': '9', fill: '#dc2626', 'font-weight': '600' })).textContent = 'Quota';
+  // stacked areas (3 layers: prod, nonprod, genstudio)
+  const layers = [
+    { data: dataPoints.map(d => d[0]), color: '#003DFF' },
+    { data: dataPoints.map(d => d[0] + d[1]), color: color2 || '#d97706' },
+    { data: dataPoints.map(d => d[0] + d[1] + d[2]), color: color3 || '#7c3aed' },
+  ];
+  // draw from top layer down
+  for (let li = layers.length - 1; li >= 0; li--) {
+    const ld = layers[li].data;
+    const prev = li > 0 ? layers[li - 1].data : ld.map(() => 0);
+    let pathD = 'M' + (x0) + ',' + (y0 + h);
+    ld.forEach((v, i) => {
+      const px = x0 + (w / (ld.length - 1)) * i;
+      const py = y0 + h - (v / maxVal) * h;
+      pathD += ' L' + px + ',' + py;
+    });
+    // close back along prev
+    for (let i = prev.length - 1; i >= 0; i--) {
+      const px = x0 + (w / (prev.length - 1)) * i;
+      const py = y0 + h - (prev[i] / maxVal) * h;
+      pathD += ' L' + px + ',' + py;
+    }
+    pathD += ' Z';
+    svg.appendChild(svgEl('path', { d: pathD, fill: layers[li].color, opacity: 0.25 }));
+  }
+  // top line
+  const topLine = layers[layers.length - 1].data;
+  let lineD = topLine.map((v, i) => {
+    const px = x0 + (w / (topLine.length - 1)) * i;
+    const py = y0 + h - (v / maxVal) * h;
+    return (i === 0 ? 'M' : 'L') + px + ',' + py;
+  }).join(' ');
+  svg.appendChild(svgEl('path', { d: lineD, fill: 'none', stroke: '#7c3aed', 'stroke-width': 2 }));
+  // x-axis labels (every 4th)
+  const months = ['Aug 24','Sep','Oct','Nov','Dec','Jan 25','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec','Jan 26','Feb','Mar'];
+  months.forEach((m, i) => {
+    if (i % 4 === 0 || i === months.length - 1) {
+      svg.appendChild(svgEl('text', { x: x0 + (w / (months.length - 1)) * i, y: y0 + h + 16, 'text-anchor': 'middle', 'font-size': '9', fill: '#9698C3' })).textContent = m;
+    }
+  });
+}
+// App growth data: [prod, nonprod, genstudio] per month
+const appGrowthData = [
+  [55,20,15],[62,23,17],[70,26,19],[80,30,22],[92,35,25],[110,40,28],[130,48,32],[155,55,36],
+  [190,65,42],[240,80,50],[310,100,58],[420,125,68],[500,142,76],[570,158,84],[630,172,90],
+  [710,188,97],[780,205,105],[850,222,118],[940,252,135],[987,264,139]
+];
+drawAreaChart('appGrowthSvg', appGrowthData, 1500, 'Apps');
+
+const recGrowthData = appGrowthData.map((d, i) => {
+  const f = (i + 1) / 20;
+  return [Math.round(f * 32700000), Math.round(f * 2100000), Math.round(f * 4500000)];
+});
+drawAreaChart('recGrowthSvg', recGrowthData, 50000000, 'Records');
+
+// ====== WATERFALL ======
+(function drawWaterfall() {
+  const svg = document.getElementById('waterfallSvg');
+  if (!svg) return;
+  const x0 = 50, y0 = 15, w = 620, h = 200;
+  const months = ['Aug 24','Sep','Oct','Nov','Dec','Jan 25','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec','Jan 26','Feb','Mar 26'];
+  const provisioned = [25,30,28,35,32,40,45,50,48,55,60,355,52,55,58,62,65,58,63,68];
+  const deleted =     [10,12,8,15,11,18,20,22,15,25,28,310,18,20,22,25,28,20,22,25];
+  const maxBar = 360;
+  drawGrid(svg, x0, y0, w, h, months.length, 4);
+  const bw = w / months.length;
+  // y-axis
+  for (let i = 0; i <= 4; i++) {
+    const v = Math.round((maxBar / 4) * (4 - i));
+    svg.appendChild(svgEl('text', { x: x0 - 6, y: y0 + (h / 4) * i + 4, 'text-anchor': 'end', 'font-size': '9', fill: '#9698C3' })).textContent = v;
+  }
+  months.forEach((m, i) => {
+    const ph = (provisioned[i] / maxBar) * h;
+    const dh = (deleted[i] / maxBar) * h;
+    const mid = y0 + h / 2;
+    // provisioned (up from midline)
+    svg.appendChild(svgEl('rect', { x: x0 + i * bw + 2, y: mid - ph, width: bw / 2 - 2, height: ph, fill: '#16a34a', opacity: .7, rx: 1 }));
+    // deleted (down from midline)
+    svg.appendChild(svgEl('rect', { x: x0 + i * bw + bw / 2, y: mid, width: bw / 2 - 2, height: dh, fill: '#dc2626', opacity: .7, rx: 1 }));
+    if (i % 3 === 0 || i === months.length - 1) {
+      svg.appendChild(svgEl('text', { x: x0 + i * bw + bw / 2, y: y0 + h + 16, 'text-anchor': 'middle', 'font-size': '8', fill: '#9698C3' })).textContent = m;
+    }
+  });
+  // net new line
+  let lineD = '';
+  months.forEach((m, i) => {
+    const net = provisioned[i] - deleted[i];
+    const mid = y0 + h / 2;
+    const ny = mid - (net / maxBar) * h;
+    lineD += (i === 0 ? 'M' : 'L') + (x0 + i * bw + bw / 2) + ',' + ny;
+  });
+  svg.appendChild(svgEl('path', { d: lineD, fill: 'none', stroke: '#003DFF', 'stroke-width': 2 }));
+  // legend
+  const lx = x0 + w - 200, ly = y0;
+  svg.appendChild(svgEl('rect', { x: lx, y: ly, width: 10, height: 10, fill: '#16a34a', rx: 2 }));
+  svg.appendChild(svgEl('text', { x: lx + 14, y: ly + 9, 'font-size': '10', fill: '#484C7A' })).textContent = 'Provisioned';
+  svg.appendChild(svgEl('rect', { x: lx + 80, y: ly, width: 10, height: 10, fill: '#dc2626', rx: 2 }));
+  svg.appendChild(svgEl('text', { x: lx + 94, y: ly + 9, 'font-size': '10', fill: '#484C7A' })).textContent = 'Deleted';
+  svg.appendChild(svgEl('line', { x1: lx + 150, y1: ly + 5, x2: lx + 168, y2: ly + 5, stroke: '#003DFF', 'stroke-width': 2 }));
+  svg.appendChild(svgEl('text', { x: lx + 172, y: ly + 9, 'font-size': '10', fill: '#484C7A' })).textContent = 'Net';
+  // annotate July spike
+  svg.appendChild(svgEl('text', { x: x0 + 11 * bw + bw / 2, y: y0 + 8, 'text-anchor': 'middle', 'font-size': '9', fill: '#dc2626', 'font-weight': '600' })).textContent = 'Jul: +355';
+})();
+
+// ====== COMPARISON CHARTS ======
+function drawCompareLine(svgId, dataA, dataB, colorA, colorB) {
+  const svg = document.getElementById(svgId);
+  if (!svg) return;
+  const x0 = 45, y0 = 15, w = 420, h = 190;
+  drawGrid(svg, x0, y0, w, h, dataA.length - 1, 4);
+  const maxVal = Math.max(...dataA, ...dataB) * 1.1;
+  for (let i = 0; i <= 4; i++) {
+    const v = Math.round((maxVal / 4) * (4 - i));
+    svg.appendChild(svgEl('text', { x: x0 - 6, y: y0 + (h / 4) * i + 4, 'text-anchor': 'end', 'font-size': '9', fill: '#9698C3' })).textContent = v;
+  }
+  [{ data: dataA, color: colorA }, { data: dataB, color: colorB }].forEach(({ data, color }) => {
+    let d = data.map((v, i) => {
+      const px = x0 + (w / (data.length - 1)) * i;
+      const py = y0 + h - (v / maxVal) * h;
+      return (i === 0 ? 'M' : 'L') + px + ',' + py;
+    }).join(' ');
+    svg.appendChild(svgEl('path', { d, fill: 'none', stroke: color, 'stroke-width': 2.5 }));
+  });
+  // legend
+  svg.appendChild(svgEl('line', { x1: x0 + w - 120, y1: y0 + 5, x2: x0 + w - 105, y2: y0 + 5, stroke: colorA, 'stroke-width': 2.5 }));
+  svg.appendChild(svgEl('text', { x: x0 + w - 100, y: y0 + 9, 'font-size': '10', fill: '#484C7A' })).textContent = 'Prod';
+  svg.appendChild(svgEl('line', { x1: x0 + w - 55, y1: y0 + 5, x2: x0 + w - 40, y2: y0 + 5, stroke: colorB, 'stroke-width': 2.5 }));
+  svg.appendChild(svgEl('text', { x: x0 + w - 35, y: y0 + 9, 'font-size': '10', fill: '#484C7A' })).textContent = 'NonProd';
+  const months = ['Aug 24','','','Nov','','','Feb 25','','','May','','','Aug','','','Nov','','','Feb 26','Mar'];
+  months.forEach((m, i) => {
+    if (m) svg.appendChild(svgEl('text', { x: x0 + (w / (months.length - 1)) * i, y: y0 + h + 16, 'text-anchor': 'middle', 'font-size': '8', fill: '#9698C3' })).textContent = m;
+  });
+}
+const prodRec = [100,108,118,130,142,158,176,195,215,238,262,290,320,352,388,428,472,520,572,630];
+const npRec = [100,105,112,118,126,135,142,150,160,170,182,195,210,225,242,260,280,302,328,355];
+drawCompareLine('compareRecSvg', prodRec, npRec, '#003DFF', '#d97706');
+const prodSrch = [100,106,114,122,132,145,158,172,188,205,224,246,270,298,328,362,400,442,488,540];
+const npSrch = [100,103,108,112,118,124,130,138,146,155,165,176,188,202,218,235,254,276,300,328];
+drawCompareLine('compareSrchSvg', prodSrch, npSrch, '#003DFF', '#d97706');
+
+// ====== APP EXPLORER ======
+const mockApps = [
+  { id:'1CMA1NNM6L', name:'cm-p100417-e924025', env:'prod', records:14487231, searches:5231002, trend:[3,5,7,9,11,13,14.5], status:'growing', created:'2024-06-12' },
+  { id:'7KBR4MQ92X', name:'cm-p83021-e711004', env:'prod', records:3621440, searches:1892110, trend:[1,1.5,2,2.2,2.8,3.2,3.6], status:'growing', created:'2024-07-03' },
+  { id:'NK42RL0E9J', name:'cm-p12009-e100233-cmprd-genstudio', env:'genstudio', records:1445600, searches:2110300, trend:[0.2,0.4,0.6,0.8,1,1.2,1.4], status:'growing', created:'2024-09-15' },
+  { id:'PQ29XN1L3D', name:'cm-p45200-e392011', env:'nonprod', records:891200, searches:122340, trend:[1.2,1.1,1.0,0.95,0.9,0.88,0.89], status:'declining', created:'2024-05-20' },
+  { id:'3ZVW8HMT5A', name:'cm-p67330-e530088', env:'prod', records:2103900, searches:943210, trend:[0.5,0.8,1,1.3,1.6,1.8,2.1], status:'growing', created:'2024-08-01' },
+  { id:'X9LMRP4T2B', name:'cm-p90100-e800012', env:'prod', records:1502300, searches:678900, trend:[0.3,0.5,0.7,0.9,1.1,1.3,1.5], status:'growing', created:'2024-07-22' },
+  { id:'Q5HN7DW8KF', name:'cm-p55030-e420100-cmprd-genstudio', env:'genstudio', records:1200100, searches:892400, trend:[0.1,0.3,0.5,0.7,0.9,1.0,1.2], status:'growing', created:'2025-01-10' },
+  { id:'RV3J6YC1MP', name:'cm-p22010-e200044', env:'prod', records:980500, searches:410200, trend:[0.4,0.5,0.6,0.7,0.8,0.9,0.98], status:'active', created:'2024-06-30' },
+  { id:'W8KT2FN5QL', name:'cm-p33300-e290010-nonprod-shared', env:'nonprod', records:452100, searches:31200, trend:[0.1,0.15,0.2,0.25,0.3,0.35,0.45], status:'active', created:'2024-11-05' },
+  { id:'BM61ZA9G4E', name:'cm-p71100-e610030', env:'prod', records:320800, searches:145600, trend:[0.05,0.08,0.1,0.15,0.2,0.26,0.32], status:'growing', created:'2025-02-18' },
+  { id:'DY47HS3L8U', name:'cm-p14500-e110090-cmstg-genstudio', env:'genstudio', records:215400, searches:310500, trend:[0.02,0.04,0.06,0.1,0.14,0.18,0.22], status:'active', created:'2025-03-01' },
+  { id:'FC82JE0N5P', name:'cm-p88400-e750021', env:'prod', records:142000, searches:67800, trend:[0.14,0.14,0.14,0.14,0.14,0.14,0.14], status:'dormant', created:'2024-10-12' },
+  { id:'GT19KM4R7W', name:'cm-p62200-e510044', env:'prod', records:89300, searches:21100, trend:[0.02,0.03,0.04,0.05,0.06,0.07,0.09], status:'active', created:'2025-01-22' },
+  { id:'HX56LP8S2V', name:'cm-p39900-e330012-nonprod-shared', env:'nonprod', records:34200, searches:8900, trend:[0.01,0.01,0.02,0.02,0.03,0.03,0.03], status:'dormant', created:'2024-09-08' },
+  { id:'JZ73MQ1T4Y', name:'cm-p77600-e660088', env:'prod', records:12100, searches:4300, trend:[0.005,0.007,0.008,0.009,0.01,0.011,0.012], status:'dormant', created:'2025-02-05' },
+];
+
+function formatNum(n) {
+  if (n >= 1000000) return (n / 1000000).toFixed(1) + 'M';
+  if (n >= 1000) return (n / 1000).toFixed(1) + 'K';
+  return n.toString();
+}
+
+function renderAppList(apps) {
+  const container = document.getElementById('explorerScroll');
+  container.innerHTML = '';
+  apps.forEach((app, idx) => {
+    const row = document.createElement('div');
+    row.className = 'app-row';
+    row.dataset.idx = idx;
+    const envClass = app.env;
+    // mini sparkline
+    const sparkW = 50, sparkH = 16;
+    const maxT = Math.max(...app.trend);
+    const sparkPts = app.trend.map((v, i) => (i * sparkW / (app.trend.length - 1)) + ',' + (sparkH - (v / maxT) * sparkH)).join(' ');
+    row.innerHTML = `
+      <div class="app-row-main">
+        <div class="app-row-id">${app.id}</div>
+        <div class="app-row-name">${app.name}</div>
+        <div style="display:flex;gap:4px;margin-top:3px"><span class="tag ${envClass}">${app.env}</span></div>
+        <div class="app-row-metrics">
+          <span>Rec: ${formatNum(app.records)}</span>
+          <span>Srch: ${formatNum(app.searches)}</span>
+        </div>
+      </div>
+      <svg width="${sparkW}" height="${sparkH}" viewBox="0 0 ${sparkW} ${sparkH}"><polyline points="${sparkPts}" fill="none" stroke="#003DFF" stroke-width="1.5"/></svg>`;
+    row.onclick = () => selectApp(app, row);
+    container.appendChild(row);
+  });
+}
+
+function selectApp(app, rowEl) {
+  document.querySelectorAll('.app-row').forEach(r => r.classList.remove('selected'));
+  rowEl.classList.add('selected');
+  const detail = document.getElementById('explorerDetail');
+  const envClass = app.env;
+  const statusColors = { growing: 'var(--green)', active: 'var(--blue)', declining: 'var(--red)', dormant: 'var(--muted)' };
+  // Build detail chart SVG
+  const cw = 400, ch = 160, cx0 = 40, cy0 = 10, cfw = 340, cfh = 130;
+  let chartSvg = `<svg width="100%" height="${ch + 30}" viewBox="0 0 ${cw} ${ch + 30}">`;
+  // grid
+  for (let i = 0; i <= 4; i++) {
+    const y = cy0 + (cfh / 4) * i;
+    chartSvg += `<line x1="${cx0}" y1="${y}" x2="${cx0 + cfw}" y2="${y}" stroke="#e5e7eb" stroke-width="1"/>`;
+  }
+  // records line
+  const maxR = Math.max(...app.trend) * 1.2;
+  const recPts = app.trend.map((v, i) => (cx0 + (cfw / (app.trend.length - 1)) * i) + ',' + (cy0 + cfh - (v / maxR) * cfh)).join(' ');
+  chartSvg += `<polyline points="${recPts}" fill="none" stroke="#003DFF" stroke-width="2.5"/>`;
+  // cohort band
+  const bandTop = app.trend.map((v, i) => (cx0 + (cfw / (app.trend.length - 1)) * i) + ',' + (cy0 + cfh - (v * 0.6 / maxR) * cfh)).join(' ');
+  const bandBot = app.trend.map((v, i) => (cx0 + (cfw / (app.trend.length - 1)) * i) + ',' + (cy0 + cfh - (v * 0.3 / maxR) * cfh));
+  chartSvg += `<polygon points="${bandTop} ${bandBot.reverse().join(' ')}" fill="#003DFF" opacity="0.08"/>`;
+  chartSvg += `<text x="${cx0 + cfw}" y="${cy0 + cfh + 18}" text-anchor="end" font-size="9" fill="#9698C3">Last 7 months</text>`;
+  chartSvg += `</svg>`;
+
+  detail.innerHTML = `
+    <div class="detail-header">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div class="detail-title">${app.name}</div>
+        <span class="tag ${envClass}">${app.env}</span>
+      </div>
+      <div class="detail-meta">
+        <span>ID: <strong class="mono">${app.id}</strong></span>
+        <span>Created: ${app.created}</span>
+        <span>Status: <span style="color:${statusColors[app.status]};font-weight:600">${app.status}</span></span>
+      </div>
+    </div>
+    <div class="card" style="padding:14px">
+      <div class="card-title" style="margin-bottom:8px">Records Trend vs Cohort Median</div>
+      ${chartSvg}
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div class="kpi" style="padding:12px">
+        <div class="kpi-label">Records</div>
+        <div class="kpi-value" style="font-size:20px">${formatNum(app.records)}</div>
+      </div>
+      <div class="kpi" style="padding:12px">
+        <div class="kpi-label">Searches</div>
+        <div class="kpi-value" style="font-size:20px">${formatNum(app.searches)}</div>
+      </div>
+    </div>
+    <div class="card" style="padding:14px">
+      <div class="card-title" style="margin-bottom:6px">Lifecycle Events</div>
+      <div style="font-size:12px;color:var(--text2);line-height:1.8">
+        <div>&#8226; <strong>${app.created}</strong> -- App created</div>
+        <div>&#8226; <strong>${app.created}</strong> -- First record ingested (day 0)</div>
+        <div>&#8226; <strong>${app.created.replace(/\d{2}$/, '28')}</strong> -- First search query</div>
+        ${app.status === 'growing' ? '<div>&#8226; Steady growth trajectory</div>' : ''}
+        ${app.status === 'dormant' ? '<div>&#8226; No significant activity in 60+ days</div>' : ''}
+      </div>
+    </div>
+    <div class="card" style="padding:14px">
+      <div class="card-title" style="margin-bottom:6px">Related Apps (same project)</div>
+      <div style="font-size:12px;color:var(--text2);line-height:1.8">
+        <div class="mono" style="font-size:11px">${app.name.replace(/-e\d+.*/, '-e' + Math.floor(Math.random()*900000+100000))}</div>
+        <div class="mono" style="font-size:11px">${app.name.replace(/-e\d+.*/, '-e' + Math.floor(Math.random()*900000+100000) + '-nonprod-shared')}</div>
+      </div>
+    </div>`;
+}
+
+function filterApps() {
+  const q = document.getElementById('explorerSearch').value.toLowerCase();
+  const filtered = mockApps.filter(a => a.id.toLowerCase().includes(q) || a.name.toLowerCase().includes(q));
+  renderAppList(filtered);
+}
+
+renderAppList(mockApps);
+</script>
+</body>
+</html>

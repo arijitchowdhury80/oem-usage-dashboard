@@ -7,8 +7,6 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "watch": "node scripts/watcher.js",
-    "dev:full": "concurrently \"npm run dev\" \"npm run watch\"",
     "process": "python3 scripts/consolidate.py \"$REPORTS_DIR\""
   },
   "dependencies": {
