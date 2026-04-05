@@ -84,37 +84,17 @@ export default function RDBrief() {
       <p style={{ fontSize: 14, color: "#484C7A", marginBottom: 10 }}>{description}</p>
       {params.length > 0 && (
         <div style={{ marginBottom: 10 }}>
-          <div
-            style={{
-              fontSize: 12,
-              fontWeight: 600,
-              color: "#9698C3",
-              textTransform: "uppercase" as const,
-              letterSpacing: 1,
-              marginBottom: 6,
-            }}
-          >
+          <div style={{ fontSize: 12, fontWeight: 600, color: "#9698C3", textTransform: "uppercase" as const, letterSpacing: 1, marginBottom: 6 }}>
             Parameters
           </div>
           <ul style={{ paddingLeft: 18, margin: 0 }}>
             {params.map((p, i) => (
-              <li key={i} style={{ fontSize: 13, color: "#36395A", marginBottom: 3 }}>
-                {p}
-              </li>
+              <li key={i} style={{ fontSize: 13, color: "#36395A", marginBottom: 3 }}>{p}</li>
             ))}
           </ul>
         </div>
       )}
-      <div
-        style={{
-          fontSize: 12,
-          fontWeight: 600,
-          color: "#9698C3",
-          textTransform: "uppercase" as const,
-          letterSpacing: 1,
-          marginBottom: 6,
-        }}
-      >
+      <div style={{ fontSize: 12, fontWeight: 600, color: "#9698C3", textTransform: "uppercase" as const, letterSpacing: 1, marginBottom: 6 }}>
         Example Response
       </div>
       {codeBlock(response)}
@@ -123,107 +103,158 @@ export default function RDBrief() {
 
   return (
     <>
-      {/* ═══════ HERO: PROBLEM + ASK (elevated 3D card) ═══════ */}
+      {/* ═══════════════════════════════════════════════════════
+          HERO CARD: PROBLEM + ASK
+          One glance = know what this is about and what we need
+          ═══════════════════════════════════════════════════════ */}
       <div className="sec">
         <div
           style={{
             background: "linear-gradient(135deg, #f8f9fb 0%, #eef0ff 100%)",
             border: "2px solid #003DFF30",
             borderRadius: 8,
-            padding: "28px 28px 24px",
-            boxShadow: "0 4px 20px rgba(0, 61, 255, 0.08), 0 1px 3px rgba(0,0,0,0.04)",
+            padding: "32px 32px 28px",
+            boxShadow: "0 4px 24px rgba(0, 61, 255, 0.08), 0 1px 3px rgba(0,0,0,0.04)",
           }}
         >
-          {/* THE PROBLEM */}
-          <div style={{ fontSize: 13, fontWeight: 600, color: "#003DFF", textTransform: "uppercase" as const, letterSpacing: 1, marginBottom: 12 }}>
+          {/* ── THE PROBLEM ── */}
+          <div style={{ fontSize: 13, fontWeight: 600, color: "#003DFF", textTransform: "uppercase" as const, letterSpacing: 1, marginBottom: 14 }}>
             The Problem
           </div>
-          <p style={{ fontSize: 18, fontWeight: 600, color: "#000033", lineHeight: 1.5, marginBottom: 8, letterSpacing: -0.3 }}>
-            Algolia has no parent-level API. OEM partners are blind.
+          <p style={{ fontSize: 20, fontWeight: 600, color: "#000033", lineHeight: 1.4, marginBottom: 12, letterSpacing: -0.3 }}>
+            Algolia&apos;s usage APIs report per application. There is no aggregated view for parent-child architectures.
           </p>
           <p style={{ fontSize: 15, color: "#36395A", lineHeight: 1.7, marginBottom: 0 }}>
-            Adobe runs <strong style={{ color: "#003DFF" }}>1,485 child apps</strong> under one parent account.
-            Algolia&apos;s APIs serve single-app owners &mdash; no endpoint answers cross-app questions like total records,
-            app health, or prod vs staging breakdown. The only workaround today: a team member manually exports CSVs
-            from Hex every week.
+            Any Algolia customer running multiple child apps under a single parent account &mdash; OEM partners,
+            agencies, marketplace integrations, multi-tenant platforms &mdash; has no API to answer basic questions:
+            how many total records across all apps, which apps are active vs unused, what&apos;s the production vs
+            staging split. Today the only path to this data is a manual CSV export from Hex, repeated every week.
           </p>
 
-          {/* DIVIDER */}
-          <div style={{ height: 1, background: "#003DFF20", margin: "20px 0" }} />
+          {/* ── DIVIDER ── */}
+          <div style={{ height: 1, background: "#003DFF20", margin: "24px 0" }} />
 
-          {/* THE ASK */}
-          <div style={{ fontSize: 13, fontWeight: 600, color: "#003DFF", textTransform: "uppercase" as const, letterSpacing: 1, marginBottom: 12 }}>
+          {/* ── THE ASK ── */}
+          <div style={{ fontSize: 13, fontWeight: 600, color: "#003DFF", textTransform: "uppercase" as const, letterSpacing: 1, marginBottom: 14 }}>
             The Ask
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px 24px" }}>
+          <p style={{ fontSize: 18, fontWeight: 600, color: "#000033", lineHeight: 1.4, marginBottom: 16, letterSpacing: -0.3 }}>
+            Build a parent-level usage aggregation API.
+          </p>
+          <p style={{ fontSize: 15, color: "#36395A", lineHeight: 1.7 }}>
+            Four read-only endpoints that expose aggregated usage data across all child applications
+            under a parent account. The data already exists in the billing system and application registry &mdash;
+            these endpoints surface it through the API. The proposed schemas and example responses are detailed below.
+          </p>
+        </div>
+      </div>
+
+      {/* ═══════════════════════════════════════════════════════
+          WHY — THE BUSINESS CASE
+          ═══════════════════════════════════════════════════════ */}
+      <div className="sec">
+        {sectionTitle("Why This Matters")}
+        <div className="card">
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px 32px" }}>
             {[
-              ["Confirm", "Does an internal admin API already exist for parent-level aggregation? Or is net-new development required?"],
-              ["Review", "Validate the 4 proposed endpoint schemas against internal data models and billing system structures."],
-              ["Scope", "Estimate engineering effort for /usage and /children endpoints with engineering leadership."],
-              ["Prioritize", "Get this into the roadmap before the Adobe renewal conversation. This is a retention lever, not a feature request."],
+              ["No self-service for partners", "OEM partners like Adobe cannot see their own usage without asking us. Every week, a team member pulls a CSV manually and sends it. This doesn't scale."],
+              ["Billing data exists, API doesn't", "The billing system already aggregates at the parent level to generate invoices. Hex queries the same Redshift tables. This is an exposure problem, not a data problem."],
+              ["Renewal risk without visibility", "Partners making multi-year commitment decisions need real-time usage data. Manual weekly CSVs with a 7-day lag don't support strategic conversations."],
+              ["Not just OEM — any multi-app customer", "Any customer with a parent-child architecture has this gap. Agencies managing client apps, platforms with marketplace integrations, companies running prod + staging environments."],
             ].map(([title, desc], i) => (
-              <div key={i} style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
-                <div style={{
-                  width: 24, height: 24, borderRadius: 12, background: "#003DFF",
-                  color: "#fff", fontSize: 13, fontWeight: 700,
-                  display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, marginTop: 2,
-                }}>{i + 1}</div>
-                <div>
-                  <div style={{ fontSize: 14, fontWeight: 600, color: "#000033" }}>{title}</div>
-                  <div style={{ fontSize: 13, color: "#484C7A", lineHeight: 1.5 }}>{desc}</div>
-                </div>
+              <div key={i}>
+                <div style={{ fontSize: 14, fontWeight: 600, color: "#000033", marginBottom: 4 }}>{title}</div>
+                <div style={{ fontSize: 14, color: "#484C7A", lineHeight: 1.6 }}>{desc}</div>
               </div>
             ))}
           </div>
         </div>
       </div>
 
-      {/* ═══════ API CAPABILITY GAP ═══════ */}
+      {/* ═══════════════════════════════════════════════════════
+          WHO BENEFITS
+          ═══════════════════════════════════════════════════════ */}
       <div className="sec">
-        {sectionTitle("API Capability Gap")}
+        {sectionTitle("Who Benefits")}
+        <div className="flex">
+          <div className="card" style={{ flex: "1 1 200px" }}>
+            <div style={{ fontSize: 14, fontWeight: 600, color: "#000033", marginBottom: 6 }}>
+              OEM Partners
+            </div>
+            <p style={{ fontSize: 14, color: "#484C7A", lineHeight: 1.6 }}>
+              Adobe today, every future OEM partner tomorrow. Self-service usage visibility
+              instead of waiting on manual CSV exports.
+            </p>
+          </div>
+          <div className="card" style={{ flex: "1 1 200px" }}>
+            <div style={{ fontSize: 14, fontWeight: 600, color: "#000033", marginBottom: 6 }}>
+              Multi-App Customers
+            </div>
+            <p style={{ fontSize: 14, color: "#484C7A", lineHeight: 1.6 }}>
+              Agencies, platforms, and any customer running multiple child apps under
+              one parent. Same parent-child pattern, same need for aggregated data.
+            </p>
+          </div>
+          <div className="card" style={{ flex: "1 1 200px" }}>
+            <div style={{ fontSize: 14, fontWeight: 600, color: "#000033", marginBottom: 6 }}>
+              Algolia Internal Teams
+            </div>
+            <p style={{ fontSize: 14, color: "#484C7A", lineHeight: 1.6 }}>
+              Partnerships, CSMs, and account teams get automated reporting. No more
+              manual Hex exports. Faster QBRs, proactive quota alerts.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* ═══════════════════════════════════════════════════════
+          WHAT'S MISSING — API GAP TABLE
+          ═══════════════════════════════════════════════════════ */}
+      <div className="sec">
+        {sectionTitle("Current API Gap")}
         <div className="card" style={{ padding: 0, overflow: "hidden" }}>
           <table>
             <thead>
               <tr>
-                <th>Question</th>
-                <th>Current API Answer</th>
+                <th>Question a partner asks</th>
+                <th>Current API answer</th>
                 <th>Status</th>
-                <th>Proposed Endpoint</th>
+                <th>Proposed endpoint</th>
               </tr>
             </thead>
             <tbody>
               <tr>
-                <td>Total records across all child apps</td>
+                <td>How many total records across all my apps?</td>
                 <td style={{ color: "#7778AF" }}>No endpoint</td>
                 <td>{badge("MISSING")}</td>
                 <td className="mono">/parents/&#123;id&#125;/usage</td>
               </tr>
               <tr>
-                <td>List all child apps with status</td>
+                <td>Show me all my child apps and their status</td>
                 <td style={{ color: "#7778AF" }}>No endpoint</td>
                 <td>{badge("MISSING")}</td>
                 <td className="mono">/parents/&#123;id&#125;/children</td>
               </tr>
               <tr>
-                <td>Top queries across parent family</td>
+                <td>What are the top queries across my portfolio?</td>
                 <td style={{ color: "#7778AF" }}>No endpoint</td>
                 <td>{badge("MISSING")}</td>
                 <td className="mono">/parents/&#123;id&#125;/analytics/top-queries</td>
               </tr>
               <tr>
-                <td>Prod vs nonprod breakdown</td>
+                <td>How much is production vs staging?</td>
                 <td style={{ color: "#7778AF" }}>No endpoint</td>
                 <td>{badge("MISSING")}</td>
                 <td className="mono">/parents/&#123;id&#125;/engagement/summary</td>
               </tr>
               <tr>
-                <td>Quota utilization</td>
+                <td>Where am I against my quota?</td>
                 <td style={{ color: "#7778AF" }}>Billing system only</td>
                 <td>{badge("PARTIAL")}</td>
                 <td className="mono">/parents/&#123;id&#125;/usage</td>
               </tr>
               <tr>
-                <td>Historical usage trend</td>
+                <td>Show me usage trends over time</td>
                 <td style={{ color: "#7778AF" }}>No endpoint</td>
                 <td>{badge("MISSING")}</td>
                 <td className="mono">/parents/&#123;id&#125;/usage?granularity=monthly</td>
@@ -233,14 +264,16 @@ export default function RDBrief() {
         </div>
       </div>
 
-      {/* ═══════ PROPOSED API SPECIFICATION ═══════ */}
+      {/* ═══════════════════════════════════════════════════════
+          PROPOSED API — 4 ENDPOINTS
+          ═══════════════════════════════════════════════════════ */}
       <div className="sec">
-        {sectionTitle("Proposed API Specification")}
+        {sectionTitle("Proposed API — 4 Endpoints")}
 
         {endpointBlock(
           "GET",
           "/1/parents/{parentId}/usage",
-          "Aggregate usage metrics across all child applications under a parent account, including quota percentages and monthly trend data.",
+          "Aggregated records, searches, and app count across all child applications. Includes quota utilization and historical trend.",
           [
             "parentId (path) — Parent application ID",
             "granularity (query, optional) — \"daily\" | \"weekly\" | \"monthly\"",
@@ -266,7 +299,7 @@ export default function RDBrief() {
         {endpointBlock(
           "GET",
           "/1/parents/{parentId}/children",
-          "Paginated list of all child applications under a parent, with status, environment classification, and activity metrics.",
+          "Paginated list of all child applications with status, environment, usage metrics, and activity timestamps.",
           [
             "parentId (path) — Parent application ID",
             "status (query, optional) — \"active\" | \"zombie\" | \"all\"",
@@ -296,7 +329,7 @@ export default function RDBrief() {
         {endpointBlock(
           "GET",
           "/1/parents/{parentId}/engagement/summary",
-          "Engagement breakdown by status and environment, with concentration metrics.",
+          "Engagement breakdown by app status and environment, with concentration metrics.",
           [
             "parentId (path) — Parent application ID",
           ],
@@ -339,66 +372,16 @@ export default function RDBrief() {
         )}
       </div>
 
-      {/* ═══════ ENGINEERING FEASIBILITY ═══════ */}
-      <div className="sec">
-        {sectionTitle("Engineering Feasibility")}
-        <div className="card">
-          <p style={{ fontSize: 15, color: "#36395A", lineHeight: 1.7, marginBottom: 12 }}>
-            <strong>The data already exists.</strong> The billing system aggregates records and searches
-            at the parent level to generate invoices. Hex queries the same Redshift tables to produce
-            the CSVs this dashboard consumes. App metadata and parent-child relationships are in the
-            application registry.
-          </p>
-          <p style={{ fontSize: 15, color: "#36395A", lineHeight: 1.7 }}>
-            This is an <strong>exposure problem, not a data problem</strong>. The information is available
-            internally &mdash; it has no API surface for partners or internal teams to consume programmatically.
-            4 read-only endpoints exposing what already exists.
-          </p>
-        </div>
-      </div>
-
-      {/* ═══════ WHO BENEFITS ═══════ */}
-      <div className="sec">
-        {sectionTitle("Who Benefits")}
-        <div className="flex">
-          <div className="card" style={{ flex: "1 1 200px" }}>
-            <div style={{ fontSize: 14, fontWeight: 600, color: "#000033", marginBottom: 6 }}>
-              OEM Partners
-            </div>
-            <p style={{ fontSize: 14, color: "#484C7A", lineHeight: 1.6 }}>
-              Adobe and all future OEM partners get self-service visibility into their
-              app portfolio. No more waiting on weekly CSV exports.
-            </p>
-          </div>
-          <div className="card" style={{ flex: "1 1 200px" }}>
-            <div style={{ fontSize: 14, fontWeight: 600, color: "#000033", marginBottom: 6 }}>
-              Multi-Tenant Customers
-            </div>
-            <p style={{ fontSize: 14, color: "#484C7A", lineHeight: 1.6 }}>
-              Agencies, platform companies, and marketplaces managing many child apps
-              under one parent. Same pattern, same need.
-            </p>
-          </div>
-          <div className="card" style={{ flex: "1 1 200px" }}>
-            <div style={{ fontSize: 14, fontWeight: 600, color: "#000033", marginBottom: 6 }}>
-              Algolia Partnerships Team
-            </div>
-            <p style={{ fontSize: 14, color: "#484C7A", lineHeight: 1.6 }}>
-              Automated reporting replaces manual Hex exports. Faster QBR prep.
-              Proactive quota alerts instead of reactive fire drills.
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* ═══════ REFERENCE IMPLEMENTATION ═══════ */}
+      {/* ═══════════════════════════════════════════════════════
+          REFERENCE IMPLEMENTATION
+          ═══════════════════════════════════════════════════════ */}
       <div className="sec">
         {sectionTitle("Reference Implementation")}
         <div className="card" style={{ marginBottom: 14 }}>
           <p style={{ fontSize: 15, color: "#36395A", lineHeight: 1.7 }}>
-            <strong>This dashboard is the reference UI.</strong> Every chart, gauge, and table in the
-            first three tabs was built on manually exported CSVs. When these endpoints exist,
-            wire this dashboard directly to them &mdash; zero manual intervention.
+            This dashboard is the proof of concept. Every chart, gauge, and table in the first three tabs
+            was built by manually processing 93 weekly CSV exports from Hex. When these endpoints exist,
+            this dashboard wires directly to the API &mdash; no manual steps, real-time data.
           </p>
         </div>
         <div className="flex">
@@ -415,57 +398,13 @@ export default function RDBrief() {
           <div className="kpi">
             <div className="kpi-label">Time Saved / Week</div>
             <div className="kpi-value" style={{ color: "#16a34a" }}>~3h</div>
-            <div className="kpi-sub">With API automation</div>
+            <div className="kpi-sub">Eliminated with API</div>
           </div>
           <div className="kpi">
-            <div className="kpi-label">OEM Partners Affected</div>
+            <div className="kpi-label">Customers Affected</div>
             <div className="kpi-value" style={{ color: "#d97706" }}>N+1</div>
-            <div className="kpi-sub">Adobe first, pattern repeats</div>
+            <div className="kpi-sub">Every parent-child account</div>
           </div>
-        </div>
-      </div>
-
-      {/* ═══════ PROPOSED BUILD SEQUENCE ═══════ */}
-      <div className="sec">
-        {sectionTitle("Proposed Build Sequence")}
-        <div className="card" style={{ padding: 0, overflow: "hidden" }}>
-          <table>
-            <thead>
-              <tr>
-                <th>Phase</th>
-                <th>Deliverable</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td style={{ fontWeight: 600, color: "#000033" }}>Phase 1</td>
-                <td>API spec and scope document (this brief)</td>
-                <td>{badge("PROPOSED")}</td>
-              </tr>
-              <tr>
-                <td style={{ fontWeight: 600, color: "#000033" }}>Phase 2</td>
-                <td>
-                  <span className="mono">/usage</span> and{" "}
-                  <span className="mono">/children</span> endpoints &mdash; replaces the entire CSV workflow
-                </td>
-                <td>{badge("PROPOSED")}</td>
-              </tr>
-              <tr>
-                <td style={{ fontWeight: 600, color: "#000033" }}>Phase 3</td>
-                <td>
-                  <span className="mono">/engagement/summary</span> and{" "}
-                  <span className="mono">/analytics/top-queries</span> endpoints
-                </td>
-                <td>{badge("PROPOSED")}</td>
-              </tr>
-              <tr>
-                <td style={{ fontWeight: 600, color: "#000033" }}>Phase 4</td>
-                <td>Productize as OEM partner tier feature, use in renewal pitch</td>
-                <td>{badge("PROPOSED")}</td>
-              </tr>
-            </tbody>
-          </table>
         </div>
       </div>
 
@@ -481,7 +420,7 @@ export default function RDBrief() {
           letterSpacing: 0.5,
         }}
       >
-        Adobe OEM Analytics Dashboard &middot; R&amp;D API Gap Brief &middot; Algolia Strategic Partnerships &middot; Arijit Chowdhury &middot; April 2026
+        Adobe OEM Analytics Dashboard &middot; R&amp;D API Brief &middot; Algolia Strategic Partnerships &middot; Arijit Chowdhury &middot; April 2026
       </div>
     </>
   );
