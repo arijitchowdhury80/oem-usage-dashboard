@@ -13,6 +13,7 @@ import Gauge from "./Gauge";
 import KPI from "./KPI";
 import ChartTooltip from "./ChartTooltip";
 import MiniBar from "./MiniBar";
+import RDBrief from "./RDBrief";
 
 const CONTRACT = CURRENT_CONTRACT;
 
@@ -219,7 +220,7 @@ function DashboardInner({
   setTab: (t: number) => void;
 }) {
   const { weeks, months, latest, topByRecords, topBySearches, appDetail, metadata, rates } = data;
-  const tabs = ["Executive Summary", "Trends & Growth", "Portfolio Health"];
+  const tabs = ["Executive Summary", "Trends & Growth", "Portfolio Health", "R&D Brief"];
 
   // What-if slider state
   const [appRate, setAppRate] = useState(rates.appRate);
@@ -774,6 +775,7 @@ function DashboardInner({
         {tab === 0 && <Tab1 />}
         {tab === 1 && <Tab2 />}
         {tab === 2 && <Tab3 />}
+        {tab === 3 && <RDBrief />}
       </div>
 
       <div className="footer">
