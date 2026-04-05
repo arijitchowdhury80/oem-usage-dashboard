@@ -123,30 +123,64 @@ export default function RDBrief() {
 
   return (
     <>
-      {/* ═══════ 1. THE PROBLEM ═══════ */}
+      {/* ═══════ HERO: PROBLEM + ASK (elevated 3D card) ═══════ */}
       <div className="sec">
-        {sectionTitle("1. The Problem")}
-        <div className="card">
-          <p style={{ fontSize: 15, color: "#36395A", lineHeight: 1.7 }}>
-            Algolia&apos;s public APIs are designed for <strong>single-application owners</strong>.
-            OEM partners like Adobe operate at a fundamentally different scale:{" "}
-            <strong style={{ color: "#003DFF" }}>1,485 child apps</strong> under one parent account.
-            The public APIs cannot answer any cross-app questions &mdash; total records across all children,
-            which apps are active vs zombie, production vs non-production breakdown, or top queries
-            across the entire parent family.
+        <div
+          style={{
+            background: "linear-gradient(135deg, #f8f9fb 0%, #eef0ff 100%)",
+            border: "2px solid #003DFF30",
+            borderRadius: 8,
+            padding: "28px 28px 24px",
+            boxShadow: "0 4px 20px rgba(0, 61, 255, 0.08), 0 1px 3px rgba(0,0,0,0.04)",
+          }}
+        >
+          {/* THE PROBLEM */}
+          <div style={{ fontSize: 13, fontWeight: 600, color: "#003DFF", textTransform: "uppercase" as const, letterSpacing: 1, marginBottom: 12 }}>
+            The Problem
+          </div>
+          <p style={{ fontSize: 18, fontWeight: 600, color: "#000033", lineHeight: 1.5, marginBottom: 8, letterSpacing: -0.3 }}>
+            Algolia has no parent-level API. OEM partners are blind.
           </p>
-          <p style={{ fontSize: 15, color: "#36395A", lineHeight: 1.7, marginTop: 12 }}>
-            <strong>Current workaround:</strong> manual Hex CSV export every week. A partnerships team member
-            runs a Redshift query, exports a CSV, and manually reconciles data across weekly snapshots.
-            This is not scalable, not self-service, and not how a platform company should serve its
-            largest OEM partners.
+          <p style={{ fontSize: 15, color: "#36395A", lineHeight: 1.7, marginBottom: 0 }}>
+            Adobe runs <strong style={{ color: "#003DFF" }}>1,485 child apps</strong> under one parent account.
+            Algolia&apos;s APIs serve single-app owners &mdash; no endpoint answers cross-app questions like total records,
+            app health, or prod vs staging breakdown. The only workaround today: a team member manually exports CSVs
+            from Hex every week.
           </p>
+
+          {/* DIVIDER */}
+          <div style={{ height: 1, background: "#003DFF20", margin: "20px 0" }} />
+
+          {/* THE ASK */}
+          <div style={{ fontSize: 13, fontWeight: 600, color: "#003DFF", textTransform: "uppercase" as const, letterSpacing: 1, marginBottom: 12 }}>
+            The Ask
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px 24px" }}>
+            {[
+              ["Confirm", "Does an internal admin API already exist for parent-level aggregation? Or is net-new development required?"],
+              ["Review", "Validate the 4 proposed endpoint schemas against internal data models and billing system structures."],
+              ["Scope", "Estimate engineering effort for /usage and /children endpoints with engineering leadership."],
+              ["Prioritize", "Get this into the roadmap before the Adobe renewal conversation. This is a retention lever, not a feature request."],
+            ].map(([title, desc], i) => (
+              <div key={i} style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
+                <div style={{
+                  width: 24, height: 24, borderRadius: 12, background: "#003DFF",
+                  color: "#fff", fontSize: 13, fontWeight: 700,
+                  display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, marginTop: 2,
+                }}>{i + 1}</div>
+                <div>
+                  <div style={{ fontSize: 14, fontWeight: 600, color: "#000033" }}>{title}</div>
+                  <div style={{ fontSize: 13, color: "#484C7A", lineHeight: 1.5 }}>{desc}</div>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 
-      {/* ═══════ 2. API CAPABILITY GAP ═══════ */}
+      {/* ═══════ API CAPABILITY GAP ═══════ */}
       <div className="sec">
-        {sectionTitle("2. API Capability Gap")}
+        {sectionTitle("API Capability Gap")}
         <div className="card" style={{ padding: 0, overflow: "hidden" }}>
           <table>
             <thead>
@@ -199,9 +233,9 @@ export default function RDBrief() {
         </div>
       </div>
 
-      {/* ═══════ 3. PROPOSED API SPECIFICATION ═══════ */}
+      {/* ═══════ PROPOSED API SPECIFICATION ═══════ */}
       <div className="sec">
-        {sectionTitle("3. Proposed API Specification")}
+        {sectionTitle("Proposed API Specification")}
 
         {endpointBlock(
           "GET",
@@ -212,19 +246,19 @@ export default function RDBrief() {
             "granularity (query, optional) — \"daily\" | \"weekly\" | \"monthly\"",
           ],
           `{
-  "parentId": "ABCD1234",
+  "parentId": "EKVXKN7L76",
   "totalApps": 1485,
-  "totalRecords": 483200000,
-  "totalSearches": 12400000,
+  "totalRecords": 39287022,
+  "totalSearches": 15760140,
   "quotas": {
-    "apps": { "used": 1485, "limit": 2000, "pct": 74.3 },
-    "records": { "used": 483200000, "limit": 1000000000, "pct": 48.3 },
-    "searches": { "used": 12400000, "limit": 100000000, "pct": 12.4 }
+    "apps": { "used": 1485, "limit": 1500, "pct": 99.0 },
+    "records": { "used": 39287022, "limit": 50000000, "pct": 78.6 },
+    "searches": { "used": 15760140, "limit": 75000000, "pct": 21.0 }
   },
   "trend": [
-    { "month": "2025-10", "apps": 1320, "records": 410000000 },
-    { "month": "2025-11", "apps": 1355, "records": 432000000 },
-    { "month": "2025-12", "apps": 1400, "records": 455000000 }
+    { "month": "2026-01", "apps": 1227, "records": 33172836 },
+    { "month": "2026-02", "apps": 1277, "records": 35792483 },
+    { "month": "2026-03", "apps": 1390, "records": 39287022 }
   ]
 }`
         )}
@@ -242,16 +276,16 @@ export default function RDBrief() {
             "hitsPerPage (query, optional) — Results per page (default: 100)",
           ],
           `{
-  "parentId": "ABCD1234",
+  "parentId": "EKVXKN7L76",
   "children": [
     {
-      "appId": "XYZ789",
-      "name": "adobe-experience-prod-us",
+      "appId": "1CMA1NNM6L",
+      "name": "cm-p100417-e924025",
       "status": "active",
       "environment": "prod",
-      "records": 12500000,
-      "searches": 340000,
-      "createdAt": "2024-03-15",
+      "records": 14517565,
+      "searches": 3,
+      "createdAt": "2024-07-16",
       "lastActivity": "2026-03-24"
     }
   ],
@@ -262,26 +296,25 @@ export default function RDBrief() {
         {endpointBlock(
           "GET",
           "/1/parents/{parentId}/engagement/summary",
-          "Engagement breakdown by status (active, zombie, records-only, search-only) and environment (prod, nonprod), with concentration metrics.",
+          "Engagement breakdown by status and environment, with concentration metrics.",
           [
             "parentId (path) — Parent application ID",
           ],
           `{
-  "parentId": "ABCD1234",
+  "parentId": "EKVXKN7L76",
   "byStatus": {
-    "active": 842,
-    "zombie": 310,
-    "recordsOnly": 215,
-    "searchOnly": 118
+    "active": 815,
+    "zombie": 297,
+    "recordsOnly": 157,
+    "searchOnly": 121
   },
   "byEnvironment": {
-    "prod": 963,
-    "nonprod": 522
+    "prod": { "apps": 1099, "records": 32747180, "searches": 13289732 },
+    "nonprod": { "apps": 343, "records": 2073790, "searches": 373672 }
   },
   "concentration": {
-    "top10PctRecords": 0.78,
-    "top10PctSearches": 0.85,
-    "giniRecords": 0.72
+    "top10RecordShare": 71.7,
+    "top10SearchShare": 67.5
   }
 }`
         )}
@@ -296,7 +329,7 @@ export default function RDBrief() {
             "limit (query, optional) — Number of results (default: 50)",
           ],
           `{
-  "parentId": "ABCD1234",
+  "parentId": "EKVXKN7L76",
   "queries": [
     { "query": "product catalog", "count": 84200, "apps": 312 },
     { "query": "asset search", "count": 67100, "apps": 285 },
@@ -306,50 +339,44 @@ export default function RDBrief() {
         )}
       </div>
 
-      {/* ═══════ 4. ENGINEERING FEASIBILITY ═══════ */}
+      {/* ═══════ ENGINEERING FEASIBILITY ═══════ */}
       <div className="sec">
-        {sectionTitle("4. Engineering Feasibility")}
+        {sectionTitle("Engineering Feasibility")}
         <div className="card">
+          <p style={{ fontSize: 15, color: "#36395A", lineHeight: 1.7, marginBottom: 12 }}>
+            <strong>The data already exists.</strong> The billing system aggregates records and searches
+            at the parent level to generate invoices. Hex queries the same Redshift tables to produce
+            the CSVs this dashboard consumes. App metadata and parent-child relationships are in the
+            application registry.
+          </p>
           <p style={{ fontSize: 15, color: "#36395A", lineHeight: 1.7 }}>
-            The data required to power these endpoints <strong>already exists</strong>. Records and search
-            counts live in the billing system. App metadata and parent-child relationships are in the
-            application registry. Historical snapshots are exported weekly to Hex via Redshift.
-          </p>
-          <p style={{ fontSize: 15, color: "#36395A", lineHeight: 1.7, marginTop: 12 }}>
             This is an <strong>exposure problem, not a data problem</strong>. The information is available
-            internally &mdash; it simply has no API surface for partners or internal teams to consume
-            programmatically.
+            internally &mdash; it has no API surface for partners or internal teams to consume programmatically.
+            4 read-only endpoints exposing what already exists.
           </p>
-          <div
-            style={{
-              marginTop: 16,
-              padding: "14px 18px",
-              background: "#f3f4f6",
-              borderRadius: 5,
-              border: "1px solid #e5e7eb",
-            }}
-          >
-            <div style={{ fontSize: 13, fontWeight: 600, color: "#23263B", marginBottom: 6 }}>
-              Estimated Scope
-            </div>
-            <div style={{ fontSize: 14, color: "#484C7A", lineHeight: 1.6 }}>
-              4 endpoints &middot; 2&ndash;4 weeks backend engineering &middot; Read-only &middot; Internal admin API layer
-            </div>
-          </div>
         </div>
       </div>
 
-      {/* ═══════ 5. WHO BENEFITS ═══════ */}
+      {/* ═══════ WHO BENEFITS ═══════ */}
       <div className="sec">
-        {sectionTitle("5. Who Benefits")}
+        {sectionTitle("Who Benefits")}
         <div className="flex">
           <div className="card" style={{ flex: "1 1 200px" }}>
             <div style={{ fontSize: 14, fontWeight: 600, color: "#000033", marginBottom: 6 }}>
               OEM Partners
             </div>
             <p style={{ fontSize: 14, color: "#484C7A", lineHeight: 1.6 }}>
-              Self-service visibility into their entire app portfolio. No more waiting on CSMs for
-              weekly CSV exports. Real-time programmatic access to usage data.
+              Adobe and all future OEM partners get self-service visibility into their
+              app portfolio. No more waiting on weekly CSV exports.
+            </p>
+          </div>
+          <div className="card" style={{ flex: "1 1 200px" }}>
+            <div style={{ fontSize: 14, fontWeight: 600, color: "#000033", marginBottom: 6 }}>
+              Multi-Tenant Customers
+            </div>
+            <p style={{ fontSize: 14, color: "#484C7A", lineHeight: 1.6 }}>
+              Agencies, platform companies, and marketplaces managing many child apps
+              under one parent. Same pattern, same need.
             </p>
           </div>
           <div className="card" style={{ flex: "1 1 200px" }}>
@@ -361,34 +388,24 @@ export default function RDBrief() {
               Proactive quota alerts instead of reactive fire drills.
             </p>
           </div>
-          <div className="card" style={{ flex: "1 1 200px" }}>
-            <div style={{ fontSize: 14, fontWeight: 600, color: "#000033", marginBottom: 6 }}>
-              Multi-Tenant Customers
-            </div>
-            <p style={{ fontSize: 14, color: "#484C7A", lineHeight: 1.6 }}>
-              Any customer with a parent-child app structure benefits. Adobe is the first,
-              but the pattern applies to every OEM and marketplace integration.
-            </p>
-          </div>
         </div>
       </div>
 
-      {/* ═══════ 6. REFERENCE IMPLEMENTATION ═══════ */}
+      {/* ═══════ REFERENCE IMPLEMENTATION ═══════ */}
       <div className="sec">
-        {sectionTitle("6. Reference Implementation")}
+        {sectionTitle("Reference Implementation")}
         <div className="card" style={{ marginBottom: 14 }}>
           <p style={{ fontSize: 15, color: "#36395A", lineHeight: 1.7 }}>
-            <strong>This dashboard is the reference UI.</strong> Every view in this application &mdash;
-            the executive summary, trends, and portfolio health tabs &mdash; was built by manually
-            processing Hex CSV exports. The endpoints proposed above would allow this same dashboard
-            to run against live API data with zero manual intervention.
+            <strong>This dashboard is the reference UI.</strong> Every chart, gauge, and table in the
+            first three tabs was built on manually exported CSVs. When these endpoints exist,
+            wire this dashboard directly to them &mdash; zero manual intervention.
           </p>
         </div>
         <div className="flex">
           <div className="kpi">
             <div className="kpi-label">Child Apps Tracked</div>
             <div className="kpi-value" style={{ color: "#003DFF" }}>1,485</div>
-            <div className="kpi-sub">Across 2 parent accounts</div>
+            <div className="kpi-sub">Across prod + nonprod parents</div>
           </div>
           <div className="kpi">
             <div className="kpi-label">Weekly CSVs Processed</div>
@@ -408,15 +425,14 @@ export default function RDBrief() {
         </div>
       </div>
 
-      {/* ═══════ 7. PROPOSED BUILD SEQUENCE ═══════ */}
+      {/* ═══════ PROPOSED BUILD SEQUENCE ═══════ */}
       <div className="sec">
-        {sectionTitle("7. Proposed Build Sequence")}
+        {sectionTitle("Proposed Build Sequence")}
         <div className="card" style={{ padding: 0, overflow: "hidden" }}>
           <table>
             <thead>
               <tr>
                 <th>Phase</th>
-                <th>Timeline</th>
                 <th>Deliverable</th>
                 <th>Status</th>
               </tr>
@@ -424,22 +440,19 @@ export default function RDBrief() {
             <tbody>
               <tr>
                 <td style={{ fontWeight: 600, color: "#000033" }}>Phase 1</td>
-                <td>Now</td>
                 <td>API spec and scope document (this brief)</td>
                 <td>{badge("PROPOSED")}</td>
               </tr>
               <tr>
                 <td style={{ fontWeight: 600, color: "#000033" }}>Phase 2</td>
-                <td>Q2 2026</td>
                 <td>
                   <span className="mono">/usage</span> and{" "}
-                  <span className="mono">/children</span> endpoints
+                  <span className="mono">/children</span> endpoints &mdash; replaces the entire CSV workflow
                 </td>
                 <td>{badge("PROPOSED")}</td>
               </tr>
               <tr>
                 <td style={{ fontWeight: 600, color: "#000033" }}>Phase 3</td>
-                <td>Q3 2026</td>
                 <td>
                   <span className="mono">/engagement/summary</span> and{" "}
                   <span className="mono">/analytics/top-queries</span> endpoints
@@ -448,38 +461,11 @@ export default function RDBrief() {
               </tr>
               <tr>
                 <td style={{ fontWeight: 600, color: "#000033" }}>Phase 4</td>
-                <td>Q4 2026</td>
-                <td>Productize as OEM partner tier feature</td>
+                <td>Productize as OEM partner tier feature, use in renewal pitch</td>
                 <td>{badge("PROPOSED")}</td>
               </tr>
             </tbody>
           </table>
-        </div>
-      </div>
-
-      {/* ═══════ 8. THE ASK ═══════ */}
-      <div className="sec">
-        {sectionTitle("8. The Ask")}
-        <div className="card">
-          <ul style={{ paddingLeft: 20, margin: 0, listStyleType: "disc" }}>
-            <li style={{ fontSize: 15, color: "#36395A", lineHeight: 1.8 }}>
-              <strong>Confirm</strong> whether an internal admin API layer exists that could serve
-              as the foundation for these endpoints, or whether net-new service development is required.
-            </li>
-            <li style={{ fontSize: 15, color: "#36395A", lineHeight: 1.8 }}>
-              <strong>Review</strong> the proposed response schemas and confirm alignment with
-              internal data models and billing system structures.
-            </li>
-            <li style={{ fontSize: 15, color: "#36395A", lineHeight: 1.8 }}>
-              <strong>Scope Phase 2</strong> &mdash; the <span className="mono">/usage</span> and{" "}
-              <span className="mono">/children</span> endpoints &mdash; with engineering leadership
-              to validate the 2&ndash;4 week estimate.
-            </li>
-            <li style={{ fontSize: 15, color: "#36395A", lineHeight: 1.8 }}>
-              <strong>Get into H1/H2 roadmap</strong> before the Adobe renewal in Q3 2026.
-              This is a retention and expansion lever, not a feature request.
-            </li>
-          </ul>
         </div>
       </div>
 
