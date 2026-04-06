@@ -57,6 +57,13 @@ body {
   line-height: 1.5;
 }
 
+/* ═══════ STICKY TOP (header + tabs wrapper) ═══════ */
+.sticky-top {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
 /* ═══════ HEADER ═══════ */
 .header {
   background: var(--algolia-navy);
@@ -195,7 +202,7 @@ body {
 .alert-desc { color: var(--text-secondary); font-size: 13px; margin-top: 2px; }
 
 /* ═══════ TABLE ═══════ */
-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; table-layout: auto; }
 th {
   color: var(--text-category);
   font-weight: 600;
@@ -205,13 +212,24 @@ th {
   font-size: 12px;
   text-transform: uppercase;
   letter-spacing: 1px;
+  position: relative;
+  white-space: nowrap;
+  /* Resizable columns */
+  resize: horizontal;
+  overflow: hidden;
+  min-width: 60px;
 }
+th::-webkit-resizer { cursor: col-resize; }
 td {
   color: var(--text-primary);
   padding: 9px 12px;
   border-bottom: 1px solid var(--border-light);
   font-size: 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
+td.wrap { white-space: normal; overflow: visible; text-overflow: unset; }
 tr:nth-child(even) { background: #fafbfc; }
 .mono { font-family: 'Sora', monospace; font-weight: 600; color: var(--text-heading); font-size: 12px; letter-spacing: 0.3px; }
 

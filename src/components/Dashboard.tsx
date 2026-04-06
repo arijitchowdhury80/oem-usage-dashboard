@@ -174,7 +174,7 @@ function EngagementPanel({ appDetail, chartData, latest }: {
                   {apps.slice(0, 50).map((a, i) => (
                     <tr key={i}>
                       <td className="mono">{a.id}</td>
-                      <td style={{ maxWidth: 200, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{a.name}</td>
+                      <td style={{ minWidth: 160 }}>{a.name}</td>
                       <td><span style={{ fontSize: 11, fontWeight: 600, padding: "1px 6px", borderRadius: 3,
                         background: a.tag === "base" ? "#003DFF14" : a.tag === "nonprod-shared" ? "#d9770614" : a.tag === "cmprd-genstudio" ? "#7c3aed14" : "#7778AF14",
                         color: a.tag === "base" ? "#003DFF" : a.tag === "nonprod-shared" ? "#d97706" : a.tag === "cmprd-genstudio" ? "#7c3aed" : "#7778AF",
@@ -269,12 +269,17 @@ function MoMTable({ momData }: { momData: MonthPoint[] }) {
   );
 }
 
-// ═══════ CHILD APP MoM TABLE — Grouped by Environment ═══════
-function ChildAppMoMTable({ appDetail, prevMonth }: { appDetail: AppDetailWithDelta[]; prevMonth?: string }) {
+// ═══════ CHILD APP MoM TABLE — Tag filter pills + sticky headers + staging summary ═══════
+function ChildAppMoMTable({ appDetail, prevMonth, billing }: { appDetail: AppDetailWithDelta[]; prevMonth?: string; billing: DashboardData["billing"] }) {
   const PAGE_SIZE = 50;
   const [sortCol, setSortCol] = useState<string>("records");
   const [sortAsc, setSortAsc] = useState(false);
   const [page, setPage] = useState(0);
+  const [tagFilter, setTagFilter] = useState<string>("all");
+  const [parentView, setParentView] = useState<"prod" | "staging">("prod");
+
+  const prodBilling = billing?.prod;
+  const stageBilling = billing?.staging;
 
   const handleSort = (col: string) => {
     if (sortCol === col) { setSortAsc(!sortAsc); }
@@ -296,20 +301,38 @@ function ChildAppMoMTable({ appDetail, prevMonth }: { appDetail: AppDetailWithDe
 
   const arrow = (col: string) => sortCol === col ? (sortAsc ? " ↑" : " ↓") : "";
 
-  // Sort all apps together, then paginate
-  const allSorted = useMemo(() => [...appDetail].sort(sortFn), [appDetail, sortCol, sortAsc]);
-  const totalPages = Math.ceil(allSorted.length / PAGE_SIZE);
-  const pageApps = allSorted.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE);
+  // Tag definitions
+  const tags = [
+    { key: "base", label: "Base", color: "#003DFF" },
+    { key: "nonprod-shared", label: "NonProd", color: "#d97706" },
+    { key: "cmprd-genstudio", label: "GenStudio", color: "#7c3aed" },
+    { key: "cmstg-genstudio", label: "GS Staging", color: "#a78bfa" },
+    { key: "legacy", label: "Legacy", color: "#7778AF" },
+  ];
+
+  const tagCounts = useMemo(() => {
+    const counts: Record<string, number> = {};
+    for (const a of appDetail) counts[a.tag ?? a.env] = (counts[a.tag ?? a.env] || 0) + 1;
+    return counts;
+  }, [appDetail]);
+
+  // Filter and sort
+  const filtered = useMemo(() => {
+    const base = tagFilter === "all" ? appDetail : appDetail.filter(a => (a.tag ?? a.env) === tagFilter);
+    return [...base].sort(sortFn);
+  }, [appDetail, tagFilter, sortCol, sortAsc]);
+
+  const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
+  const pageApps = filtered.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE);
 
   const handleDownload = () => {
     downloadCSV("child_app_usage.csv",
       ["app_id", "name", "env", "tag", "records", "rec_delta", "searches", "search_delta", "created", "status"],
-      appDetail.map(a => [a.id, `"${a.name}"`, a.env, a.tag ?? "", String(a.records), String(a.recDelta), String(a.searches), String(a.searchDelta), a.created, a.status ?? ""])
+      filtered.map(a => [a.id, `"${a.name}"`, a.env, a.tag ?? "", String(a.records), String(a.recDelta), String(a.searches), String(a.searchDelta), a.created, a.status ?? ""])
     );
   };
 
-  const envColor = (env: string) => env === "prod" ? "#003DFF" : env === "nonprod" ? "#d97706" : "#7778AF";
-  const envLabel = (env: string) => env === "prod" ? "PROD" : env === "nonprod" ? "NONPROD" : "OTHER";
+  const tagColor = (tag: string) => tags.find(t => t.key === tag)?.color ?? "#7778AF";
 
   return (
     <div className="sec">
@@ -320,46 +343,129 @@ function ChildAppMoMTable({ appDetail, prevMonth }: { appDetail: AppDetailWithDe
         </div>
         <DownloadButton onClick={handleDownload} label="Download CSV" />
       </div>
-      <div className="card" style={{ padding: 0, overflow: "hidden" }}>
-        <table>
-          <thead>
-            <tr>
-              <th style={{ cursor: "pointer" }} onClick={() => handleSort("id")}>App ID{arrow("id")}</th>
-              <th style={{ cursor: "pointer" }} onClick={() => handleSort("name")}>Name{arrow("name")}</th>
-              <th>Env</th>
-              <th style={{ cursor: "pointer", textAlign: "right" }} onClick={() => handleSort("records")}>Records{arrow("records")}</th>
-              <th style={{ cursor: "pointer", textAlign: "right" }} onClick={() => handleSort("recDelta")}>Rec Δ{arrow("recDelta")}</th>
-              <th style={{ cursor: "pointer", textAlign: "right" }} onClick={() => handleSort("searches")}>Searches{arrow("searches")}</th>
-              <th style={{ cursor: "pointer", textAlign: "right" }} onClick={() => handleSort("searchDelta")}>Srch Δ{arrow("searchDelta")}</th>
-              <th>Created</th>
-            </tr>
-          </thead>
-          <tbody>
-            {pageApps.map((a, i) => (
-              <tr key={a.id + i}>
-                <td className="mono">{a.id}</td>
-                <td style={{ maxWidth: 200, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{a.name}</td>
-                <td><span style={{ fontSize: 11, fontWeight: 600, padding: "1px 6px", borderRadius: 3,
-                  background: envColor(a.env) + "14", color: envColor(a.env) }}>{envLabel(a.env)}</span></td>
-                <td style={{ textAlign: "right" }}>{fmt(a.records)}</td>
-                <td style={{ textAlign: "right", color: a.recDelta > 0 ? "#16a34a" : a.recDelta < 0 ? "#dc2626" : "#7778AF", fontWeight: 500 }}>
-                  {a.isNew ? <span style={{ fontSize: 12, fontWeight: 600, padding: "1px 8px", borderRadius: 3, background: "#003DFF14", color: "#003DFF" }}>NEW</span>
-                    : a.recDelta !== 0 ? `${a.recDelta > 0 ? "+" : ""}${fmt(a.recDelta)}` : "—"}
-                </td>
-                <td style={{ textAlign: "right" }}>{fmt(a.searches)}</td>
-                <td style={{ textAlign: "right", color: a.searchDelta > 0 ? "#16a34a" : a.searchDelta < 0 ? "#dc2626" : "#7778AF", fontWeight: 500 }}>
-                  {a.isNew ? "—" : a.searchDelta !== 0 ? `${a.searchDelta > 0 ? "+" : ""}${fmt(a.searchDelta)}` : "—"}
-                </td>
-                <td style={{ fontSize: 13, color: "#7778AF" }}>{a.created}</td>
-              </tr>
+
+      {/* Parent toggle: Production / Staging */}
+      <div style={{ display: "flex", gap: 8, marginBottom: 12 }}>
+        <button onClick={() => { setParentView("prod"); setPage(0); }}
+          style={{ padding: "8px 20px", fontSize: 13, fontWeight: 600, borderRadius: 5, cursor: "pointer",
+            border: parentView === "prod" ? "2px solid #003DFF" : "1px solid #e5e7eb",
+            background: parentView === "prod" ? "#003DFF0A" : "#fff", color: parentView === "prod" ? "#003DFF" : "#484C7A" }}>
+          ● Production — {prodBilling ? prodBilling.period_end_live_apps.toLocaleString() : "—"} apps
+        </button>
+        <button onClick={() => { setParentView("staging"); setPage(0); }}
+          style={{ padding: "8px 20px", fontSize: 13, fontWeight: 600, borderRadius: 5, cursor: "pointer",
+            border: parentView === "staging" ? "2px solid #d97706" : "1px solid #e5e7eb",
+            background: parentView === "staging" ? "#d9770608" : "#fff", color: parentView === "staging" ? "#d97706" : "#484C7A" }}>
+          ● Staging — {stageBilling ? stageBilling.period_end_live_apps : "—"} apps
+        </button>
+      </div>
+
+      {parentView === "staging" ? (
+        /* Staging view — billing aggregate only */
+        <div className="card" style={{ padding: 20 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16 }}>
+            <div style={{ width: 10, height: 10, borderRadius: 2, background: "#d97706" }} />
+            <span style={{ fontSize: 15, fontWeight: 600, color: "#23263B" }}>Staging Parent</span>
+            <span style={{ fontSize: 13, color: "#7778AF" }}>{stageBilling?.parent_id ?? "J5OO6J0MJP"}</span>
+          </div>
+          {stageBilling ? (
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: 16 }}>
+              <div>
+                <div style={{ fontSize: 12, color: "#9698C3", fontWeight: 600, textTransform: "uppercase" as const, letterSpacing: 1 }}>Live Apps</div>
+                <div style={{ fontSize: 24, fontWeight: 600, color: "#000033" }}>{stageBilling.period_end_live_apps}</div>
+              </div>
+              <div>
+                <div style={{ fontSize: 12, color: "#9698C3", fontWeight: 600, textTransform: "uppercase" as const, letterSpacing: 1 }}>Records</div>
+                <div style={{ fontSize: 24, fontWeight: 600, color: "#000033" }}>{fmt(stageBilling.billable_records)}</div>
+              </div>
+              <div>
+                <div style={{ fontSize: 12, color: "#9698C3", fontWeight: 600, textTransform: "uppercase" as const, letterSpacing: 1 }}>Searches</div>
+                <div style={{ fontSize: 24, fontWeight: 600, color: "#d97706" }}>{fmt(stageBilling.billable_search_requests)} ⚠</div>
+              </div>
+              <div>
+                <div style={{ fontSize: 12, color: "#9698C3", fontWeight: 600, textTransform: "uppercase" as const, letterSpacing: 1 }}>Churn</div>
+                <div style={{ fontSize: 24, fontWeight: 600, color: "#dc2626" }}>{stageBilling.provisioned_apps > 0 ? ((stageBilling.deleted_in_period_apps / stageBilling.provisioned_apps * 100)).toFixed(0) : 0}%</div>
+                <div style={{ fontSize: 12, color: "#7778AF" }}>{stageBilling.deleted_in_period_apps.toLocaleString()} deleted of {stageBilling.provisioned_apps.toLocaleString()} provisioned</div>
+              </div>
+            </div>
+          ) : (
+            <div style={{ color: "#7778AF", fontSize: 14 }}>No staging billing data available.</div>
+          )}
+          <div style={{ marginTop: 16, padding: "10px 14px", background: "#f8f9fb", borderRadius: 4, fontSize: 13, color: "#7778AF" }}>
+            Individual staging app data is not included in the weekly CSV export. Only billing aggregates are available from the <code style={{ fontSize: 12, background: "#e5e7eb", padding: "1px 4px", borderRadius: 2 }}>stage_prod_parent_agg_stat</code> file.
+          </div>
+        </div>
+      ) : (
+        /* Production view — full app detail table */
+        <>
+          {/* Tag filter pills */}
+          <div style={{ display: "flex", gap: 6, marginBottom: 12, flexWrap: "wrap" }}>
+            <button onClick={() => { setTagFilter("all"); setPage(0); }}
+              style={{ padding: "4px 14px", fontSize: 12, fontWeight: tagFilter === "all" ? 700 : 500, borderRadius: 20,
+                border: tagFilter === "all" ? "1px solid #23263B" : "1px solid #e5e7eb",
+                background: tagFilter === "all" ? "#23263B" : "#fff", color: tagFilter === "all" ? "#fff" : "#484C7A", cursor: "pointer" }}>
+              All ({prodBilling ? prodBilling.period_end_live_apps.toLocaleString() : appDetail.length})
+            </button>
+            {tags.filter(t => (tagCounts[t.key] ?? 0) > 0).map(t => (
+              <button key={t.key} onClick={() => { setTagFilter(t.key); setPage(0); }}
+                style={{ padding: "4px 14px", fontSize: 12, fontWeight: tagFilter === t.key ? 700 : 500, borderRadius: 20,
+                  border: tagFilter === t.key ? `1px solid ${t.color}` : "1px solid #e5e7eb",
+                  background: tagFilter === t.key ? t.color + "14" : "#fff", color: tagFilter === t.key ? t.color : "#484C7A", cursor: "pointer" }}>
+                {t.label} ({tagCounts[t.key] ?? 0})
+              </button>
             ))}
-          </tbody>
-        </table>
+          </div>
+
+          <div className="card" style={{ padding: 0, overflow: "hidden" }}>
+            {/* Production parent header */}
+            <div style={{ background: "#23263B", padding: "10px 16px", display: "flex", alignItems: "center", gap: 10 }}>
+              <span style={{ fontSize: 13, fontWeight: 600, color: "#fff", textTransform: "uppercase" as const, letterSpacing: 1 }}>Production Parent</span>
+              <span style={{ fontSize: 12, color: "rgba(255,255,255,0.5)" }}>EX9JOVML7S</span>
+              <span style={{ fontSize: 12, color: "rgba(255,255,255,0.5)", marginLeft: "auto" }}>
+                {tagFilter === "all" ? (prodBilling ? prodBilling.period_end_live_apps.toLocaleString() : filtered.length.toLocaleString()) : filtered.length.toLocaleString()} apps{tagFilter !== "all" ? ` (${tags.find(t => t.key === tagFilter)?.label})` : ""}
+              </span>
+            </div>
+        <div style={{ overflowX: "auto" }}>
+          <table>
+            <thead style={{ position: "sticky", top: 0, zIndex: 1, background: "#fff" }}>
+              <tr>
+                <th style={{ cursor: "pointer" }} onClick={() => handleSort("id")}>App ID{arrow("id")}</th>
+                <th style={{ cursor: "pointer" }} onClick={() => handleSort("name")}>Name{arrow("name")}</th>
+                <th>Tag</th>
+                <th style={{ cursor: "pointer", textAlign: "right" }} onClick={() => handleSort("records")}>Records{arrow("records")}</th>
+                <th style={{ cursor: "pointer", textAlign: "right" }} onClick={() => handleSort("recDelta")}>Rec Δ{arrow("recDelta")}</th>
+                <th style={{ cursor: "pointer", textAlign: "right" }} onClick={() => handleSort("searches")}>Searches{arrow("searches")}</th>
+                <th style={{ cursor: "pointer", textAlign: "right" }} onClick={() => handleSort("searchDelta")}>Srch Δ{arrow("searchDelta")}</th>
+                <th>Created</th>
+              </tr>
+            </thead>
+            <tbody>
+              {pageApps.map((a, i) => (
+                <tr key={a.id + i}>
+                  <td className="mono">{a.id}</td>
+                  <td style={{ minWidth: 160 }}>{a.name}</td>
+                  <td><span style={{ fontSize: 11, fontWeight: 600, padding: "1px 6px", borderRadius: 3,
+                    background: tagColor(a.tag ?? a.env) + "14", color: tagColor(a.tag ?? a.env) }}>{(tags.find(t => t.key === (a.tag ?? a.env))?.label ?? a.env).toUpperCase()}</span></td>
+                  <td style={{ textAlign: "right" }}>{fmt(a.records)}</td>
+                  <td style={{ textAlign: "right", color: a.recDelta > 0 ? "#16a34a" : a.recDelta < 0 ? "#dc2626" : "#7778AF", fontWeight: 500 }}>
+                    {a.isNew ? <span style={{ fontSize: 12, fontWeight: 600, padding: "1px 8px", borderRadius: 3, background: "#003DFF14", color: "#003DFF" }}>NEW</span>
+                      : a.recDelta !== 0 ? `${a.recDelta > 0 ? "+" : ""}${fmt(a.recDelta)}` : "—"}
+                  </td>
+                  <td style={{ textAlign: "right" }}>{fmt(a.searches)}</td>
+                  <td style={{ textAlign: "right", color: a.searchDelta > 0 ? "#16a34a" : a.searchDelta < 0 ? "#dc2626" : "#7778AF", fontWeight: 500 }}>
+                    {a.isNew ? "—" : a.searchDelta !== 0 ? `${a.searchDelta > 0 ? "+" : ""}${fmt(a.searchDelta)}` : "—"}
+                  </td>
+                  <td style={{ fontSize: 13, color: "#7778AF" }}>{a.created}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
         {/* Pagination */}
         {totalPages > 1 && (
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "12px 16px", borderTop: "1px solid #e5e7eb", background: "#f8f9fb" }}>
             <span style={{ fontSize: 13, color: "#7778AF" }}>
-              Showing {page * PAGE_SIZE + 1}–{Math.min((page + 1) * PAGE_SIZE, allSorted.length)} of {allSorted.length} apps
+              Showing {page * PAGE_SIZE + 1}–{Math.min((page + 1) * PAGE_SIZE, filtered.length)} of {filtered.length}
             </span>
             <div style={{ display: "flex", gap: 6 }}>
               <button disabled={page === 0} onClick={() => setPage(page - 1)}
@@ -378,7 +484,9 @@ function ChildAppMoMTable({ appDetail, prevMonth }: { appDetail: AppDetailWithDe
             </div>
           </div>
         )}
-      </div>
+          </div>
+        </>
+      )}
     </div>
   );
 }
@@ -866,13 +974,14 @@ function DashboardInner({
         </div>
 
         {/* CHILD APP MONTHLY RECORD & SEARCH USAGE — GROUPED BY ENVIRONMENT */}
-        <ChildAppMoMTable appDetail={appDetail} prevMonth={data.prevMonth} />
+        <ChildAppMoMTable appDetail={appDetail} prevMonth={data.prevMonth} billing={billing} />
       </>
     );
   };
 
   return (
     <div className="dashboard">
+      <div className="sticky-top">
       <div className="header">
         <div>
           <div className="header-title">
@@ -937,6 +1046,7 @@ function DashboardInner({
           </div>
         ))}
       </div>
+      </div>{/* end sticky-top */}
 
       <div className="body">
         {tab === 0 && <Tab1 />}
