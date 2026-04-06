@@ -254,20 +254,25 @@ def process_csv(csv_info):
         if name.startswith('gs-'): return 'genstudio'
         return 'legacy'
 
+    # All counts below use ONLY active (non-deleted) apps
+    active_list = [a for a in apps.values() if not a['deleted']]
+
     tag_counts = defaultdict(int)
-    for a in apps.values():
+    for a in active_list:
         tag_counts[name_tag(a['name'])] += 1
 
-    # Legacy segmentation (kept for backward compatibility)
-    prod = sum(1 for a in apps.values() if a['name'].startswith('cm-') and 'nonprod' not in a['name'].lower())
-    nonprod = sum(1 for a in apps.values() if 'nonprod' in a['name'].lower())
-    genstudio = sum(1 for a in apps.values() if a['name'].startswith('gs-'))
-    legacy = sum(1 for a in apps.values()
+    # Legacy segmentation (kept for backward compatibility) — active only
+    prod = sum(1 for a in active_list if a['name'].startswith('cm-') and 'nonprod' not in a['name'].lower())
+    nonprod = sum(1 for a in active_list if 'nonprod' in a['name'].lower())
+    genstudio = sum(1 for a in active_list if a['name'].startswith('gs-'))
+    legacy = sum(1 for a in active_list
                  if not a['name'].startswith('cm-') and not a['name'].startswith('gs-'))
 
-    zombie = sum(1 for a in apps.values() if a['max_records'] == 0 and a['total_searches'] == 0)
-    records_no_search = sum(1 for a in apps.values() if a['max_records'] > 0 and a['total_searches'] == 0)
-    search_no_records = sum(1 for a in apps.values() if a['max_records'] == 0 and a['total_searches'] > 0)
+    # Engagement classification — ONLY active (non-deleted) apps
+    active_apps = [a for a in apps.values() if not a['deleted']]
+    zombie = sum(1 for a in active_apps if a['max_records'] == 0 and a['total_searches'] == 0)
+    records_no_search = sum(1 for a in active_apps if a['max_records'] > 0 and a['total_searches'] == 0)
+    search_no_records = sum(1 for a in active_apps if a['max_records'] == 0 and a['total_searches'] > 0)
 
     total_latest_records = sum(a['latest_records'] for a in apps.values())
     total_searches = sum(a['total_searches'] for a in apps.values())
@@ -278,10 +283,16 @@ def process_csv(csv_info):
     if billing:
         billing_data = billing
         # Use billing system's authoritative numbers for the headline totals
+        # IMPORTANT: Quota applies to PRODUCTION parent only, not combined prod+staging
+        # Hex PDF shows: Apps=1,425 (prod), Records=40,095,020 (prod), Searches=35,927,203 (prod only)
         active = billing['prod'].get('period_end_live_apps', active)
         total_latest_records = billing['prod'].get('billable_records', total_latest_records)
-        total_searches = billing['combined'].get('billable_search_requests', total_searches)
-        print(f" [billing override: {active} apps, {total_latest_records:,} records]", end='', flush=True)
+        total_searches = billing['prod'].get('billable_search_requests', total_searches)
+        print(f" [billing override: {active} apps, {total_latest_records:,} records, {total_searches:,} searches]", end='', flush=True)
+    else:
+        print(f"\n  ⚠ WARNING: No stage_prod_parent_agg_stat file found in {csv_info['folder']}.", end='', flush=True)
+        print(f"\n    Numbers will be ESTIMATED from CSV rows (may not match Hex exactly).", end='', flush=True)
+        print(f"\n    To fix: download stage_prod_parent_agg_stat CSV from Hex into the same folder.", end='', flush=True)
 
     # ── Environment breakdown: prod vs nonprod records/searches ──
     def is_nonprod(name):
@@ -290,13 +301,14 @@ def process_csv(csv_info):
     def is_prod_cm(name):
         return name.startswith('cm-') and not is_nonprod(name)
 
-    prod_records = sum(a['latest_records'] for a in apps.values() if is_prod_cm(a['name']))
-    prod_searches = sum(a['total_searches'] for a in apps.values() if is_prod_cm(a['name']))
-    nonprod_records = sum(a['latest_records'] for a in apps.values() if is_nonprod(a['name']))
-    nonprod_searches = sum(a['total_searches'] for a in apps.values() if is_nonprod(a['name']))
-    legacy_records = sum(a['latest_records'] for a in apps.values()
+    # Environment breakdown — active apps only
+    prod_records = sum(a['latest_records'] for a in active_list if is_prod_cm(a['name']))
+    prod_searches = sum(a['total_searches'] for a in active_list if is_prod_cm(a['name']))
+    nonprod_records = sum(a['latest_records'] for a in active_list if is_nonprod(a['name']))
+    nonprod_searches = sum(a['total_searches'] for a in active_list if is_nonprod(a['name']))
+    legacy_records = sum(a['latest_records'] for a in active_list
                         if not a['name'].startswith('cm-') and not a['name'].startswith('gs-'))
-    legacy_searches = sum(a['total_searches'] for a in apps.values()
+    legacy_searches = sum(a['total_searches'] for a in active_list
                          if not a['name'].startswith('cm-') and not a['name'].startswith('gs-'))
 
     # Concentration
@@ -400,7 +412,7 @@ def process_csv(csv_info):
             'zombie': zombie,
             'records_no_search': records_no_search,
             'search_no_records': search_no_records,
-            'active_both': total - zombie - records_no_search - search_no_records,
+            'active_both': active - zombie - records_no_search - search_no_records,
         },
         'concentration': {
             'top10_records_pct': top10_rec_pct,
@@ -538,6 +550,18 @@ def main():
 
     print()
     print(f"Successfully processed {len(snapshots)} of {len(csv_files)} files")
+
+    # Check how many snapshots had billing files
+    with_billing = sum(1 for s in snapshots if s.get('billing'))
+    without_billing = len(snapshots) - with_billing
+    if without_billing > 0:
+        latest_has_billing = snapshots[-1].get('billing') is not None
+        print(f"  Billing file: {with_billing} snapshots with billing data, {without_billing} without (estimated)")
+        if not latest_has_billing:
+            print(f"  ⚠ LATEST SNAPSHOT HAS NO BILLING FILE — numbers may not match Hex!")
+            print(f"    Add stage_prod_parent_agg_stat CSV to the latest report folder to fix.")
+    else:
+        print(f"  Billing file: all {with_billing} snapshots have billing data ✓")
 
     if not snapshots:
         print("No data processed.")

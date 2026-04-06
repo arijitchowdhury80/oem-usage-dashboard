@@ -369,7 +369,7 @@ function ChildAppMoMTable({ appDetail, prevMonth, billing }: { appDetail: AppDet
             <span style={{ fontSize: 13, color: "#7778AF" }}>{stageBilling?.parent_id ?? "J5OO6J0MJP"}</span>
           </div>
           {stageBilling ? (
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: 16 }}>
+            <div className="grid-4col">
               <div>
                 <div style={{ fontSize: 12, color: "#9698C3", fontWeight: 600, textTransform: "uppercase" as const, letterSpacing: 1 }}>Live Apps</div>
                 <div style={{ fontSize: 24, fontWeight: 600, color: "#000033" }}>{stageBilling.period_end_live_apps}</div>
@@ -491,10 +491,30 @@ function ChildAppMoMTable({ appDetail, prevMonth, billing }: { appDetail: AppDet
   );
 }
 
+const TAB_HASHES = ["#summary", "#trends", "#portfolio", "#rnd-brief"];
+
+function getTabFromHash(): number {
+  if (typeof window === "undefined") return 0;
+  const idx = TAB_HASHES.indexOf(window.location.hash);
+  return idx >= 0 ? idx : 0;
+}
+
 export default function Dashboard() {
   const [data, setData] = useState<DashboardData | null>(null);
-  const [tab, setTab] = useState(0);
+  const [tab, setTab] = useState(getTabFromHash);
   const [error, setError] = useState<string | null>(null);
+
+  const handleSetTab = (i: number) => {
+    setTab(i);
+    window.location.hash = TAB_HASHES[i];
+  };
+
+  // Listen for browser back/forward
+  useEffect(() => {
+    const onHashChange = () => setTab(getTabFromHash());
+    window.addEventListener("hashchange", onHashChange);
+    return () => window.removeEventListener("hashchange", onHashChange);
+  }, []);
 
   const reload = () => loadDashboardData().then(setData).catch((e) => setError(e.message));
 
@@ -506,7 +526,7 @@ export default function Dashboard() {
   if (error) return <div style={{ padding: 40, color: "#dc2626" }}>Error: {error}</div>;
   if (!data) return <div style={{ padding: 40, color: "#9ca3af" }}>Loading dashboard...</div>;
 
-  return <DashboardInner data={data} tab={tab} setTab={setTab} onReload={reload} />;
+  return <DashboardInner data={data} tab={tab} setTab={handleSetTab} onReload={reload} />;
 }
 
 function DashboardInner({
@@ -609,9 +629,9 @@ function DashboardInner({
 
   const appsPct = (latest.apps / CONTRACT.appsQuota) * 100;
 
-  // Search calculation: only count from Feb 2026 contract start
-  const jan2026 = weeks.find((w) => w.month === "2026-01");
-  const searchesCurrent = jan2026 ? latest.searches - jan2026.searches : latest.searches;
+  // Search total comes directly from billing system (production parent only)
+  // No need to subtract — billing file provides the correct cumulative number
+  const searchesCurrent = latest.searches;
 
   const dataThrough = new Date(latest.date).toLocaleDateString("en-US", {
     month: "short", day: "numeric", year: "numeric",
@@ -679,7 +699,7 @@ function DashboardInner({
         <div className="sec">
           <div className="sec-t">Production vs Staging</div>
           <div className="card" style={{ padding: 0, overflow: "hidden" }}>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr" }}>
+            <div className="grid-2col">
               {/* Production */}
               <div style={{ padding: 20, borderRight: "1px solid #e5e7eb" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
@@ -690,7 +710,7 @@ function DashboardInner({
                   </div>
                   <span style={{ fontSize: 13, color: "#7778AF", marginLeft: "auto" }}>{prodBilling.period_end_live_apps.toLocaleString()} live apps</span>
                 </div>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12 }}>
+                <div className="grid-3col">
                   <div>
                     <div style={{ fontSize: 12, color: "#9698C3", fontWeight: 600, textTransform: "uppercase" as const, letterSpacing: 1 }}>Apps</div>
                     <div style={{ fontSize: 22, fontWeight: 600, color: "#000033" }}>{prodBilling.period_end_live_apps.toLocaleString()}</div>
@@ -721,7 +741,7 @@ function DashboardInner({
                   </div>
                   <span style={{ fontSize: 13, color: "#7778AF", marginLeft: "auto" }}>{stageBilling.period_end_live_apps} live apps</span>
                 </div>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12 }}>
+                <div className="grid-3col">
                   <div>
                     <div style={{ fontSize: 12, color: "#9698C3", fontWeight: 600, textTransform: "uppercase" as const, letterSpacing: 1 }}>Apps</div>
                     <div style={{ fontSize: 22, fontWeight: 600, color: "#000033" }}>{stageBilling.period_end_live_apps}</div>

@@ -345,3 +345,94 @@ svg text { font-family: 'Sora', -apple-system, sans-serif; }
 
 /* ═══════ SPINNER ═══════ */
 @keyframes spin { to { transform: rotate(360deg); } }
+
+/* ═══════ RESPONSIVE GRID HELPERS ═══════ */
+.grid-2col { display: grid; grid-template-columns: 1fr 1fr; }
+.grid-3col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+.grid-4col { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 16px; }
+
+/* ═══════════════════════════════════════════════════
+   MOBILE RESPONSIVE — max-width 640px
+   ═══════════════════════════════════════════════════ */
+@media (max-width: 640px) {
+  /* Header: compact */
+  .header { padding: 10px 16px; }
+  .header-title { font-size: 14px; gap: 8px; }
+  .header-logo { height: 20px; }
+  .header-meta { font-size: 11px; }
+  .header-date-label { font-size: 10px; }
+  .header-date-val { font-size: 12px; }
+
+  /* Tabs: scrollable, smaller */
+  .tabs { padding: 0 12px; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .tab { padding: 10px 14px; font-size: 11px; white-space: nowrap; }
+
+  /* Body: tighter padding */
+  .body { padding: 14px 12px; }
+
+  /* Sections */
+  .sec { margin-bottom: 18px; }
+  .sec-t { font-size: 12px; margin-bottom: 10px; }
+
+  /* Cards */
+  .card { padding: 14px; }
+
+  /* Flex: stack vertically */
+  .flex { flex-direction: column; gap: 10px; }
+
+  /* KPIs: full width */
+  .kpi { flex: 1 1 100%; }
+  .kpi-value { font-size: 24px; }
+  .kpi-sub { font-size: 12px; }
+
+  /* Gauges: stack */
+  .gauge-wrap { flex: 1 1 100%; }
+
+  /* Engagement: stack vertically, donut first */
+  .engage-panel { flex-direction: column-reverse; min-height: auto; }
+  .engage-left { border-right: none; border-top: 1px solid var(--border-light); padding: 14px 12px; }
+  .engage-right { padding: 14px 12px; }
+
+  /* Tables: horizontal scroll */
+  .card { overflow-x: auto; }
+  table { font-size: 13px; min-width: 500px; }
+  th { font-size: 11px; padding: 8px 8px; }
+  td { padding: 7px 8px; font-size: 13px; }
+
+  /* Environment bar */
+  .env-bar { height: 28px; }
+  .env-bar div { font-size: 11px; }
+  .env-labels { font-size: 10px; }
+
+  /* Grids: stack on mobile */
+  .grid-2col { grid-template-columns: 1fr; }
+  .grid-3col { grid-template-columns: 1fr; }
+  .grid-4col { grid-template-columns: 1fr 1fr; }
+
+  /* Prod vs Staging: stack */
+  .grid-2col > div { border-right: none !important; padding-right: 0 !important; border-bottom: 1px solid var(--border-light); padding-bottom: 16px; margin-bottom: 16px; }
+  .grid-2col > div:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+
+  /* Footer */
+  .footer { padding: 10px 12px; font-size: 10px; }
+
+  /* Alert */
+  .alert { padding: 10px 12px; }
+  .alert-title { font-size: 13px; }
+  .alert-desc { font-size: 11px; }
+
+  /* Minibar */
+  .minibar { width: 60px; }
+}
+
+/* ═══════════════════════════════════════════════════
+   EMAIL SNAPSHOT — hide chrome, optimize for capture
+   ═══════════════════════════════════════════════════ */
+.email-snapshot .sticky-top { display: none; }
+.email-snapshot .footer { display: none; }
+.email-snapshot .body { padding: 16px; max-width: 100%; }
+.email-snapshot .flex { flex-direction: column; gap: 10px; }
+.email-snapshot .gauge-wrap { flex: 1 1 100%; }
+.email-snapshot .engage-panel { flex-direction: column-reverse; min-height: auto; }
+.email-snapshot .engage-left { border-right: none; border-top: 1px solid var(--border-light); }
+.email-snapshot .kpi { flex: 1 1 100%; }
