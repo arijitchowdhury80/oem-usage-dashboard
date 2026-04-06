@@ -5,7 +5,7 @@ import {
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   Cell, PieChart, Pie, ReferenceLine,
 } from "recharts";
-import { CURRENT_CONTRACT, PARENT_APPS } from "@/lib/contracts";
+import { CURRENT_CONTRACT } from "@/lib/contracts";
 import { loadDashboardData } from "@/lib/data";
 import { fmt } from "@/lib/formatters";
 import type { DashboardData, WeekPoint, MonthPoint, AppDetailWithDelta } from "@/lib/types";
@@ -16,6 +16,27 @@ import MiniBar from "./MiniBar";
 import RDBrief from "./RDBrief";
 
 const CONTRACT = CURRENT_CONTRACT;
+
+function downloadCSV(filename: string, headers: string[], rows: string[][]) {
+  const csv = [headers.join(","), ...rows.map(r => r.join(","))].join("\n");
+  const blob = new Blob([csv], { type: "text/csv" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function DownloadButton({ onClick, label = "CSV" }: { onClick: () => void; label?: string }) {
+  return (
+    <button onClick={onClick} style={{
+      fontSize: 12, color: "#003DFF", background: "none", border: "1px solid #003DFF",
+      borderRadius: 4, padding: "4px 12px", cursor: "pointer", fontWeight: 500,
+      fontFamily: "'Sora', sans-serif",
+    }}>{label}</button>
+  );
+}
 
 function hitDate(runway: number, baseDate: string = "2026-03-24"): string {
   if (runway > 20) return "Not projected";
@@ -250,16 +271,15 @@ function MoMTable({ momData }: { momData: MonthPoint[] }) {
 
 // ═══════ CHILD APP MoM TABLE — Grouped by Environment ═══════
 function ChildAppMoMTable({ appDetail, prevMonth }: { appDetail: AppDetailWithDelta[]; prevMonth?: string }) {
+  const PAGE_SIZE = 50;
   const [sortCol, setSortCol] = useState<string>("records");
   const [sortAsc, setSortAsc] = useState(false);
-
-  const prodApps = appDetail.filter((a) => a.env === "prod");
-  const nonprodApps = appDetail.filter((a) => a.env === "nonprod");
-  const legacyApps = appDetail.filter((a) => a.env === "legacy" || a.env === "genstudio");
+  const [page, setPage] = useState(0);
 
   const handleSort = (col: string) => {
     if (sortCol === col) { setSortAsc(!sortAsc); }
     else { setSortCol(col); setSortAsc(false); }
+    setPage(0);
   };
 
   const sortFn = (a: AppDetailWithDelta, b: AppDetailWithDelta) => {
@@ -276,46 +296,29 @@ function ChildAppMoMTable({ appDetail, prevMonth }: { appDetail: AppDetailWithDe
 
   const arrow = (col: string) => sortCol === col ? (sortAsc ? " ↑" : " ↓") : "";
 
-  const renderGroup = (title: string, parentId: string, apps: AppDetailWithDelta[], color: string) => {
-    if (apps.length === 0) return null;
-    const sorted = [...apps].sort(sortFn);
-    return (
-      <>
-        <tr>
-          <td colSpan={7} style={{ background: color + "0A", padding: "10px 12px", borderBottom: `2px solid ${color}` }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-              <div style={{ width: 10, height: 10, borderRadius: 2, background: color }} />
-              <span style={{ fontSize: 14, fontWeight: 600, color: "#23263B", textTransform: "uppercase" as const, letterSpacing: 1 }}>{title}</span>
-              <span style={{ fontSize: 13, color: "#7778AF" }}>Parent: {parentId}</span>
-              <span style={{ fontSize: 13, color: "#7778AF", marginLeft: "auto" }}>{apps.length} apps</span>
-            </div>
-          </td>
-        </tr>
-        {sorted.map((a, i) => (
-          <tr key={a.id + i}>
-            <td className="mono">{a.id}</td>
-            <td style={{ maxWidth: 200, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{a.name}</td>
-            <td style={{ textAlign: "right" }}>{fmt(a.records)}</td>
-            <td style={{ textAlign: "right", color: a.recDelta > 0 ? "#16a34a" : a.recDelta < 0 ? "#dc2626" : "#7778AF", fontWeight: 500 }}>
-              {a.isNew ? <span style={{ fontSize: 14, fontWeight: 600, padding: "1px 8px", borderRadius: 3, background: "#003DFF14", color: "#003DFF" }}>NEW</span>
-                : a.recDelta !== 0 ? `${a.recDelta > 0 ? "+" : ""}${fmt(a.recDelta)}` : "—"}
-            </td>
-            <td style={{ textAlign: "right" }}>{fmt(a.searches)}</td>
-            <td style={{ textAlign: "right", color: a.searchDelta > 0 ? "#16a34a" : a.searchDelta < 0 ? "#dc2626" : "#7778AF", fontWeight: 500 }}>
-              {a.isNew ? "—" : a.searchDelta !== 0 ? `${a.searchDelta > 0 ? "+" : ""}${fmt(a.searchDelta)}` : "—"}
-            </td>
-            <td style={{ fontSize: 13, color: "#7778AF" }}>{a.created}</td>
-          </tr>
-        ))}
-      </>
+  // Sort all apps together, then paginate
+  const allSorted = useMemo(() => [...appDetail].sort(sortFn), [appDetail, sortCol, sortAsc]);
+  const totalPages = Math.ceil(allSorted.length / PAGE_SIZE);
+  const pageApps = allSorted.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE);
+
+  const handleDownload = () => {
+    downloadCSV("child_app_usage.csv",
+      ["app_id", "name", "env", "tag", "records", "rec_delta", "searches", "search_delta", "created", "status"],
+      appDetail.map(a => [a.id, `"${a.name}"`, a.env, a.tag ?? "", String(a.records), String(a.recDelta), String(a.searches), String(a.searchDelta), a.created, a.status ?? ""])
     );
   };
 
+  const envColor = (env: string) => env === "prod" ? "#003DFF" : env === "nonprod" ? "#d97706" : "#7778AF";
+  const envLabel = (env: string) => env === "prod" ? "PROD" : env === "nonprod" ? "NONPROD" : "OTHER";
+
   return (
     <div className="sec">
-      <div className="sec-t">
-        Child App Monthly Record &amp; Search Usage
-        {prevMonth && <span style={{ textTransform: "none" as const, letterSpacing: 0, fontWeight: 400, color: "#7778AF", marginLeft: 8 }}>MoM delta vs {prevMonth}</span>}
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
+        <div className="sec-t" style={{ marginBottom: 0 }}>
+          Child App Monthly Record &amp; Search Usage
+          {prevMonth && <span style={{ textTransform: "none" as const, letterSpacing: 0, fontWeight: 400, color: "#7778AF", marginLeft: 8 }}>MoM delta vs {prevMonth}</span>}
+        </div>
+        <DownloadButton onClick={handleDownload} label="Download CSV" />
       </div>
       <div className="card" style={{ padding: 0, overflow: "hidden" }}>
         <table>
@@ -323,6 +326,7 @@ function ChildAppMoMTable({ appDetail, prevMonth }: { appDetail: AppDetailWithDe
             <tr>
               <th style={{ cursor: "pointer" }} onClick={() => handleSort("id")}>App ID{arrow("id")}</th>
               <th style={{ cursor: "pointer" }} onClick={() => handleSort("name")}>Name{arrow("name")}</th>
+              <th>Env</th>
               <th style={{ cursor: "pointer", textAlign: "right" }} onClick={() => handleSort("records")}>Records{arrow("records")}</th>
               <th style={{ cursor: "pointer", textAlign: "right" }} onClick={() => handleSort("recDelta")}>Rec Δ{arrow("recDelta")}</th>
               <th style={{ cursor: "pointer", textAlign: "right" }} onClick={() => handleSort("searches")}>Searches{arrow("searches")}</th>
@@ -331,11 +335,49 @@ function ChildAppMoMTable({ appDetail, prevMonth }: { appDetail: AppDetailWithDe
             </tr>
           </thead>
           <tbody>
-            {renderGroup("Production", PARENT_APPS.production.id, prodApps, "#003DFF")}
-            {renderGroup("Non-Production", PARENT_APPS.staging.id, nonprodApps, "#d97706")}
-            {legacyApps.length > 0 && renderGroup("Legacy / Other", "—", legacyApps, "#7778AF")}
+            {pageApps.map((a, i) => (
+              <tr key={a.id + i}>
+                <td className="mono">{a.id}</td>
+                <td style={{ maxWidth: 200, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{a.name}</td>
+                <td><span style={{ fontSize: 11, fontWeight: 600, padding: "1px 6px", borderRadius: 3,
+                  background: envColor(a.env) + "14", color: envColor(a.env) }}>{envLabel(a.env)}</span></td>
+                <td style={{ textAlign: "right" }}>{fmt(a.records)}</td>
+                <td style={{ textAlign: "right", color: a.recDelta > 0 ? "#16a34a" : a.recDelta < 0 ? "#dc2626" : "#7778AF", fontWeight: 500 }}>
+                  {a.isNew ? <span style={{ fontSize: 12, fontWeight: 600, padding: "1px 8px", borderRadius: 3, background: "#003DFF14", color: "#003DFF" }}>NEW</span>
+                    : a.recDelta !== 0 ? `${a.recDelta > 0 ? "+" : ""}${fmt(a.recDelta)}` : "—"}
+                </td>
+                <td style={{ textAlign: "right" }}>{fmt(a.searches)}</td>
+                <td style={{ textAlign: "right", color: a.searchDelta > 0 ? "#16a34a" : a.searchDelta < 0 ? "#dc2626" : "#7778AF", fontWeight: 500 }}>
+                  {a.isNew ? "—" : a.searchDelta !== 0 ? `${a.searchDelta > 0 ? "+" : ""}${fmt(a.searchDelta)}` : "—"}
+                </td>
+                <td style={{ fontSize: 13, color: "#7778AF" }}>{a.created}</td>
+              </tr>
+            ))}
           </tbody>
         </table>
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "12px 16px", borderTop: "1px solid #e5e7eb", background: "#f8f9fb" }}>
+            <span style={{ fontSize: 13, color: "#7778AF" }}>
+              Showing {page * PAGE_SIZE + 1}–{Math.min((page + 1) * PAGE_SIZE, allSorted.length)} of {allSorted.length} apps
+            </span>
+            <div style={{ display: "flex", gap: 6 }}>
+              <button disabled={page === 0} onClick={() => setPage(page - 1)}
+                style={{ padding: "5px 14px", fontSize: 13, fontWeight: 500, borderRadius: 4, border: "1px solid #e5e7eb",
+                  background: page === 0 ? "#f3f4f6" : "#fff", color: page === 0 ? "#9698C3" : "#36395A", cursor: page === 0 ? "default" : "pointer" }}>
+                ← Prev
+              </button>
+              <span style={{ padding: "5px 10px", fontSize: 13, color: "#484C7A", fontWeight: 600 }}>
+                {page + 1} / {totalPages}
+              </span>
+              <button disabled={page >= totalPages - 1} onClick={() => setPage(page + 1)}
+                style={{ padding: "5px 14px", fontSize: 13, fontWeight: 500, borderRadius: 4, border: "1px solid #e5e7eb",
+                  background: page >= totalPages - 1 ? "#f3f4f6" : "#fff", color: page >= totalPages - 1 ? "#9698C3" : "#36395A", cursor: page >= totalPages - 1 ? "default" : "pointer" }}>
+                Next →
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -748,7 +790,13 @@ function DashboardInner({
     return (
       <>
         <div className="sec">
-          <div className="sec-t">Top 10 — By Records</div>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
+            <div className="sec-t" style={{ marginBottom: 0 }}>Top 10 — By Records</div>
+            <DownloadButton onClick={() => downloadCSV("top10_by_records.csv",
+              ["rank", "app_id", "name", "records", "share_pct", "searches", "ratio"],
+              topByRecords.map((d, i) => [String(i + 1), d.id, `"${d.name}"`, String(d.records), ((d.records / latest.records) * 100).toFixed(1), String(d.searches), d.records > 0 ? (d.searches / d.records).toFixed(4) : "0"])
+            )} />
+          </div>
           <div className="card">
             <table>
               <thead>
@@ -784,7 +832,13 @@ function DashboardInner({
         </div>
 
         <div className="sec">
-          <div className="sec-t">Top 10 — By Search Volume</div>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
+            <div className="sec-t" style={{ marginBottom: 0 }}>Top 10 — By Search Volume</div>
+            <DownloadButton onClick={() => downloadCSV("top10_by_searches.csv",
+              ["rank", "app_id", "name", "searches", "records"],
+              topBySearches.map((d, i) => [String(i + 1), d.id, `"${d.name}"`, String(d.searches), String(d.records)])
+            )} />
+          </div>
           <div className="card">
             <table>
               <thead>
