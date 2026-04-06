@@ -40,6 +40,11 @@ function cleanWeeks(raw: ConsolidatedData): WeekPoint[] {
       prodSearches: s.environment?.prod_searches ?? 0,
       nonprodRecords: s.environment?.nonprod_records ?? 0,
       nonprodSearches: s.environment?.nonprod_searches ?? 0,
+      tagBase: s.name_tags?.base ?? 0,
+      tagNonprodShared: s.name_tags?.nonprod_shared ?? 0,
+      tagCmprdGenstudio: s.name_tags?.cmprd_genstudio ?? 0,
+      tagCmstgGenstudio: s.name_tags?.cmstg_genstudio ?? 0,
+      tagLegacy: s.name_tags?.legacy ?? 0,
     }));
 }
 
@@ -77,6 +82,11 @@ function computeMonths(weeks: WeekPoint[]): MonthPoint[] {
     prodSearches: w.prodSearches,
     nonprodRecords: w.nonprodRecords,
     nonprodSearches: w.nonprodSearches,
+    tagBase: w.tagBase,
+    tagNonprodShared: w.tagNonprodShared,
+    tagCmprdGenstudio: w.tagCmprdGenstudio,
+    tagCmstgGenstudio: w.tagCmstgGenstudio,
+    tagLegacy: w.tagLegacy,
   }));
 }
 
@@ -139,6 +149,11 @@ export async function loadDashboardData(): Promise<DashboardData> {
     };
   });
 
+  // Extract billing data from the latest snapshot (if billing file was present)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const rawLatest = latestSnapshot as any;
+  const billing = rawLatest?.billing ?? null;
+
   return {
     weeks,
     months,
@@ -150,5 +165,6 @@ export async function loadDashboardData(): Promise<DashboardData> {
     metadata: raw._metadata,
     rates,
     prevMonth: prevSnapshot ? monthKeys[monthKeys.length - 2] : undefined,
+    billing,
   };
 }

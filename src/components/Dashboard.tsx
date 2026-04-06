@@ -29,6 +29,155 @@ function formatMonth(dateStr: string): string {
   return d.toLocaleDateString("en-US", { month: "short", year: "2-digit" });
 }
 
+// ═══════ ENGAGEMENT PANEL — Interactive donut with app list overlay ═══════
+function EngagementPanel({ appDetail, chartData, latest }: {
+  appDetail: AppDetailWithDelta[];
+  chartData: Array<{ m: string } & WeekPoint>;
+  latest: WeekPoint;
+}) {
+  const [expandedStatus, setExpandedStatus] = useState<string | null>(null);
+  const [hoveredStatus, setHoveredStatus] = useState<string | null>(null);
+
+  const categories = [
+    { key: "active", color: "#16a34a", label: "Active", count: latest.activeBoth, desc: "Records and searches. Working as intended.", dataKey: "activeBoth" },
+    { key: "records_only", color: "#d97706", label: "Records only", count: latest.recordsNoSearch, desc: "Content loaded, no one is searching.", dataKey: "recordsNoSearch" },
+    { key: "search_only", color: "#8b5cf6", label: "Search only", count: latest.searchNoRecords, desc: "Searches firing, no content indexed.", dataKey: "searchNoRecords" },
+    { key: "zombie", color: "#dc2626", label: "Zombie", count: latest.zombie, desc: "Created but never used. Zero activity.", dataKey: "zombie" },
+  ];
+
+  const downloadCSV = (statusKey: string, label: string) => {
+    const apps = appDetail.filter(a => a.status === statusKey);
+    const header = "app_id,name,tag,records,searches,created\n";
+    const rows = apps.map(a => `${a.id},${a.name},${a.tag ?? a.env},${a.records},${a.searches},${a.created}`).join("\n");
+    const blob = new Blob([header + rows], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `${label.toLowerCase().replace(/\s/g, "_")}_apps.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
+  };
+
+  return (
+    <div className="sec">
+      <div className="sec-t">Engagement Health</div>
+      <div className="card" style={{ padding: 0, overflow: "hidden" }}>
+        <div className="engage-panel">
+          <div className="engage-left">
+            <div className="chart-title">Trend Over Time</div>
+            <ResponsiveContainer width="100%" height={240}>
+              <LineChart data={chartData} margin={{ top: 5, right: 10, bottom: 5, left: 10 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" />
+                <XAxis dataKey="m" tick={{ fill: "#9ca3af", fontSize: 11 }} interval={2} />
+                <YAxis tick={{ fill: "#9ca3af", fontSize: 11 }} />
+                <Tooltip content={<ChartTooltip />} />
+                {categories.map(cat => (
+                  <Line key={cat.key} dataKey={cat.dataKey} stroke={cat.color}
+                    strokeWidth={hoveredStatus === cat.key ? 3 : 2}
+                    strokeOpacity={hoveredStatus && hoveredStatus !== cat.key ? 0.2 : 1}
+                    dot={false} name={cat.label} />
+                ))}
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+          <div className="engage-right">
+            <div className="chart-title" style={{ textAlign: "center" }}>Current Snapshot</div>
+            <ResponsiveContainer width="100%" height={130}>
+              <PieChart>
+                <Pie data={categories.map(c => ({ name: c.label, value: c.count, fill: c.color }))}
+                  cx="50%" cy="50%" innerRadius={36} outerRadius={55} dataKey="value" strokeWidth={0}
+                  onClick={(_, index) => {
+                    const key = categories[index].key;
+                    setExpandedStatus(expandedStatus === key ? null : key);
+                  }}
+                  style={{ cursor: "pointer" }}
+                >
+                  {categories.map((c, i) => (
+                    <Cell key={i} fill={c.color}
+                      opacity={hoveredStatus && hoveredStatus !== c.key ? 0.3 : 1}
+                      stroke={expandedStatus === c.key ? c.color : "none"}
+                      strokeWidth={expandedStatus === c.key ? 3 : 0}
+                    />
+                  ))}
+                </Pie>
+              </PieChart>
+            </ResponsiveContainer>
+            <div style={{ marginTop: 10 }}>
+              {categories.map((cat) => (
+                <div key={cat.key}
+                  style={{ cursor: "pointer", borderRadius: 4, padding: "2px 0", transition: "background 0.15s",
+                    background: expandedStatus === cat.key ? cat.color + "0A" : "transparent" }}
+                  onMouseEnter={() => setHoveredStatus(cat.key)}
+                  onMouseLeave={() => setHoveredStatus(null)}
+                  onClick={() => setExpandedStatus(expandedStatus === cat.key ? null : cat.key)}
+                >
+                  <div className="engage-legend" style={{ marginBottom: 4 }}>
+                    <div className="engage-dot" style={{ background: cat.color }} />
+                    <div style={{ flex: 1 }}>
+                      <div className="engage-leg-title" style={{ display: "flex", justifyContent: "space-between" }}>
+                        <span>{cat.label} ({cat.count})</span>
+                        <span style={{ fontSize: 11, color: "#9698C3" }}>{expandedStatus === cat.key ? "▼" : "▶"}</span>
+                      </div>
+                      <div className="engage-leg-desc">{cat.desc}</div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Expanded app list overlay */}
+        {expandedStatus && (() => {
+          const cat = categories.find(c => c.key === expandedStatus)!;
+          const apps = appDetail.filter(a => a.status === expandedStatus).sort((a, b) => b.records - a.records);
+          return (
+            <div style={{ borderTop: `2px solid ${cat.color}`, padding: "16px 20px", background: cat.color + "05", maxHeight: 400, overflowY: "auto" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+                <div style={{ fontSize: 14, fontWeight: 600, color: "#23263B" }}>
+                  <span style={{ display: "inline-block", width: 10, height: 10, borderRadius: 2, background: cat.color, marginRight: 8 }} />
+                  {cat.label} — {apps.length} apps
+                </div>
+                <button onClick={() => downloadCSV(expandedStatus, cat.label)}
+                  style={{ fontSize: 12, color: "#003DFF", background: "none", border: "1px solid #003DFF", borderRadius: 4, padding: "4px 12px", cursor: "pointer", fontWeight: 500 }}>
+                  Download CSV
+                </button>
+              </div>
+              <table style={{ fontSize: 13 }}>
+                <thead>
+                  <tr>
+                    <th>App ID</th><th>Name</th><th>Tag</th><th style={{ textAlign: "right" }}>Records</th><th style={{ textAlign: "right" }}>Searches</th><th>Created</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {apps.slice(0, 50).map((a, i) => (
+                    <tr key={i}>
+                      <td className="mono">{a.id}</td>
+                      <td style={{ maxWidth: 200, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{a.name}</td>
+                      <td><span style={{ fontSize: 11, fontWeight: 600, padding: "1px 6px", borderRadius: 3,
+                        background: a.tag === "base" ? "#003DFF14" : a.tag === "nonprod-shared" ? "#d9770614" : a.tag === "cmprd-genstudio" ? "#7c3aed14" : "#7778AF14",
+                        color: a.tag === "base" ? "#003DFF" : a.tag === "nonprod-shared" ? "#d97706" : a.tag === "cmprd-genstudio" ? "#7c3aed" : "#7778AF",
+                      }}>{a.tag ?? a.env}</span></td>
+                      <td style={{ textAlign: "right" }}>{fmt(a.records)}</td>
+                      <td style={{ textAlign: "right" }}>{fmt(a.searches)}</td>
+                      <td style={{ color: "#7778AF" }}>{a.created}</td>
+                    </tr>
+                  ))}
+                  {apps.length > 50 && (
+                    <tr><td colSpan={6} style={{ textAlign: "center", color: "#7778AF", padding: 10 }}>
+                      Showing 50 of {apps.length} — download CSV for full list
+                    </td></tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          );
+        })()}
+      </div>
+    </div>
+  );
+}
+
 // ═══════ MoM TABLE — Sortable, latest month first ═══════
 function MoMTable({ momData }: { momData: MonthPoint[] }) {
   const [sortCol, setSortCol] = useState<string>("month");
@@ -246,12 +395,12 @@ function DashboardInner({
     }
   };
 
-  const { weeks, months, latest, topByRecords, topBySearches, appDetail, metadata, rates } = data;
+  const { weeks, months, latest, topByRecords, topBySearches, appDetail, metadata, rates, billing } = data;
   const tabs = ["Executive Summary", "Trends & Growth", "Portfolio Health", "R&D Brief"];
 
-  // What-if slider state
-  const [appRate, setAppRate] = useState(rates.appRate);
-  const [recRate, setRecRate] = useState(rates.recRate);
+  // Growth rate for projections (no longer editable — What-If removed)
+  const appRate = rates.appRate;
+  const recRate = rates.recRate;
 
   // Time range for trends tab
   const [timeRange, setTimeRange] = useState<"6m" | "12m" | "all">("all");
@@ -274,7 +423,7 @@ function DashboardInner({
     return { appRunway: aw, recRunway: rw, appHit: hitDate(aw, latest.date), recHit: hitDate(rw, latest.date), projected };
   }, [appRate, recRate, latest]);
 
-  const isModified = appRate !== rates.appRate || recRate !== rates.recRate;
+  // isModified removed — What-If sliders removed
 
   // Month-end data for charts
   const monthEnds = useMemo(() => {
@@ -321,8 +470,34 @@ function DashboardInner({
   const weekCount = weeks.length;
 
   // ═══════ TAB 1: EXECUTIVE SUMMARY ═══════
+  const prodBilling = billing?.prod;
+  const stageBilling = billing?.staging;
+  const topApp = topByRecords[0];
+  const topAppShare = topApp ? ((topApp.records / latest.records) * 100).toFixed(1) : "0";
+  const emptyIndexApps = latest.searchNoRecords;
+  const emptyIndexPct = latest.apps > 0 ? ((emptyIndexApps / latest.apps) * 100).toFixed(0) : "0";
+  const zombiePct = ((latest.zombie / CONTRACT.appsQuota) * 100).toFixed(0);
+
   const Tab1 = () => (
     <>
+      {/* NARRATIVE BANNER */}
+      <div style={{ background: "#003DFF08", borderLeft: "3px solid #003DFF", padding: "18px 22px", borderRadius: 6, marginBottom: 18 }}>
+        <p style={{ fontSize: 15, color: "#36395A", lineHeight: 1.7, marginBottom: 6 }}>
+          Apps grew <strong>+{months.length > 1 ? months[months.length - 1].appDelta : 0}</strong> to <strong>{latest.apps.toLocaleString()}</strong> ({(appsPct).toFixed(1)}% of quota) — ceiling in <strong>{proj.appRunway > 20 ? ">12" : proj.appRunway.toFixed(1)} months</strong>.
+        </p>
+        <p style={{ fontSize: 15, color: "#36395A", lineHeight: 1.7, marginBottom: 6 }}>
+          <strong>1 app holds {topAppShare}%</strong> of all records. Top search app ≠ top records app — only {topByRecords.filter(r => topBySearches.some(s => s.id === r.id)).length} overlap in both top-10 lists.
+        </p>
+        {stageBilling && (
+          <p style={{ fontSize: 15, color: "#36395A", lineHeight: 1.7, marginBottom: 6 }}>
+            Staging generates <strong>{latest.searches > 0 ? ((stageBilling.billable_search_requests / (stageBilling.billable_search_requests + (prodBilling?.billable_search_requests ?? 0))) * 100).toFixed(0) : 0}%</strong> of searches but only <strong>{latest.records > 0 ? ((stageBilling.billable_records / (stageBilling.billable_records + (prodBilling?.billable_records ?? 0))) * 100).toFixed(1) : 0}%</strong> of records.
+          </p>
+        )}
+        <p style={{ fontSize: 15, color: "#36395A", lineHeight: 1.7 }}>
+          <strong>{emptyIndexApps + latest.zombie} apps</strong> ({latest.apps > 0 ? (((emptyIndexApps + latest.zombie) / latest.apps) * 100).toFixed(0) : 0}% of portfolio) are either empty or zombie — cleanup opportunity.
+        </p>
+      </div>
+
       {appsPct >= 85 && (
         <div className="alert">
           <span className="alert-icon">&#9888;</span>
@@ -338,175 +513,137 @@ function DashboardInner({
         </div>
       )}
 
+      {/* QUOTA GAUGES WITH ENVIRONMENT BREAKDOWN */}
       <div className="sec">
-        <div className="sec-t">Aggregate Usage vs Quota — SO {CONTRACT.soNumber}</div>
+        <div className="sec-t">Quota Consumption — SO {CONTRACT.soNumber}</div>
         <div className="flex">
           <Gauge label="Customer Apps" current={latest.apps} quota={CONTRACT.appsQuota} hitDate={proj.appHit} />
           <Gauge label="Records (max)" current={latest.records} quota={CONTRACT.recordsQuota} hitDate={proj.recHit} />
           <Gauge label="Search Requests" current={searchesCurrent} quota={CONTRACT.searchesQuota} hitDate="Not projected" />
         </div>
+        {/* Tag breakdown removed — Prod vs Staging panel below covers this */}
       </div>
 
-      {/* ENVIRONMENT BREAKDOWN */}
-      <div className="sec">
-        <div className="sec-t">Usage by Environment</div>
-        <div className="card" style={{ padding: 20 }}>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
-            {/* Production */}
-            <div style={{ borderRight: "1px solid #e5e7eb", paddingRight: 20 }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
-                <div style={{ width: 10, height: 10, borderRadius: 2, background: "#003DFF" }} />
-                <div>
-                  <span style={{ fontSize: 14, fontWeight: 600, color: "#23263B", textTransform: "uppercase" as const, letterSpacing: 1 }}>Production</span>
-                  <span style={{ fontSize: 13, color: "#7778AF", display: "block", marginTop: 1 }}>Parent: {PARENT_APPS.production.id}</span>
+      {/* PRODUCTION VS STAGING */}
+      {prodBilling && stageBilling && (
+        <div className="sec">
+          <div className="sec-t">Production vs Staging</div>
+          <div className="card" style={{ padding: 0, overflow: "hidden" }}>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr" }}>
+              {/* Production */}
+              <div style={{ padding: 20, borderRight: "1px solid #e5e7eb" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
+                  <div style={{ width: 10, height: 10, borderRadius: 2, background: "#003DFF" }} />
+                  <div>
+                    <div style={{ fontSize: 14, fontWeight: 600, color: "#23263B", textTransform: "uppercase" as const, letterSpacing: 1 }}>Production</div>
+                    <div style={{ fontSize: 13, color: "#7778AF" }}>Parent: {prodBilling.parent_id}</div>
+                  </div>
+                  <span style={{ fontSize: 13, color: "#7778AF", marginLeft: "auto" }}>{prodBilling.period_end_live_apps.toLocaleString()} live apps</span>
                 </div>
-                <span style={{ fontSize: 13, color: "#7778AF", marginLeft: "auto" }}>{latest.prod.toLocaleString()} apps</span>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12 }}>
+                  <div>
+                    <div style={{ fontSize: 12, color: "#9698C3", fontWeight: 600, textTransform: "uppercase" as const, letterSpacing: 1 }}>Apps</div>
+                    <div style={{ fontSize: 22, fontWeight: 600, color: "#000033" }}>{prodBilling.period_end_live_apps.toLocaleString()}</div>
+                    <div style={{ fontSize: 12, color: "#7778AF" }}>{((prodBilling.period_end_live_apps / (prodBilling.period_end_live_apps + stageBilling.period_end_live_apps)) * 100).toFixed(0)}% of total</div>
+                  </div>
+                  <div>
+                    <div style={{ fontSize: 12, color: "#9698C3", fontWeight: 600, textTransform: "uppercase" as const, letterSpacing: 1 }}>Records</div>
+                    <div style={{ fontSize: 22, fontWeight: 600, color: "#000033" }}>{fmt(prodBilling.billable_records)}</div>
+                    <div style={{ fontSize: 12, color: "#7778AF" }}>{((prodBilling.billable_records / (prodBilling.billable_records + stageBilling.billable_records)) * 100).toFixed(1)}% of total</div>
+                  </div>
+                  <div>
+                    <div style={{ fontSize: 12, color: "#9698C3", fontWeight: 600, textTransform: "uppercase" as const, letterSpacing: 1 }}>Searches</div>
+                    <div style={{ fontSize: 22, fontWeight: 600, color: "#000033" }}>{fmt(prodBilling.billable_search_requests)}</div>
+                    <div style={{ fontSize: 12, color: "#7778AF" }}>{((prodBilling.billable_search_requests / (prodBilling.billable_search_requests + stageBilling.billable_search_requests)) * 100).toFixed(1)}% of total</div>
+                  </div>
+                </div>
+                <div style={{ fontSize: 13, color: "#7778AF", marginTop: 12, paddingTop: 10, borderTop: "1px solid #f3f4f6" }}>
+                  Provisioned: {prodBilling.provisioned_apps.toLocaleString()} · Deleted: {prodBilling.deleted_in_period_apps.toLocaleString()} · Retention: {prodBilling.provisioned_apps > 0 ? (100 - (prodBilling.deleted_in_period_apps / prodBilling.provisioned_apps * 100)).toFixed(0) : 100}%
+                </div>
               </div>
-              <div style={{ display: "flex", gap: 16 }}>
-                <div>
-                  <div style={{ fontSize: 13, color: "#9698C3", fontWeight: 600, textTransform: "uppercase" as const, letterSpacing: 1 }}>Records</div>
-                  <div style={{ fontSize: 24, fontWeight: 600, color: "#23263B" }}>{fmt(latest.prodRecords)}</div>
-                  <div style={{ fontSize: 13, color: "#7778AF" }}>{((latest.prodRecords / CONTRACT.recordsQuota) * 100).toFixed(1)}% of quota</div>
+              {/* Staging */}
+              <div style={{ padding: 20 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
+                  <div style={{ width: 10, height: 10, borderRadius: 2, background: "#d97706" }} />
+                  <div>
+                    <div style={{ fontSize: 14, fontWeight: 600, color: "#23263B", textTransform: "uppercase" as const, letterSpacing: 1 }}>Staging</div>
+                    <div style={{ fontSize: 13, color: "#7778AF" }}>Parent: {stageBilling.parent_id}</div>
+                  </div>
+                  <span style={{ fontSize: 13, color: "#7778AF", marginLeft: "auto" }}>{stageBilling.period_end_live_apps} live apps</span>
                 </div>
-                <div>
-                  <div style={{ fontSize: 13, color: "#9698C3", fontWeight: 600, textTransform: "uppercase" as const, letterSpacing: 1 }}>Searches</div>
-                  <div style={{ fontSize: 24, fontWeight: 600, color: "#23263B" }}>{fmt(latest.prodSearches)}</div>
-                  <div style={{ fontSize: 13, color: "#7778AF" }}>{((latest.prodSearches / latest.searches) * 100).toFixed(0)}% of total</div>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12 }}>
+                  <div>
+                    <div style={{ fontSize: 12, color: "#9698C3", fontWeight: 600, textTransform: "uppercase" as const, letterSpacing: 1 }}>Apps</div>
+                    <div style={{ fontSize: 22, fontWeight: 600, color: "#000033" }}>{stageBilling.period_end_live_apps}</div>
+                    <div style={{ fontSize: 12, color: "#7778AF" }}>{((stageBilling.period_end_live_apps / (prodBilling.period_end_live_apps + stageBilling.period_end_live_apps)) * 100).toFixed(0)}% of total</div>
+                  </div>
+                  <div>
+                    <div style={{ fontSize: 12, color: "#9698C3", fontWeight: 600, textTransform: "uppercase" as const, letterSpacing: 1 }}>Records</div>
+                    <div style={{ fontSize: 22, fontWeight: 600, color: "#000033" }}>{fmt(stageBilling.billable_records)}</div>
+                    <div style={{ fontSize: 12, color: "#7778AF" }}>{((stageBilling.billable_records / (prodBilling.billable_records + stageBilling.billable_records)) * 100).toFixed(1)}% of total</div>
+                  </div>
+                  <div>
+                    <div style={{ fontSize: 12, color: "#9698C3", fontWeight: 600, textTransform: "uppercase" as const, letterSpacing: 1 }}>Searches</div>
+                    <div style={{ fontSize: 22, fontWeight: 600, color: "#d97706" }}>{fmt(stageBilling.billable_search_requests)} ⚠</div>
+                    <div style={{ fontSize: 12, color: "#7778AF" }}>{((stageBilling.billable_search_requests / (prodBilling.billable_search_requests + stageBilling.billable_search_requests)) * 100).toFixed(1)}% of total</div>
+                  </div>
+                </div>
+                <div style={{ fontSize: 13, color: "#7778AF", marginTop: 12, paddingTop: 10, borderTop: "1px solid #f3f4f6" }}>
+                  Provisioned: {stageBilling.provisioned_apps.toLocaleString()} · Deleted: {stageBilling.deleted_in_period_apps.toLocaleString()} · Churn: {stageBilling.provisioned_apps > 0 ? ((stageBilling.deleted_in_period_apps / stageBilling.provisioned_apps * 100)).toFixed(0) : 0}%
                 </div>
               </div>
             </div>
-            {/* Non-Production */}
-            <div>
-              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
-                <div style={{ width: 10, height: 10, borderRadius: 2, background: "#d97706" }} />
-                <div>
-                  <span style={{ fontSize: 14, fontWeight: 600, color: "#23263B", textTransform: "uppercase" as const, letterSpacing: 1 }}>Non-Production</span>
-                  <span style={{ fontSize: 13, color: "#7778AF", display: "block", marginTop: 1 }}>Parent: {PARENT_APPS.staging.id}</span>
-                </div>
-                <span style={{ fontSize: 13, color: "#7778AF", marginLeft: "auto" }}>{latest.nonprod.toLocaleString()} apps</span>
-              </div>
-              <div style={{ display: "flex", gap: 16 }}>
-                <div>
-                  <div style={{ fontSize: 13, color: "#9698C3", fontWeight: 600, textTransform: "uppercase" as const, letterSpacing: 1 }}>Records</div>
-                  <div style={{ fontSize: 24, fontWeight: 600, color: "#23263B" }}>{fmt(latest.nonprodRecords)}</div>
-                  <div style={{ fontSize: 13, color: "#7778AF" }}>{((latest.nonprodRecords / CONTRACT.recordsQuota) * 100).toFixed(1)}% of quota</div>
-                </div>
-                <div>
-                  <div style={{ fontSize: 13, color: "#9698C3", fontWeight: 600, textTransform: "uppercase" as const, letterSpacing: 1 }}>Searches</div>
-                  <div style={{ fontSize: 24, fontWeight: 600, color: "#23263B" }}>{fmt(latest.nonprodSearches)}</div>
-                  <div style={{ fontSize: 13, color: "#7778AF" }}>{((latest.nonprodSearches / latest.searches) * 100).toFixed(0)}% of total</div>
-                </div>
-              </div>
-            </div>
-          </div>
-          {/* Usage bar */}
-          <div style={{ marginTop: 16 }}>
-            <div style={{ fontSize: 13, color: "#9698C3", fontWeight: 600, textTransform: "uppercase" as const, letterSpacing: 1, marginBottom: 6 }}>Record Distribution</div>
-            <div style={{ display: "flex", height: 8, borderRadius: 4, overflow: "hidden", background: "#f3f4f6" }}>
-              <div style={{ width: `${(latest.prodRecords / latest.records * 100)}%`, background: "#003DFF" }} />
-              <div style={{ width: `${(latest.nonprodRecords / latest.records * 100)}%`, background: "#d97706" }} />
-            </div>
-            <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13, color: "#7778AF", marginTop: 4 }}>
-              <span>Prod: {((latest.prodRecords / latest.records) * 100).toFixed(1)}%</span>
-              <span>NonProd: {((latest.nonprodRecords / latest.records) * 100).toFixed(1)}%</span>
+            {/* Summary footer */}
+            <div style={{ padding: "12px 20px", background: "#f8f9fb", borderTop: "1px solid #e5e7eb", fontSize: 13, color: "#484C7A", lineHeight: 1.6 }}>
+              Staging generates <strong>{((stageBilling.billable_search_requests / (prodBilling.billable_search_requests + stageBilling.billable_search_requests)) * 100).toFixed(0)}%</strong> of all search traffic on <strong>{((stageBilling.period_end_live_apps / (prodBilling.period_end_live_apps + stageBilling.period_end_live_apps)) * 100).toFixed(0)}%</strong> of apps.
+              {" "}This is QA/test automation — not real user traffic.
+              {" "}<strong>{((stageBilling.deleted_in_period_apps / stageBilling.provisioned_apps) * 100).toFixed(0)}%</strong> of staging apps are created and deleted within weeks.
             </div>
           </div>
         </div>
-      </div>
+      )}
 
-      {/* WHAT-IF SCENARIO MODELER */}
+      {/* ENGAGEMENT HEALTH — Interactive: click donut/legend to see app lists */}
+      <EngagementPanel appDetail={appDetail} chartData={chartData} latest={latest} />
+
+      {/* APP TYPES — naming convention breakdown within production parent */}
       <div className="sec">
-        <div className="sec-t">
-          What-If Scenario Modeler
-          {isModified && (
-            <span style={{ marginLeft: 8, color: "#003DFF", fontSize: 14, fontWeight: 500, textTransform: "none" as const, letterSpacing: 0 }}>
-              Modified from actual
-            </span>
-          )}
-        </div>
-        <div className="card" style={{ padding: 20 }}>
-          <div className="slider-section">
-            <div className="slider-group">
-              <div className="slider-head">
-                <span className="slider-label">App Growth Rate</span>
-                <span className="slider-val" style={{ color: appRate !== rates.appRate ? "#003DFF" : "#111827" }}>
-                  {appRate} <span className="slider-unit">apps/mo</span>
-                </span>
-              </div>
-              <input
-                type="range" min={10} max={120} value={appRate}
-                onChange={(e) => setAppRate(Number(e.target.value))}
-                style={{
-                  width: "100%", height: 6, appearance: "none" as const,
-                  background: `linear-gradient(to right, #003DFF ${((appRate - 10) / 110) * 100}%, #e5e7eb ${((appRate - 10) / 110) * 100}%)`,
-                  borderRadius: 3, outline: "none", cursor: "pointer",
-                }}
-              />
-              <div className="slider-range">
-                <span>10/mo</span>
-                <span style={{ color: "#6b7280", fontWeight: 600 }}>Actual: {rates.appRate}/mo</span>
-                <span>120/mo</span>
-              </div>
-              <div
-                className="slider-result"
-                style={{ background: proj.appRunway < 3 ? "#fef2f2" : proj.appRunway < 6 ? "#fffbeb" : "#f0fdf4" }}
-              >
-                <span style={{ color: proj.appRunway < 3 ? "#dc2626" : proj.appRunway < 6 ? "#d97706" : "#16a34a", fontWeight: 600 }}>
-                  Ceiling in {proj.appRunway > 20 ? ">12" : proj.appRunway.toFixed(1)} months → {proj.appHit}
-                </span>
-              </div>
-            </div>
-            <div className="slider-group">
-              <div className="slider-head">
-                <span className="slider-label">Record Growth Rate</span>
-                <span className="slider-val" style={{ color: recRate !== rates.recRate ? "#003DFF" : "#111827" }}>
-                  {fmt(recRate)} <span className="slider-unit">records/mo</span>
-                </span>
-              </div>
-              <input
-                type="range" min={500000} max={3000000} step={100000} value={recRate}
-                onChange={(e) => setRecRate(Number(e.target.value))}
-                style={{
-                  width: "100%", height: 6, appearance: "none" as const,
-                  background: `linear-gradient(to right, #8b5cf6 ${((recRate - 500000) / 2500000) * 100}%, #e5e7eb ${((recRate - 500000) / 2500000) * 100}%)`,
-                  borderRadius: 3, outline: "none", cursor: "pointer",
-                }}
-              />
-              <div className="slider-range">
-                <span>500K/mo</span>
-                <span style={{ color: "#6b7280", fontWeight: 600 }}>Actual: {fmt(rates.recRate)}/mo</span>
-                <span>3M/mo</span>
-              </div>
-              <div
-                className="slider-result"
-                style={{ background: proj.recRunway < 3 ? "#fef2f2" : proj.recRunway < 6 ? "#fffbeb" : "#f0fdf4" }}
-              >
-                <span style={{ color: proj.recRunway < 3 ? "#dc2626" : proj.recRunway < 6 ? "#d97706" : "#16a34a", fontWeight: 600 }}>
-                  Ceiling in {proj.recRunway > 20 ? ">12" : proj.recRunway.toFixed(1)} months → {proj.recHit}
-                </span>
-              </div>
-            </div>
-          </div>
-          {isModified && (
-            <div style={{ marginTop: 14, textAlign: "center" }}>
-              <button
-                className="reset-btn"
-                onClick={() => { setAppRate(rates.appRate); setRecRate(rates.recRate); }}
-              >
-                Reset to actual rates
-              </button>
-            </div>
-          )}
+        <div className="sec-t">App Types (by naming convention)</div>
+        <div className="card" style={{ padding: 0, overflow: "hidden" }}>
+          <table>
+            <thead>
+              <tr>
+                <th>Tag</th><th style={{ textAlign: "right" }}>Apps</th><th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              {[
+                { dot: "#003DFF", tag: "Base", apps: latest.tagBase, desc: "Production AEM content indices" },
+                { dot: "#d97706", tag: "nonprod-shared", apps: latest.tagNonprodShared, desc: "Non-production environments" },
+                { dot: "#7c3aed", tag: "cmprd-genstudio", apps: latest.tagCmprdGenstudio, desc: "GenStudio for Performance Marketing" },
+                ...(latest.tagCmstgGenstudio > 0 ? [{ dot: "#a78bfa", tag: "cmstg-genstudio", apps: latest.tagCmstgGenstudio, desc: "GenStudio staging" }] : []),
+                ...(latest.tagLegacy > 0 ? [{ dot: "#7778AF", tag: "Legacy", apps: latest.tagLegacy, desc: "Pre-Cloud Manager apps" }] : []),
+              ].map((row, i) => (
+                <tr key={i}>
+                  <td><span style={{ display: "inline-block", width: 8, height: 8, borderRadius: 2, background: row.dot, marginRight: 8, verticalAlign: "middle" }} />{row.tag}</td>
+                  <td style={{ textAlign: "right", fontWeight: 600 }}>{row.apps.toLocaleString()}</td>
+                  <td style={{ color: "#7778AF" }}>{row.desc}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       </div>
 
       <div className="sec">
         <div className="sec-t">Partnership at a Glance</div>
         <div className="flex">
-          <KPI label="Active Child Apps" value={latest.apps.toLocaleString()} sub={`${latest.prod} prod · ${latest.nonprod} nonprod`} />
-          <KPI label="Current Records" value={fmt(latest.records)} sub={`${(latest.records / CONTRACT.recordsQuota * 100).toFixed(0)}% of 50M quota`} />
-          <KPI label="Zombie Apps" value={latest.zombie.toString()} sub="Provisioned, never used" color="#dc2626" />
-          <KPI label="Concentration" value={latest.c10r + "%"} sub="Top 10 hold this % of records" color={latest.c10r > 80 ? "#d97706" : "#16a34a"} />
+          <KPI label="Top App Share" value={topAppShare + "%"} sub={`1 app holds ${fmt(topApp?.records ?? 0)} of ${fmt(latest.records)}`} color="#d97706"
+            sparkline={months.slice(-6).map(m => m.c10r)} sparkColor="#d97706" />
+          <KPI label="Empty Index Apps" value={emptyIndexApps.toString()} sub={`${emptyIndexPct}% of apps — searches w/o data`} color="#dc2626"
+            sparkline={months.slice(-6).map(m => m.searchNoRecords)} sparkColor="#dc2626" />
+          <KPI label="Zombie Apps" value={latest.zombie.toString()} sub={`${zombiePct}% of quota, zero activity`} color="#dc2626"
+            sparkline={months.slice(-6).map(m => m.zombie)} sparkColor="#dc2626" />
         </div>
       </div>
     </>
@@ -606,101 +743,10 @@ function DashboardInner({
     </>
   );
 
-  // ═══════ TAB 3: PORTFOLIO HEALTH ═══════
+  // ═══════ TAB 3: PORTFOLIO DETAIL ═══════
   const Tab3 = () => {
-    const total = latest.prod + latest.nonprod;
-    const prodPct = total > 0 ? ((latest.prod / total) * 100).toFixed(0) : "0";
-    const npPct = total > 0 ? ((latest.nonprod / total) * 100).toFixed(0) : "0";
-
-    const engColors = { ab: "#16a34a", rns: "#d97706", snr: "#8b5cf6", z: "#dc2626" };
-    const engData = [
-      { name: "Active", value: latest.activeBoth, color: engColors.ab },
-      { name: "Records only", value: latest.recordsNoSearch, color: engColors.rns },
-      { name: "Search only", value: latest.searchNoRecords, color: engColors.snr },
-      { name: "Zombie", value: latest.zombie, color: engColors.z },
-    ];
-    const engLegend = [
-      { c: engColors.ab, l: "Active", n: latest.activeBoth, d: "Records and searches. Working as intended." },
-      { c: engColors.rns, l: "Records only", n: latest.recordsNoSearch, d: "Content loaded, no one is searching." },
-      { c: engColors.snr, l: "Search only", n: latest.searchNoRecords, d: "Searches firing, no content indexed." },
-      { c: engColors.z, l: "Zombie", n: latest.zombie, d: "Created but never used. Zero activity." },
-    ];
-
-    const topApp = topByRecords[0];
-    const topAppShare = topApp ? ((topApp.records / latest.records) * 100).toFixed(0) : "0";
-    const top5Records = topByRecords.slice(0, 5).reduce((a, b) => a + b.records, 0);
-    const top5Pct = latest.records > 0 ? ((top5Records / latest.records) * 100).toFixed(0) : "0";
-
     return (
       <>
-        <div className="sec">
-          <div className="sec-t">Key Insights</div>
-          <div className="flex">
-            <KPI label="App #1 Record Share" value={topAppShare + "%"} sub={`${topApp?.id} holds ${fmt(topApp?.records ?? 0)} of ${fmt(latest.records)}`} color="#dc2626" />
-            <KPI label="Top 5 Concentration" value={top5Pct + "%"} sub={`5 apps hold ${top5Pct}% of all records`} color="#d97706" />
-            <KPI label="Non-Production Apps" value={latest.nonprod.toString()} sub={`${npPct}% of all apps — consuming quota`} color="#d97706" />
-            <KPI label="Zombie Apps" value={latest.zombie.toString()} sub={`${((latest.zombie / CONTRACT.appsQuota) * 100).toFixed(0)}% of quota wasted`} color="#dc2626" />
-          </div>
-        </div>
-
-        <div className="sec">
-          <div className="sec-t">Environment Split</div>
-          <div className="card" style={{ padding: "14px 20px" }}>
-            <div className="env-bar">
-              <div style={{ width: `${prodPct}%`, background: "#003DFF" }}>{prodPct}%</div>
-              <div style={{ width: `${npPct}%`, background: "#d97706" }}>{npPct}%</div>
-            </div>
-            <div className="env-labels">
-              <span style={{ color: "#003DFF", fontWeight: 600 }}>Production — {latest.prod.toLocaleString()}</span>
-              <span style={{ color: "#d97706", fontWeight: 600 }}>Non-Production — {latest.nonprod}</span>
-            </div>
-          </div>
-        </div>
-
-        <div className="sec">
-          <div className="sec-t">Engagement Health</div>
-          <div className="card" style={{ padding: 0, overflow: "hidden" }}>
-            <div className="engage-panel">
-              <div className="engage-left">
-                <div className="chart-title">Trend Over Time</div>
-                <ResponsiveContainer width="100%" height={240}>
-                  <LineChart data={chartData} margin={{ top: 5, right: 10, bottom: 5, left: 10 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" />
-                    <XAxis dataKey="m" tick={{ fill: "#9ca3af", fontSize: 11 }} interval={2} />
-                    <YAxis tick={{ fill: "#9ca3af", fontSize: 11 }} />
-                    <Tooltip content={<ChartTooltip />} />
-                    <Line dataKey="activeBoth" stroke={engColors.ab} strokeWidth={2} dot={false} name="Active" />
-                    <Line dataKey="recordsNoSearch" stroke={engColors.rns} strokeWidth={2} dot={false} name="Records only" />
-                    <Line dataKey="searchNoRecords" stroke={engColors.snr} strokeWidth={2} dot={false} name="Search only" />
-                    <Line dataKey="zombie" stroke={engColors.z} strokeWidth={2} dot={false} name="Zombie" />
-                  </LineChart>
-                </ResponsiveContainer>
-              </div>
-              <div className="engage-right">
-                <div className="chart-title" style={{ textAlign: "center" }}>Current Snapshot</div>
-                <ResponsiveContainer width="100%" height={130}>
-                  <PieChart>
-                    <Pie data={engData} cx="50%" cy="50%" innerRadius={36} outerRadius={55} dataKey="value" strokeWidth={0}>
-                      {engData.map((e, i) => <Cell key={i} fill={e.color} />)}
-                    </Pie>
-                  </PieChart>
-                </ResponsiveContainer>
-                <div style={{ marginTop: 10 }}>
-                  {engLegend.map((l, i) => (
-                    <div key={i} className="engage-legend">
-                      <div className="engage-dot" style={{ background: l.c }} />
-                      <div>
-                        <div className="engage-leg-title">{l.l} ({l.n})</div>
-                        <div className="engage-leg-desc">{l.d}</div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
         <div className="sec">
           <div className="sec-t">Top 10 — By Records</div>
           <div className="card">

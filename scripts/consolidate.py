@@ -244,6 +244,21 @@ def process_csv(csv_info):
     active = sum(1 for a in apps.values() if not a['deleted'])
     deleted = sum(1 for a in apps.values() if a['deleted'])
 
+    # Naming tag classification (within the production parent's children)
+    def name_tag(name):
+        nl = name.lower()
+        if '-nonprod-shared' in nl: return 'nonprod-shared'
+        if '-cmprd-genstudio' in nl: return 'cmprd-genstudio'
+        if '-cmstg-genstudio' in nl: return 'cmstg-genstudio'
+        if name.startswith('cm-'): return 'base'
+        if name.startswith('gs-'): return 'genstudio'
+        return 'legacy'
+
+    tag_counts = defaultdict(int)
+    for a in apps.values():
+        tag_counts[name_tag(a['name'])] += 1
+
+    # Legacy segmentation (kept for backward compatibility)
     prod = sum(1 for a in apps.values() if a['name'].startswith('cm-') and 'nonprod' not in a['name'].lower())
     nonprod = sum(1 for a in apps.values() if 'nonprod' in a['name'].lower())
     genstudio = sum(1 for a in apps.values() if a['name'].startswith('gs-'))
@@ -317,27 +332,28 @@ def process_csv(csv_info):
         for aid, a in sorted(apps.items(), key=lambda x: x[1]['total_searches'], reverse=True)[:15]
     ]
 
-    # All apps summary for per-child MoM (top 30 by records + top 30 by searches, deduplicated)
-    top_ids = set()
+    # ALL apps with engagement classification — enables interactive drill-down
+    def engagement_class(a):
+        if a['max_records'] == 0 and a['total_searches'] == 0:
+            return 'zombie'
+        if a['max_records'] > 0 and a['total_searches'] == 0:
+            return 'records_only'
+        if a['max_records'] == 0 and a['total_searches'] > 0:
+            return 'search_only'
+        return 'active'
+
     all_app_detail = []
-    for aid, a in sorted(apps.items(), key=lambda x: x[1]['latest_records'], reverse=True)[:30]:
-        if aid not in top_ids:
-            top_ids.add(aid)
-            all_app_detail.append({
-                'id': aid, 'name': a['name'][:40], 'env': env_tag(a['name']),
-                'records': a['latest_records'], 'max_records': a['max_records'],
-                'searches': a['total_searches'], 'max_rsum': a['max_rsum'],
-                'created': a['created'],
-            })
-    for aid, a in sorted(apps.items(), key=lambda x: x[1]['total_searches'], reverse=True)[:30]:
-        if aid not in top_ids:
-            top_ids.add(aid)
-            all_app_detail.append({
-                'id': aid, 'name': a['name'][:40], 'env': env_tag(a['name']),
-                'records': a['latest_records'], 'max_records': a['max_records'],
-                'searches': a['total_searches'], 'max_rsum': a['max_rsum'],
-                'created': a['created'],
-            })
+    for aid, a in sorted(apps.items(), key=lambda x: x[1]['latest_records'], reverse=True):
+        if a['deleted']:
+            continue  # skip deleted apps
+        all_app_detail.append({
+            'id': aid, 'name': a['name'][:40], 'env': env_tag(a['name']),
+            'tag': name_tag(a['name']),
+            'records': a['latest_records'], 'max_records': a['max_records'],
+            'searches': a['total_searches'], 'max_rsum': a['max_rsum'],
+            'created': a['created'],
+            'status': engagement_class(a),
+        })
 
     # App age distribution
     age = {'0_3mo': 0, '3_6mo': 0, '6_12mo': 0, '12mo_plus': 0, 'unknown': 0}
@@ -371,6 +387,14 @@ def process_csv(csv_info):
             'nonprod': nonprod,
             'genstudio': genstudio,
             'legacy': legacy,
+        },
+        'name_tags': {
+            'base': tag_counts.get('base', 0),
+            'nonprod_shared': tag_counts.get('nonprod-shared', 0),
+            'cmprd_genstudio': tag_counts.get('cmprd-genstudio', 0),
+            'cmstg_genstudio': tag_counts.get('cmstg-genstudio', 0),
+            'genstudio': tag_counts.get('genstudio', 0),
+            'legacy': tag_counts.get('legacy', 0),
         },
         'engagement': {
             'zombie': zombie,
@@ -518,6 +542,13 @@ def main():
     if not snapshots:
         print("No data processed.")
         sys.exit(1)
+
+    # Trim app_detail from older snapshots to keep JSON size manageable
+    # Full detail only on the latest 2 snapshots (for MoM delta), top 30 for the rest
+    for i, snap in enumerate(snapshots):
+        if i < len(snapshots) - 2:
+            # Keep only top 30 by records for older snapshots
+            snap['app_detail'] = sorted(snap['app_detail'], key=lambda x: x['records'], reverse=True)[:30]
 
     # Build outputs
     monthly = compute_monthly(snapshots)

@@ -25,6 +25,14 @@ export interface WeeklySnapshot {
     top10_records_pct: number;
     top10_searches_pct: number;
   };
+  name_tags?: {
+    base: number;
+    nonprod_shared: number;
+    cmprd_genstudio: number;
+    cmstg_genstudio: number;
+    genstudio: number;
+    legacy: number;
+  };
   environment: {
     prod_apps: number;
     prod_records: number;
@@ -61,11 +69,13 @@ export interface AppDetail {
   id: string;
   name: string;
   env: string;
+  tag?: string;
   records: number;
   max_records: number;
   searches: number;
   max_rsum: number;
   created: string;
+  status?: "active" | "records_only" | "search_only" | "zombie";
 }
 
 export interface MonthlySummary {
@@ -127,6 +137,12 @@ export interface WeekPoint {
   prodSearches: number;
   nonprodRecords: number;
   nonprodSearches: number;
+  // Naming tag counts
+  tagBase: number;
+  tagNonprodShared: number;
+  tagCmprdGenstudio: number;
+  tagCmstgGenstudio: number;
+  tagLegacy: number;
 }
 
 // Monthly data point
@@ -150,6 +166,11 @@ export interface MonthPoint {
   prodSearches: number;
   nonprodRecords: number;
   nonprodSearches: number;
+  tagBase: number;
+  tagNonprodShared: number;
+  tagCmprdGenstudio: number;
+  tagCmstgGenstudio: number;
+  tagLegacy: number;
 }
 
 export interface AppDetailWithDelta extends AppDetail {
@@ -158,6 +179,23 @@ export interface AppDetailWithDelta extends AppDetail {
   recDelta: number;
   searchDelta: number;
   isNew: boolean;
+}
+
+export interface BillingParent {
+  parent_id: string;
+  billing_period_start: string;
+  billing_period_end: string;
+  billable_search_requests: number;
+  billable_records: number;
+  period_end_live_apps: number;
+  deleted_in_period_apps: number;
+  provisioned_apps: number;
+}
+
+export interface BillingData {
+  source: string;
+  prod: BillingParent | null;
+  staging: BillingParent | null;
 }
 
 export interface DashboardData {
@@ -174,4 +212,5 @@ export interface DashboardData {
     recRate: number;
   };
   prevMonth?: string;
+  billing: BillingData | null;
 }
