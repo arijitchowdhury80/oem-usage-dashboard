@@ -1,11 +1,11 @@
 {
   "_metadata": {
-    "generated_at": "2026-04-04T17:12:24.689972",
+    "generated_at": "2026-04-06T10:41:42.770077",
     "root_dir": "/Users/arijitchowdhury/Library/CloudStorage/GoogleDrive-arijit.chowdhury@algolia.com/My Drive/Partners/Adobe/Data/Reports Sent to Adobe",
-    "files_found": 94,
-    "files_processed": 93,
+    "files_found": 95,
+    "files_processed": 94,
     "date_range_start": "2024-07-22",
-    "date_range_end": "2026-03-31"
+    "date_range_end": "2026-04-06"
   },
   "weekly_snapshots": [
     {
@@ -72123,6 +72123,868 @@
           "created": "2024-07-12"
         }
       ]
+    },
+    {
+      "report_date": "2026-04-06",
+      "report_month": "2026-04",
+      "csv_rows": 223174,
+      "totals": {
+        "apps": 1529,
+        "active_apps": 1432,
+        "deleted_apps": 97,
+        "latest_records": 40242030,
+        "total_searches": 16515761
+      },
+      "segmentation": {
+        "prod": 1153,
+        "nonprod": 371,
+        "genstudio": 0,
+        "legacy": 5
+      },
+      "engagement": {
+        "zombie": 315,
+        "records_no_search": 158,
+        "search_no_records": 121,
+        "active_both": 935
+      },
+      "concentration": {
+        "top10_records_pct": 71.4,
+        "top10_searches_pct": 66.7
+      },
+      "environment": {
+        "prod_apps": 1153,
+        "prod_records": 34229181,
+        "prod_searches": 14361203,
+        "nonprod_apps": 371,
+        "nonprod_records": 2098838,
+        "nonprod_searches": 368592,
+        "legacy_apps": 5,
+        "legacy_records": 3914011,
+        "legacy_searches": 1785966
+      },
+      "age_distribution": {
+        "0_3mo": 277,
+        "3_6mo": 183,
+        "6_12mo": 347,
+        "12mo_plus": 722,
+        "unknown": 0
+      },
+      "top15_by_records": [
+        {
+          "id": "1CMA1NNM6L",
+          "name": "cm-p100417-e924025",
+          "records": 14517565,
+          "searches": 3,
+          "created": "2024-07-16",
+          "env": "prod"
+        },
+        {
+          "id": "OEOILPJ8JM",
+          "name": "AEM Assets POC",
+          "records": 3620770,
+          "searches": 0,
+          "created": "2022-05-24",
+          "env": "legacy"
+        },
+        {
+          "id": "089WMAWO74",
+          "name": "cm-p178262-e1909084",
+          "records": 2275140,
+          "searches": 19,
+          "created": "2025-12-03",
+          "env": "prod"
+        },
+        {
+          "id": "M4T2C8PMV4",
+          "name": "cm-p129658-e1278735",
+          "records": 1975375,
+          "searches": 896,
+          "created": "2024-09-11",
+          "env": "prod"
+        },
+        {
+          "id": "IW2CKGBKX8",
+          "name": "cm-p149610-e1557926",
+          "records": 1716463,
+          "searches": 13,
+          "created": "2025-02-19",
+          "env": "prod"
+        },
+        {
+          "id": "1UHCRD89YX",
+          "name": "cm-p103260-e1030285",
+          "records": 1253606,
+          "searches": 64460,
+          "created": "2025-04-17",
+          "env": "prod"
+        },
+        {
+          "id": "OFIC6T2SX8",
+          "name": "cm-p31453-e106883",
+          "records": 1086337,
+          "searches": 32058,
+          "created": "2024-07-18",
+          "env": "prod"
+        },
+        {
+          "id": "5ODS6OOG3J",
+          "name": "cm-p163668-e1757739-nonprod-shared",
+          "records": 888094,
+          "searches": 15591,
+          "created": "2025-08-18",
+          "env": "nonprod"
+        },
+        {
+          "id": "SB9Q79LEAL",
+          "name": "cm-p57322-e631381",
+          "records": 736245,
+          "searches": 727259,
+          "created": "2025-06-25",
+          "env": "prod"
+        },
+        {
+          "id": "MNCOVT9RLY",
+          "name": "cm-p135331-e1368299",
+          "records": 675312,
+          "searches": 3331,
+          "created": "2025-06-26",
+          "env": "prod"
+        },
+        {
+          "id": "1B012ENVG9",
+          "name": "cm-p151941-e1578500",
+          "records": 671454,
+          "searches": 2637,
+          "created": "2024-07-16",
+          "env": "prod"
+        },
+        {
+          "id": "N7K5RYW0PE",
+          "name": "cm-p64403-e609778",
+          "records": 667245,
+          "searches": 21843,
+          "created": "2025-07-29",
+          "env": "prod"
+        },
+        {
+          "id": "7O2HNE3SBZ",
+          "name": "cm-p138004-e1400660",
+          "records": 635011,
+          "searches": 0,
+          "created": "2025-07-11",
+          "env": "prod"
+        },
+        {
+          "id": "IKRPY86K23",
+          "name": "cm-p17257-e44095",
+          "records": 492949,
+          "searches": 254225,
+          "created": "2024-09-03",
+          "env": "prod"
+        },
+        {
+          "id": "H6PAJ8513P",
+          "name": "cm-p145170-e1496182",
+          "records": 450981,
+          "searches": 9532,
+          "created": "2024-11-27",
+          "env": "prod"
+        }
+      ],
+      "top15_by_searches": [
+        {
+          "id": "GTH4AUT0Y6",
+          "name": "cm-p150705-e1552975",
+          "records": 884,
+          "searches": 5738340,
+          "created": "2025-01-08",
+          "env": "prod"
+        },
+        {
+          "id": "RM23XD8STN",
+          "name": "Adobe-GMO_prod",
+          "records": 226456,
+          "searches": 1707862,
+          "created": "2023-11-02",
+          "env": "legacy"
+        },
+        {
+          "id": "SB9Q79LEAL",
+          "name": "cm-p57322-e631381",
+          "records": 736245,
+          "searches": 727259,
+          "created": "2025-06-25",
+          "env": "prod"
+        },
+        {
+          "id": "UFRITNXAF9",
+          "name": "cm-p129105-e1259847",
+          "records": 67260,
+          "searches": 686339,
+          "created": "2024-07-02",
+          "env": "prod"
+        },
+        {
+          "id": "PT2RT9NXP7",
+          "name": "cm-p139705-e1420120 - cmprd - GenSt",
+          "records": 23456,
+          "searches": 467059,
+          "created": "2024-08-09",
+          "env": "prod"
+        },
+        {
+          "id": "Y91FGX4CZG",
+          "name": "cm-p121952-e1214068",
+          "records": 34445,
+          "searches": 391846,
+          "created": "2024-09-19",
+          "env": "prod"
+        },
+        {
+          "id": "9WWGVHZ5OR",
+          "name": "cm-p141757-e1451207",
+          "records": 492,
+          "searches": 382454,
+          "created": "2024-07-10",
+          "env": "prod"
+        },
+        {
+          "id": "B589QLNHHD",
+          "name": "cm-p142211-e1500691",
+          "records": 1422,
+          "searches": 356496,
+          "created": "2024-07-13",
+          "env": "prod"
+        },
+        {
+          "id": "73V0A5ID90",
+          "name": "cm-p142544-e1463488",
+          "records": 11615,
+          "searches": 284207,
+          "created": "2024-07-11",
+          "env": "prod"
+        },
+        {
+          "id": "KJBOO27CTY",
+          "name": "cm-p140854-e1441220",
+          "records": 8552,
+          "searches": 270537,
+          "created": "2024-09-09",
+          "env": "prod"
+        },
+        {
+          "id": "DYIP6GIETF",
+          "name": "cm-p153411-e1611039",
+          "records": 27121,
+          "searches": 255931,
+          "created": "2024-09-26",
+          "env": "prod"
+        },
+        {
+          "id": "IKRPY86K23",
+          "name": "cm-p17257-e44095",
+          "records": 492949,
+          "searches": 254225,
+          "created": "2024-09-03",
+          "env": "prod"
+        },
+        {
+          "id": "8ERYRF0QPB",
+          "name": "cm-p15699-e36870",
+          "records": 37199,
+          "searches": 190331,
+          "created": "2024-06-28",
+          "env": "prod"
+        },
+        {
+          "id": "SGGPFVW1ME",
+          "name": "cm-p118565-e1156303",
+          "records": 45902,
+          "searches": 178520,
+          "created": "2024-07-18",
+          "env": "prod"
+        },
+        {
+          "id": "LKZVGWZMAG",
+          "name": "cm-p137454-e1438138",
+          "records": 88823,
+          "searches": 153773,
+          "created": "2024-07-13",
+          "env": "prod"
+        }
+      ],
+      "app_detail": [
+        {
+          "id": "1CMA1NNM6L",
+          "name": "cm-p100417-e924025",
+          "env": "prod",
+          "records": 14517565,
+          "max_records": 14820660,
+          "searches": 3,
+          "max_rsum": 3,
+          "created": "2024-07-16"
+        },
+        {
+          "id": "OEOILPJ8JM",
+          "name": "AEM Assets POC",
+          "env": "legacy",
+          "records": 3620770,
+          "max_records": 3620786,
+          "searches": 0,
+          "max_rsum": 0,
+          "created": "2022-05-24"
+        },
+        {
+          "id": "089WMAWO74",
+          "name": "cm-p178262-e1909084",
+          "env": "prod",
+          "records": 2275140,
+          "max_records": 2276355,
+          "searches": 19,
+          "max_rsum": 19,
+          "created": "2025-12-03"
+        },
+        {
+          "id": "M4T2C8PMV4",
+          "name": "cm-p129658-e1278735",
+          "env": "prod",
+          "records": 1975375,
+          "max_records": 1975375,
+          "searches": 896,
+          "max_rsum": 896,
+          "created": "2024-09-11"
+        },
+        {
+          "id": "IW2CKGBKX8",
+          "name": "cm-p149610-e1557926",
+          "env": "prod",
+          "records": 1716463,
+          "max_records": 1716463,
+          "searches": 13,
+          "max_rsum": 13,
+          "created": "2025-02-19"
+        },
+        {
+          "id": "1UHCRD89YX",
+          "name": "cm-p103260-e1030285",
+          "env": "prod",
+          "records": 1253606,
+          "max_records": 1253606,
+          "searches": 64460,
+          "max_rsum": 64460,
+          "created": "2025-04-17"
+        },
+        {
+          "id": "OFIC6T2SX8",
+          "name": "cm-p31453-e106883",
+          "env": "prod",
+          "records": 1086337,
+          "max_records": 1086426,
+          "searches": 32058,
+          "max_rsum": 32058,
+          "created": "2024-07-18"
+        },
+        {
+          "id": "5ODS6OOG3J",
+          "name": "cm-p163668-e1757739-nonprod-shared",
+          "env": "nonprod",
+          "records": 888094,
+          "max_records": 888115,
+          "searches": 15591,
+          "max_rsum": 15591,
+          "created": "2025-08-18"
+        },
+        {
+          "id": "SB9Q79LEAL",
+          "name": "cm-p57322-e631381",
+          "env": "prod",
+          "records": 736245,
+          "max_records": 736292,
+          "searches": 727259,
+          "max_rsum": 727259,
+          "created": "2025-06-25"
+        },
+        {
+          "id": "MNCOVT9RLY",
+          "name": "cm-p135331-e1368299",
+          "env": "prod",
+          "records": 675312,
+          "max_records": 675312,
+          "searches": 3331,
+          "max_rsum": 3331,
+          "created": "2025-06-26"
+        },
+        {
+          "id": "1B012ENVG9",
+          "name": "cm-p151941-e1578500",
+          "env": "prod",
+          "records": 671454,
+          "max_records": 671483,
+          "searches": 2637,
+          "max_rsum": 2637,
+          "created": "2024-07-16"
+        },
+        {
+          "id": "N7K5RYW0PE",
+          "name": "cm-p64403-e609778",
+          "env": "prod",
+          "records": 667245,
+          "max_records": 673594,
+          "searches": 21843,
+          "max_rsum": 21843,
+          "created": "2025-07-29"
+        },
+        {
+          "id": "7O2HNE3SBZ",
+          "name": "cm-p138004-e1400660",
+          "env": "prod",
+          "records": 635011,
+          "max_records": 684606,
+          "searches": 0,
+          "max_rsum": 0,
+          "created": "2025-07-11"
+        },
+        {
+          "id": "IKRPY86K23",
+          "name": "cm-p17257-e44095",
+          "env": "prod",
+          "records": 492949,
+          "max_records": 512429,
+          "searches": 254225,
+          "max_rsum": 254225,
+          "created": "2024-09-03"
+        },
+        {
+          "id": "H6PAJ8513P",
+          "name": "cm-p145170-e1496182",
+          "env": "prod",
+          "records": 450981,
+          "max_records": 450982,
+          "searches": 9532,
+          "max_rsum": 9532,
+          "created": "2024-11-27"
+        },
+        {
+          "id": "JF4VPGJMPY",
+          "name": "cm-p92868-e889970",
+          "env": "prod",
+          "records": 423367,
+          "max_records": 423368,
+          "searches": 1525,
+          "max_rsum": 1525,
+          "created": "2024-07-17"
+        },
+        {
+          "id": "0FUUWR3VNF",
+          "name": "cm-p154363-e1620826",
+          "env": "prod",
+          "records": 333630,
+          "max_records": 334346,
+          "searches": 1,
+          "max_rsum": 1,
+          "created": "2024-11-26"
+        },
+        {
+          "id": "Q1NIF9CKEC",
+          "name": "cm-p107395-e1006599",
+          "env": "prod",
+          "records": 328142,
+          "max_records": 370787,
+          "searches": 18204,
+          "max_rsum": 18204,
+          "created": "2024-07-02"
+        },
+        {
+          "id": "KLDY3JGW1K",
+          "name": "cm-p105602-e1559857",
+          "env": "prod",
+          "records": 280144,
+          "max_records": 281273,
+          "searches": 250,
+          "max_rsum": 250,
+          "created": "2024-12-05"
+        },
+        {
+          "id": "2SJNMZCU7L",
+          "name": "cm-p121852-e1208888",
+          "env": "prod",
+          "records": 258007,
+          "max_records": 328154,
+          "searches": 1600,
+          "max_rsum": 1600,
+          "created": "2024-07-08"
+        },
+        {
+          "id": "56R8GGQZ20",
+          "name": "cm-p153342-e1636008",
+          "env": "prod",
+          "records": 255371,
+          "max_records": 255371,
+          "searches": 35466,
+          "max_rsum": 35466,
+          "created": "2025-04-11"
+        },
+        {
+          "id": "U5DOTKRJCT",
+          "name": "cm-p163668-e1757693",
+          "env": "prod",
+          "records": 250309,
+          "max_records": 250309,
+          "searches": 4751,
+          "max_rsum": 4751,
+          "created": "2025-08-18"
+        },
+        {
+          "id": "PZ9D87WX0S",
+          "name": "cm-p132802-e1287812",
+          "env": "prod",
+          "records": 245331,
+          "max_records": 245331,
+          "searches": 98,
+          "max_rsum": 98,
+          "created": "2024-03-14"
+        },
+        {
+          "id": "RM23XD8STN",
+          "name": "Adobe-GMO_prod",
+          "env": "legacy",
+          "records": 226456,
+          "max_records": 227316,
+          "searches": 1707862,
+          "max_rsum": 1707862,
+          "created": "2023-11-02"
+        },
+        {
+          "id": "4U0CXJN4NY",
+          "name": "cm-p161893-e1740704-nonprod-shared",
+          "env": "nonprod",
+          "records": 225594,
+          "max_records": 227326,
+          "searches": 4588,
+          "max_rsum": 4588,
+          "created": "2025-10-31"
+        },
+        {
+          "id": "NYCI7NR0FR",
+          "name": "cm-p138888-e1411788",
+          "env": "prod",
+          "records": 210896,
+          "max_records": 210896,
+          "searches": 1,
+          "max_rsum": 1,
+          "created": "2024-07-31"
+        },
+        {
+          "id": "AW8PZX66Q8",
+          "name": "cm-p57322-e631431-nonprod-shared",
+          "env": "nonprod",
+          "records": 194790,
+          "max_records": 194790,
+          "searches": 11410,
+          "max_rsum": 11410,
+          "created": "2025-06-27"
+        },
+        {
+          "id": "C2IH7NN6MG",
+          "name": "cm-p146752-e1509285",
+          "env": "prod",
+          "records": 192136,
+          "max_records": 193724,
+          "searches": 9,
+          "max_rsum": 9,
+          "created": "2024-07-14"
+        },
+        {
+          "id": "FENDKTX353",
+          "name": "cm-p131677-e1282681",
+          "env": "prod",
+          "records": 185533,
+          "max_records": 185536,
+          "searches": 349,
+          "max_rsum": 349,
+          "created": "2024-07-10"
+        },
+        {
+          "id": "UVIITDC488",
+          "name": "cm-p154854-e1658809",
+          "env": "prod",
+          "records": 179115,
+          "max_records": 179119,
+          "searches": 1407,
+          "max_rsum": 1407,
+          "created": "2025-06-27"
+        },
+        {
+          "id": "GTH4AUT0Y6",
+          "name": "cm-p150705-e1552975",
+          "env": "prod",
+          "records": 884,
+          "max_records": 12807,
+          "searches": 5738340,
+          "max_rsum": 5738340,
+          "created": "2025-01-08"
+        },
+        {
+          "id": "UFRITNXAF9",
+          "name": "cm-p129105-e1259847",
+          "env": "prod",
+          "records": 67260,
+          "max_records": 100319,
+          "searches": 686339,
+          "max_rsum": 686339,
+          "created": "2024-07-02"
+        },
+        {
+          "id": "PT2RT9NXP7",
+          "name": "cm-p139705-e1420120 - cmprd - GenStudio ",
+          "env": "prod",
+          "records": 23456,
+          "max_records": 24380,
+          "searches": 467059,
+          "max_rsum": 467059,
+          "created": "2024-08-09"
+        },
+        {
+          "id": "Y91FGX4CZG",
+          "name": "cm-p121952-e1214068",
+          "env": "prod",
+          "records": 34445,
+          "max_records": 34445,
+          "searches": 391846,
+          "max_rsum": 391846,
+          "created": "2024-09-19"
+        },
+        {
+          "id": "9WWGVHZ5OR",
+          "name": "cm-p141757-e1451207",
+          "env": "prod",
+          "records": 492,
+          "max_records": 492,
+          "searches": 382454,
+          "max_rsum": 382454,
+          "created": "2024-07-10"
+        },
+        {
+          "id": "B589QLNHHD",
+          "name": "cm-p142211-e1500691",
+          "env": "prod",
+          "records": 1422,
+          "max_records": 1523,
+          "searches": 356496,
+          "max_rsum": 356496,
+          "created": "2024-07-13"
+        },
+        {
+          "id": "73V0A5ID90",
+          "name": "cm-p142544-e1463488",
+          "env": "prod",
+          "records": 11615,
+          "max_records": 11615,
+          "searches": 284207,
+          "max_rsum": 284207,
+          "created": "2024-07-11"
+        },
+        {
+          "id": "KJBOO27CTY",
+          "name": "cm-p140854-e1441220",
+          "env": "prod",
+          "records": 8552,
+          "max_records": 8554,
+          "searches": 270537,
+          "max_rsum": 270537,
+          "created": "2024-09-09"
+        },
+        {
+          "id": "DYIP6GIETF",
+          "name": "cm-p153411-e1611039",
+          "env": "prod",
+          "records": 27121,
+          "max_records": 27121,
+          "searches": 255931,
+          "max_rsum": 255931,
+          "created": "2024-09-26"
+        },
+        {
+          "id": "8ERYRF0QPB",
+          "name": "cm-p15699-e36870",
+          "env": "prod",
+          "records": 37199,
+          "max_records": 37288,
+          "searches": 190331,
+          "max_rsum": 190331,
+          "created": "2024-06-28"
+        },
+        {
+          "id": "SGGPFVW1ME",
+          "name": "cm-p118565-e1156303",
+          "env": "prod",
+          "records": 45902,
+          "max_records": 45903,
+          "searches": 178520,
+          "max_rsum": 178520,
+          "created": "2024-07-18"
+        },
+        {
+          "id": "LKZVGWZMAG",
+          "name": "cm-p137454-e1438138",
+          "env": "prod",
+          "records": 88823,
+          "max_records": 88851,
+          "searches": 153773,
+          "max_rsum": 153773,
+          "created": "2024-07-13"
+        },
+        {
+          "id": "U03EHCL4FJ",
+          "name": "cm-p140454-e1433323",
+          "env": "prod",
+          "records": 6698,
+          "max_records": 6698,
+          "searches": 150833,
+          "max_rsum": 150833,
+          "created": "2024-08-28"
+        },
+        {
+          "id": "5H3LQY5XNN",
+          "name": "cm-p160162-e1749154",
+          "env": "prod",
+          "records": 16573,
+          "max_records": 16573,
+          "searches": 125589,
+          "max_rsum": 125589,
+          "created": "2025-08-05"
+        },
+        {
+          "id": "D12VD6B4UP",
+          "name": "cm-p140377-e1434145",
+          "env": "prod",
+          "records": 13277,
+          "max_records": 15308,
+          "searches": 116556,
+          "max_rsum": 116556,
+          "created": "2024-09-05"
+        },
+        {
+          "id": "0BZU8VYEDE",
+          "name": "cm-p137816-e1664799",
+          "env": "prod",
+          "records": 85955,
+          "max_records": 85955,
+          "searches": 112804,
+          "max_rsum": 112804,
+          "created": "2025-05-13"
+        },
+        {
+          "id": "XX9C0C59F9",
+          "name": "cm-p158133-e1684900",
+          "env": "prod",
+          "records": 2079,
+          "max_records": 2158,
+          "searches": 90907,
+          "max_rsum": 90907,
+          "created": "2024-12-02"
+        },
+        {
+          "id": "SM6Z9AXMD7",
+          "name": "cm-p166960-e1792993",
+          "env": "prod",
+          "records": 35198,
+          "max_records": 35236,
+          "searches": 84928,
+          "max_rsum": 84928,
+          "created": "2025-09-17"
+        },
+        {
+          "id": "V9DMKP5TS3",
+          "name": "cm-p139724-e1420402",
+          "env": "prod",
+          "records": 3644,
+          "max_records": 3644,
+          "searches": 84383,
+          "max_rsum": 84383,
+          "created": "2024-08-13"
+        },
+        {
+          "id": "TOSJ0DG4WN",
+          "name": "cm-p151561-e1583957",
+          "env": "prod",
+          "records": 9125,
+          "max_records": 9140,
+          "searches": 83091,
+          "max_rsum": 83091,
+          "created": "2024-12-05"
+        },
+        {
+          "id": "YB69FBRU10",
+          "name": "cm-p35255-e147963",
+          "env": "prod",
+          "records": 10941,
+          "max_records": 12340,
+          "searches": 81783,
+          "max_rsum": 81783,
+          "created": "2024-06-28"
+        },
+        {
+          "id": "0BJBWLDHP2",
+          "name": "Adobe-GMO",
+          "env": "legacy",
+          "records": 63267,
+          "max_records": 63267,
+          "searches": 78102,
+          "max_rsum": 78102,
+          "created": "2023-09-28"
+        },
+        {
+          "id": "MHV0RU0UE1",
+          "name": "cm-p45330-e208671",
+          "env": "prod",
+          "records": 50196,
+          "max_records": 50210,
+          "searches": 75697,
+          "max_rsum": 75697,
+          "created": "2024-08-13"
+        },
+        {
+          "id": "WQVCWADGH7",
+          "name": "cm-p153262-e1614718",
+          "env": "prod",
+          "records": 15547,
+          "max_records": 34597,
+          "searches": 73048,
+          "max_rsum": 73048,
+          "created": "2025-05-08"
+        },
+        {
+          "id": "QFNFRHOMPY",
+          "name": "cm-p97352-e901248",
+          "env": "prod",
+          "records": 20493,
+          "max_records": 20504,
+          "searches": 70933,
+          "max_rsum": 70933,
+          "created": "2024-09-16"
+        },
+        {
+          "id": "462RG3H2NH",
+          "name": "cm-p123810-e1223271",
+          "env": "prod",
+          "records": 10179,
+          "max_records": 11740,
+          "searches": 68011,
+          "max_rsum": 68011,
+          "created": "2024-06-28"
+        },
+        {
+          "id": "V1DAB7DKDS",
+          "name": "cm-p63456-e531327",
+          "env": "prod",
+          "records": 20348,
+          "max_records": 20359,
+          "searches": 66631,
+          "max_rsum": 66631,
+          "created": "2024-07-10"
+        }
+      ]
     }
   ],
   "monthly_summary": [
@@ -72524,6 +73386,25 @@
       "prod_searches": 13289732,
       "nonprod_records": 2073790,
       "nonprod_searches": 373672
+    },
+    {
+      "month": "2026-04",
+      "report_date": "2026-04-06",
+      "weeks_in_month": 1,
+      "apps": 1432,
+      "records": 40242030,
+      "searches": 16515761,
+      "total_apps_ever": 1529,
+      "prod": 1153,
+      "nonprod": 371,
+      "genstudio": 0,
+      "zombie": 315,
+      "top10_rec_pct": 71.4,
+      "top10_srch_pct": 66.7,
+      "prod_records": 34229181,
+      "prod_searches": 14361203,
+      "nonprod_records": 2098838,
+      "nonprod_searches": 368592
     }
   ],
   "app_master": [
@@ -72538,98 +73419,98 @@
       "id": "OEOILPJ8JM",
       "name": "AEM Assets POC",
       "records": 3620770,
-      "searches": 223,
+      "searches": 0,
       "created": "2022-05-24"
     },
     {
       "id": "089WMAWO74",
       "name": "cm-p178262-e1909084",
-      "records": 1774248,
-      "searches": 0,
+      "records": 2275140,
+      "searches": 19,
       "created": "2025-12-03"
     },
     {
       "id": "M4T2C8PMV4",
       "name": "cm-p129658-e1278735",
-      "records": 1755530,
-      "searches": 1023,
+      "records": 1975375,
+      "searches": 896,
       "created": "2024-09-11"
     },
     {
       "id": "IW2CKGBKX8",
       "name": "cm-p149610-e1557926",
-      "records": 1487978,
+      "records": 1716463,
       "searches": 13,
       "created": "2025-02-19"
     },
     {
       "id": "1UHCRD89YX",
       "name": "cm-p103260-e1030285",
-      "records": 1226764,
-      "searches": 52980,
+      "records": 1253606,
+      "searches": 64460,
       "created": "2025-04-17"
     },
     {
       "id": "OFIC6T2SX8",
       "name": "cm-p31453-e106883",
-      "records": 1084358,
-      "searches": 33521,
+      "records": 1086337,
+      "searches": 32058,
       "created": "2024-07-18"
     },
     {
       "id": "5ODS6OOG3J",
       "name": "cm-p163668-e1757739-nonprod-shared",
-      "records": 886871,
-      "searches": 13591,
+      "records": 888094,
+      "searches": 15591,
       "created": "2025-08-18"
     },
     {
       "id": "SB9Q79LEAL",
       "name": "cm-p57322-e631381",
-      "records": 729411,
-      "searches": 705808,
+      "records": 736245,
+      "searches": 727259,
       "created": "2025-06-25"
+    },
+    {
+      "id": "MNCOVT9RLY",
+      "name": "cm-p135331-e1368299",
+      "records": 675312,
+      "searches": 3331,
+      "created": "2025-06-26"
+    },
+    {
+      "id": "1B012ENVG9",
+      "name": "cm-p151941-e1578500",
+      "records": 671454,
+      "searches": 2637,
+      "created": "2024-07-16"
     },
     {
       "id": "N7K5RYW0PE",
       "name": "cm-p64403-e609778",
-      "records": 667386,
+      "records": 667245,
       "searches": 21843,
       "created": "2025-07-29"
     },
     {
       "id": "7O2HNE3SBZ",
       "name": "cm-p138004-e1400660",
-      "records": 629519,
+      "records": 635011,
       "searches": 0,
       "created": "2025-07-11"
     },
     {
-      "id": "1B012ENVG9",
-      "name": "cm-p151941-e1578500",
-      "records": 617877,
-      "searches": 946,
-      "created": "2024-07-16"
-    },
-    {
-      "id": "MNCOVT9RLY",
-      "name": "cm-p135331-e1368299",
-      "records": 572903,
-      "searches": 4670,
-      "created": "2025-06-26"
-    },
-    {
       "id": "IKRPY86K23",
       "name": "cm-p17257-e44095",
-      "records": 499340,
-      "searches": 251680,
+      "records": 492949,
+      "searches": 254225,
       "created": "2024-09-03"
     },
     {
       "id": "H6PAJ8513P",
       "name": "cm-p145170-e1496182",
-      "records": 450627,
-      "searches": 8069,
+      "records": 450981,
+      "searches": 9532,
       "created": "2024-11-27"
     },
     {
@@ -72670,8 +73551,8 @@
     {
       "id": "RM23XD8STN",
       "name": "Adobe-GMO_prod",
-      "records": 217348,
-      "searches": 1685500,
+      "records": 226456,
+      "searches": 1707862,
       "created": "2023-11-02"
     },
     {
@@ -72705,8 +73586,8 @@
     {
       "id": "LKZVGWZMAG",
       "name": "cm-p137454-e1438138",
-      "records": 83323,
-      "searches": 118616,
+      "records": 88823,
+      "searches": 153773,
       "created": "2024-07-13"
     },
     {
@@ -72719,8 +73600,8 @@
     {
       "id": "UFRITNXAF9",
       "name": "cm-p129105-e1259847",
-      "records": 67003,
-      "searches": 687060,
+      "records": 67260,
+      "searches": 686339,
       "created": "2024-07-02"
     },
     {
@@ -72761,8 +73642,8 @@
     {
       "id": "SGGPFVW1ME",
       "name": "cm-p118565-e1156303",
-      "records": 44133,
-      "searches": 144576,
+      "records": 45902,
+      "searches": 178520,
       "created": "2024-07-18"
     },
     {
@@ -72789,15 +73670,15 @@
     {
       "id": "8ERYRF0QPB",
       "name": "cm-p15699-e36870",
-      "records": 36994,
-      "searches": 198059,
+      "records": 37199,
+      "searches": 190331,
       "created": "2024-06-28"
     },
     {
       "id": "Y91FGX4CZG",
       "name": "cm-p121952-e1214068",
-      "records": 34112,
-      "searches": 359266,
+      "records": 34445,
+      "searches": 391846,
       "created": "2024-09-19"
     },
     {
@@ -72808,18 +73689,25 @@
       "created": "2024-07-02"
     },
     {
+      "id": "DYIP6GIETF",
+      "name": "cm-p153411-e1611039",
+      "records": 27121,
+      "searches": 255931,
+      "created": "2024-09-26"
+    },
+    {
+      "id": "PT2RT9NXP7",
+      "name": "cm-p139705-e1420120 - cmprd - GenSt",
+      "records": 23456,
+      "searches": 467059,
+      "created": "2024-08-09"
+    },
+    {
       "id": "7Y6X1QU4PW",
       "name": "cm-p133616-e1306141",
       "records": 23281,
       "searches": 3849,
       "created": "2024-04-02"
-    },
-    {
-      "id": "PT2RT9NXP7",
-      "name": "cm-p139705-e1420120 - cmprd - GenSt",
-      "records": 22958,
-      "searches": 406439,
-      "created": "2024-08-09"
     },
     {
       "id": "462RG3H2NH",
@@ -72829,6 +73717,13 @@
       "created": "2024-06-28"
     },
     {
+      "id": "73V0A5ID90",
+      "name": "cm-p142544-e1463488",
+      "records": 11615,
+      "searches": 284207,
+      "created": "2024-07-11"
+    },
+    {
       "id": "YB69FBRU10",
       "name": "cm-p35255-e147963",
       "records": 10767,
@@ -72836,17 +73731,10 @@
       "created": "2024-06-28"
     },
     {
-      "id": "73V0A5ID90",
-      "name": "cm-p142544-e1463488",
-      "records": 10741,
-      "searches": 273184,
-      "created": "2024-07-11"
-    },
-    {
       "id": "KJBOO27CTY",
       "name": "cm-p140854-e1441220",
-      "records": 8228,
-      "searches": 254597,
+      "records": 8552,
+      "searches": 270537,
       "created": "2024-09-09"
     },
     {
@@ -72869,13 +73757,6 @@
       "records": 6545,
       "searches": 154911,
       "created": "2024-08-28"
-    },
-    {
-      "id": "7H2O7XEQO1",
-      "name": "cm-p131306-e1282755",
-      "records": 6460,
-      "searches": 435,
-      "created": "2024-07-01"
     }
   ],
   "contract": {
