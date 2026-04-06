@@ -104,11 +104,20 @@ def extract_date(dirpath, filename):
 # ═══════════════════════════════════════════════════════════
 
 def process_csv(csv_info):
-    """Process one CSV, return a weekly snapshot summary."""
+    """Process one CSV, return a weekly snapshot summary.
+
+    Billing methodology:
+    - Records: use max_monthly_record_usage (4th-highest-day method, how customers get billed)
+    - Searches: use billable_search_requests_rsum (cumulative from billing period start)
+    - Apps: exclude parent app IDs (EX9JOVML7S, J50O6J0MJP) from child app counts
+    """
     path = csv_info['path']
     report_date = csv_info['report_date']
     apps = {}
     row_count = 0
+
+    # Parent app IDs to exclude from child app counts
+    PARENT_APP_IDS = {'EX9JOVML7S', 'J50O6J0MJP'}
 
     try:
         with open(path, 'r', encoding='utf-8-sig') as f:
@@ -124,8 +133,13 @@ def process_csv(csv_info):
                 if not app_id:
                     continue
 
+                # Skip parent app IDs — they are billing containers, not child apps
+                if app_id in PARENT_APP_IDS:
+                    continue
+
                 try:
-                    records = int(row.get('daily_used_records', 0) or 0)
+                    daily_records = int(row.get('daily_used_records', 0) or 0)
+                    billable_records = int(row.get('max_monthly_record_usage', 0) or 0)
                     searches = int(row.get('billable_search_requests', 0) or 0)
                     search_ops = int(row.get('total_search_operations', 0) or 0)
                     roll_30d = int(row.get('roll_30day_search_operations', 0) or 0)
@@ -133,14 +147,17 @@ def process_csv(csv_info):
                 except (ValueError, TypeError):
                     continue
 
+                usage_date = (row.get('usage_date') or '')[:10]
+
                 if app_id not in apps:
                     apps[app_id] = {
                         'name': row.get('app_name', ''),
                         'created': (row.get('app_created_at') or '')[:10],
                         'deleted': (row.get('app_deleted_at') or '')[:10] if row.get('app_deleted_at') else '',
                         'last_activity': (row.get('app_last_activity_at') or '')[:10],
-                        'latest_records': records,
-                        'max_records': records,
+                        'latest_records': billable_records,
+                        'latest_date': usage_date,
+                        'max_records': billable_records,
                         'total_searches': 0,
                         'max_roll_30d': roll_30d,
                         'max_rsum': rsum,
@@ -148,7 +165,12 @@ def process_csv(csv_info):
                     }
 
                 a = apps[app_id]
-                a['max_records'] = max(a['max_records'], records)
+                # Use billable records from the LATEST date row per app
+                # (reflects current billing month's 4th-highest-day methodology)
+                if usage_date >= a['latest_date']:
+                    a['latest_records'] = billable_records
+                    a['latest_date'] = usage_date
+                a['max_records'] = max(a['max_records'], billable_records)
                 a['total_searches'] += searches
                 a['max_roll_30d'] = max(a['max_roll_30d'], roll_30d)
                 a['max_rsum'] = max(a['max_rsum'], rsum)
