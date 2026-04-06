@@ -50,21 +50,77 @@ def find_csv_files(root_dir):
             # Skip non-daily-usage files
             if fname.startswith('stage_prod_parent_agg_stat'):
                 continue
+            if fname.startswith('last_three_months'):
+                continue
 
             full_path = os.path.join(dirpath, fname)
             report_date = extract_date(dirpath, fname)
 
             if report_date:
+                # Check if a billing summary file exists in the same folder
+                billing_file = find_billing_file(dirpath)
                 csv_files.append({
                     'path': full_path,
                     'filename': fname,
                     'report_date': report_date,
                     'report_date_str': report_date.isoformat(),
                     'folder': os.path.basename(dirpath),
+                    'billing_file': billing_file,
                 })
 
     csv_files.sort(key=lambda x: x['report_date'])
     return csv_files
+
+
+def find_billing_file(dirpath):
+    """Find a stage_prod_parent_agg_stat CSV in the same folder, if one exists."""
+    for fname in os.listdir(dirpath):
+        if fname.startswith('stage_prod_parent_agg_stat') and fname.endswith('.csv'):
+            return os.path.join(dirpath, fname)
+    return None
+
+
+def load_billing_totals(billing_path):
+    """Load authoritative billing totals from stage_prod_parent_agg_stat CSV.
+
+    Returns dict with prod/staging breakdowns and combined totals.
+    These numbers come directly from the billing system and are the source of truth.
+    """
+    if not billing_path or not os.path.exists(billing_path):
+        return None
+
+    result = {'prod': {}, 'staging': {}}
+    try:
+        with open(billing_path, 'r', encoding='utf-8-sig') as f:
+            reader = csv.DictReader(f)
+            for row in reader:
+                parent_id = (row.get('billing_public_application_id') or '').strip()
+                entry = {
+                    'parent_id': parent_id,
+                    'billing_period_start': (row.get('billing_period_start') or '')[:10],
+                    'billing_period_end': (row.get('billing_period_end') or '')[:10],
+                    'billable_search_requests': int(float(row.get('billable_search_requests', 0) or 0)),
+                    'billable_records': int(float(row.get('billable_records', 0) or 0)),
+                    'period_end_live_apps': int(float(row.get('period_end_live_apps', 0) or 0)),
+                    'deleted_in_period_apps': int(float(row.get('deleted_in_period_apps', 0) or 0)),
+                    'provisioned_apps': int(float(row.get('provisioned_apps', 0) or 0)),
+                }
+                if parent_id == 'EX9JOVML7S':
+                    result['prod'] = entry
+                elif parent_id == 'J50O6J0MJP':
+                    result['staging'] = entry
+
+        if result['prod']:
+            result['combined'] = {
+                'live_apps': result['prod'].get('period_end_live_apps', 0) + result['staging'].get('period_end_live_apps', 0),
+                'billable_records': result['prod'].get('billable_records', 0) + result['staging'].get('billable_records', 0),
+                'billable_search_requests': result['prod'].get('billable_search_requests', 0) + result['staging'].get('billable_search_requests', 0),
+            }
+            return result
+    except Exception as e:
+        print(f"  WARNING: Could not read billing file {billing_path}: {e}")
+
+    return None
 
 
 def extract_date(dirpath, filename):
@@ -201,6 +257,17 @@ def process_csv(csv_info):
     total_latest_records = sum(a['latest_records'] for a in apps.values())
     total_searches = sum(a['total_searches'] for a in apps.values())
 
+    # ── Override totals with billing system numbers if available ──
+    billing = load_billing_totals(csv_info.get('billing_file'))
+    billing_data = None
+    if billing:
+        billing_data = billing
+        # Use billing system's authoritative numbers for the headline totals
+        active = billing['prod'].get('period_end_live_apps', active)
+        total_latest_records = billing['prod'].get('billable_records', total_latest_records)
+        total_searches = billing['combined'].get('billable_search_requests', total_searches)
+        print(f" [billing override: {active} apps, {total_latest_records:,} records]", end='', flush=True)
+
     # ── Environment breakdown: prod vs nonprod records/searches ──
     def is_nonprod(name):
         return 'nonprod' in name.lower()
@@ -326,6 +393,11 @@ def process_csv(csv_info):
             'legacy_records': legacy_records,
             'legacy_searches': legacy_searches,
         },
+        'billing': {
+            'source': 'stage_prod_parent_agg_stat' if billing_data else 'computed',
+            'prod': billing_data['prod'] if billing_data else None,
+            'staging': billing_data['staging'] if billing_data else None,
+        } if billing_data else None,
         'age_distribution': age,
         'top15_by_records': top15_records,
         'top15_by_searches': top15_searches,
