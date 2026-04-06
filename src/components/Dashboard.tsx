@@ -506,7 +506,9 @@ export default function Dashboard() {
 
   const handleSetTab = (i: number) => {
     setTab(i);
-    window.location.hash = TAB_HASHES[i];
+    if (typeof window !== "undefined") {
+      history.replaceState(null, "", TAB_HASHES[i]);
+    }
   };
 
   // Listen for browser back/forward
