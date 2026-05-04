@@ -286,7 +286,13 @@ def process_csv(csv_info):
         # IMPORTANT: Quota applies to PRODUCTION parent only, not combined prod+staging
         # Hex PDF shows: Apps=1,425 (prod), Records=40,095,020 (prod), Searches=35,927,203 (prod only)
         active = billing['prod'].get('period_end_live_apps', active)
-        total_latest_records = billing['prod'].get('billable_records', total_latest_records)
+        billing_records = billing['prod'].get('billable_records', 0)
+        # Only override if billing has a non-zero value — a 0 means the period
+        # hasn't been finalized yet (records are computed after period close)
+        if billing_records > 0:
+            total_latest_records = billing_records
+        else:
+            print(f"\n  ⚠ WARNING: billing file has 0 records — using CSV-computed value instead.", end='', flush=True)
         total_searches = billing['prod'].get('billable_search_requests', total_searches)
         print(f" [billing override: {active} apps, {total_latest_records:,} records, {total_searches:,} searches]", end='', flush=True)
     else:

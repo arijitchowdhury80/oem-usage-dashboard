@@ -1,6 +1,6 @@
 {
   "_metadata": {
-    "generated_at": "2026-05-04T10:59:59.390163",
+    "generated_at": "2026-05-04T11:02:51.275783",
     "root_dir": "/Users/arijitchowdhury/Library/CloudStorage/GoogleDrive-arijit.chowdhury@algolia.com/My Drive/Partners/Adobe/Data/Reports Sent to Adobe",
     "files_found": 84,
     "files_processed": 83,
@@ -71488,7 +71488,7 @@
         "apps": 1602,
         "active_apps": 1475,
         "deleted_apps": 125,
-        "latest_records": 0,
+        "latest_records": 41480821,
         "total_searches": 40110913
       },
       "segmentation": {
@@ -71512,7 +71512,7 @@
         "active_both": 954
       },
       "concentration": {
-        "top10_records_pct": 0,
+        "top10_records_pct": 70.0,
         "top10_searches_pct": 30.8
       },
       "environment": {
@@ -89952,14 +89952,14 @@
       "report_date": "2026-05-04",
       "weeks_in_month": 1,
       "apps": 1475,
-      "records": 0,
+      "records": 41480821,
       "searches": 40110913,
       "total_apps_ever": 1602,
       "prod": 1125,
       "nonprod": 348,
       "genstudio": 0,
       "zombie": 262,
-      "top10_rec_pct": 0,
+      "top10_rec_pct": 70.0,
       "top10_srch_pct": 30.8,
       "prod_records": 20169241,
       "prod_searches": 16353970,
