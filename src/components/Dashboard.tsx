@@ -277,6 +277,9 @@ function ChildAppMoMTable({ appDetail, prevMonth, billing }: { appDetail: AppDet
   const [page, setPage] = useState(0);
   const [tagFilter, setTagFilter] = useState<string>("all");
   const [parentView, setParentView] = useState<"prod" | "staging">("prod");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [bulkMode, setBulkMode] = useState(false);
+  const [bulkInput, setBulkInput] = useState("");
 
   const prodBilling = billing?.prod;
   const stageBilling = billing?.staging;
@@ -316,11 +319,26 @@ function ChildAppMoMTable({ appDetail, prevMonth, billing }: { appDetail: AppDet
     return counts;
   }, [appDetail]);
 
+  // Search terms derived from single query or bulk textarea
+  const searchTerms = useMemo(() => {
+    if (bulkMode) {
+      return bulkInput.split(/[\n,]/).map(s => s.trim().toLowerCase()).filter(Boolean);
+    }
+    return searchQuery.trim() ? [searchQuery.trim().toLowerCase()] : [];
+  }, [bulkMode, bulkInput, searchQuery]);
+
   // Filter and sort
   const filtered = useMemo(() => {
-    const base = tagFilter === "all" ? appDetail : appDetail.filter(a => (a.tag ?? a.env) === tagFilter);
+    let base = tagFilter === "all" ? appDetail : appDetail.filter(a => (a.tag ?? a.env) === tagFilter);
+    if (searchTerms.length > 0) {
+      base = base.filter(a =>
+        searchTerms.some(term =>
+          a.name.toLowerCase().includes(term) || a.id.toLowerCase().includes(term)
+        )
+      );
+    }
     return [...base].sort(sortFn);
-  }, [appDetail, tagFilter, sortCol, sortAsc]);
+  }, [appDetail, tagFilter, sortCol, sortAsc, searchTerms]);
 
   const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
   const pageApps = filtered.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE);
@@ -398,6 +416,87 @@ function ChildAppMoMTable({ appDetail, prevMonth, billing }: { appDetail: AppDet
       ) : (
         /* Production view — full app detail table */
         <>
+          {/* Search bar */}
+          <div style={{ display: "flex", gap: 8, marginBottom: 10, alignItems: "center" }}>
+            <div style={{ flex: 1, position: "relative" }}>
+              <input
+                type="text"
+                placeholder="Search by app name or ID…"
+                value={searchQuery}
+                disabled={bulkMode}
+                onChange={e => { setSearchQuery(e.target.value); setPage(0); }}
+                style={{
+                  width: "100%", padding: "8px 36px 8px 34px", fontSize: 13,
+                  border: "1px solid #e5e7eb", borderRadius: 6, outline: "none",
+                  fontFamily: "'Sora', sans-serif", color: "#23263B", boxSizing: "border-box" as const,
+                  background: bulkMode ? "#f3f4f6" : "#fff",
+                }}
+              />
+              <span style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", color: "#9698C3", fontSize: 15, pointerEvents: "none" }}>⌕</span>
+              {searchQuery && !bulkMode && (
+                <button onClick={() => { setSearchQuery(""); setPage(0); }}
+                  style={{ position: "absolute", right: 10, top: "50%", transform: "translateY(-50%)",
+                    background: "none", border: "none", cursor: "pointer", color: "#9698C3", fontSize: 18, lineHeight: 1 }}>×</button>
+              )}
+            </div>
+            <button
+              onClick={() => { setBulkMode(!bulkMode); setSearchQuery(""); setBulkInput(""); setPage(0); }}
+              style={{
+                padding: "8px 14px", fontSize: 12, fontWeight: 600, borderRadius: 6, cursor: "pointer",
+                border: bulkMode ? "1px solid #003DFF" : "1px solid #e5e7eb",
+                background: bulkMode ? "#003DFF0A" : "#fff",
+                color: bulkMode ? "#003DFF" : "#484C7A", whiteSpace: "nowrap" as const,
+                fontFamily: "'Sora', sans-serif",
+              }}>
+              {bulkMode ? "✕ Bulk mode" : "Bulk lookup"}
+            </button>
+          </div>
+
+          {/* Bulk lookup textarea */}
+          {bulkMode && (
+            <div style={{ marginBottom: 12, padding: 12, background: "#f8f9fb", borderRadius: 6, border: "1px solid #e5e7eb" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+                <div style={{ fontSize: 12, fontWeight: 600, color: "#484C7A" }}>
+                  Paste app names or IDs — one per line
+                </div>
+                <label style={{ fontSize: 12, color: "#003DFF", cursor: "pointer", fontWeight: 600, fontFamily: "'Sora', sans-serif" }}>
+                  Upload .txt / .csv
+                  <input type="file" accept=".txt,.csv" style={{ display: "none" }}
+                    onChange={e => {
+                      const file = e.target.files?.[0];
+                      if (!file) return;
+                      const reader = new FileReader();
+                      reader.onload = ev => { setBulkInput(ev.target?.result as string ?? ""); setPage(0); };
+                      reader.readAsText(file);
+                    }} />
+                </label>
+              </div>
+              <textarea
+                value={bulkInput}
+                onChange={e => { setBulkInput(e.target.value); setPage(0); }}
+                placeholder={"AEM Assets POC\ncm-prod-12345\nGS-ADOBE-MAIN"}
+                style={{
+                  width: "100%", height: 100, padding: 8, fontSize: 12,
+                  border: "1px solid #e5e7eb", borderRadius: 4, resize: "vertical" as const,
+                  fontFamily: "monospace", color: "#23263B", boxSizing: "border-box" as const,
+                  background: "#fff", outline: "none",
+                }}
+              />
+              <div style={{ fontSize: 12, color: "#7778AF", marginTop: 6 }}>
+                {bulkInput.trim()
+                  ? <><strong style={{ color: "#003DFF" }}>{filtered.length}</strong> app{filtered.length !== 1 ? "s" : ""} matched from {searchTerms.length} search term{searchTerms.length !== 1 ? "s" : ""}</>
+                  : "Paste app names above to filter the table below"}
+              </div>
+            </div>
+          )}
+
+          {/* Single-search result count */}
+          {!bulkMode && searchQuery && (
+            <div style={{ fontSize: 12, color: "#7778AF", marginBottom: 8 }}>
+              <strong style={{ color: "#23263B" }}>{filtered.length}</strong> app{filtered.length !== 1 ? "s" : ""} matched for &ldquo;{searchQuery}&rdquo;
+            </div>
+          )}
+
           {/* Tag filter pills */}
           <div style={{ display: "flex", gap: 6, marginBottom: 12, flexWrap: "wrap" }}>
             <button onClick={() => { setTagFilter("all"); setPage(0); }}
@@ -440,6 +539,11 @@ function ChildAppMoMTable({ appDetail, prevMonth, billing }: { appDetail: AppDet
               </tr>
             </thead>
             <tbody>
+              {pageApps.length === 0 && (
+                <tr><td colSpan={8} style={{ textAlign: "center", color: "#7778AF", padding: "28px 16px", fontSize: 13 }}>
+                  No apps matched your search.
+                </td></tr>
+              )}
               {pageApps.map((a, i) => (
                 <tr key={a.id + i}>
                   <td className="mono">{a.id}</td>
@@ -528,44 +632,16 @@ export default function Dashboard() {
   if (error) return <div style={{ padding: 40, color: "#dc2626" }}>Error: {error}</div>;
   if (!data) return <div style={{ padding: 40, color: "#9ca3af" }}>Loading dashboard...</div>;
 
-  return <DashboardInner data={data} tab={tab} setTab={handleSetTab} onReload={reload} />;
+  return <DashboardInner data={data} tab={tab} setTab={handleSetTab} />;
 }
 
 function DashboardInner({
-  data, tab, setTab, onReload,
+  data, tab, setTab,
 }: {
   data: DashboardData;
   tab: number;
   setTab: (t: number) => void;
-  onReload: () => void;
 }) {
-  const [updating, setUpdating] = useState(false);
-  const [updateMsg, setUpdateMsg] = useState<string | null>(null);
-  const [updateAvailable, setUpdateAvailable] = useState(true);
-
-  const handleUpdate = async () => {
-    setUpdating(true);
-    setUpdateMsg(null);
-    try {
-      const res = await fetch("/api/update", { method: "POST" });
-      const body = await res.json();
-      if (res.status === 403) {
-        setUpdateAvailable(false);
-        return;
-      }
-      if (!res.ok || !body.success) {
-        setUpdateMsg(body.error || "Update failed");
-        return;
-      }
-      onReload();
-      setUpdateMsg("Updated");
-      setTimeout(() => setUpdateMsg(null), 3000);
-    } catch {
-      setUpdateMsg("Network error");
-    } finally {
-      setUpdating(false);
-    }
-  };
 
   const { weeks, months, latest, topByRecords, topBySearches, appDetail, metadata, rates, billing } = data;
   const tabs = ["Executive Summary", "Trends & Growth", "Portfolio Health", "R&D Brief"];
@@ -1016,38 +1092,6 @@ function DashboardInner({
           </div>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-          {updateAvailable && (
-            <button
-              onClick={handleUpdate}
-              disabled={updating}
-              style={{
-                padding: "5px 14px",
-                fontSize: 13,
-                fontWeight: 500,
-                color: updating ? "#9ca3af" : "#003DFF",
-                background: "transparent",
-                border: "1px solid " + (updating ? "#e5e7eb" : "#003DFF"),
-                borderRadius: 6,
-                cursor: updating ? "not-allowed" : "pointer",
-                display: "flex",
-                alignItems: "center",
-                gap: 6,
-                whiteSpace: "nowrap" as const,
-              }}
-            >
-              {updating ? (
-                <>
-                  <span style={{ display: "inline-block", width: 12, height: 12, border: "2px solid #9ca3af", borderTopColor: "transparent", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
-                  Updating...
-                </>
-              ) : "Update Data"}
-            </button>
-          )}
-          {updateMsg && (
-            <span style={{ fontSize: 13, color: updateMsg === "Updated" ? "#16a34a" : "#dc2626", fontWeight: 500 }}>
-              {updateMsg}
-            </span>
-          )}
           <div style={{ textAlign: "right" }}>
             <div className="header-date-label">Data as of</div>
             <div className="header-date-val">
