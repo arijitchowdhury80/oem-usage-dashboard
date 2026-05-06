@@ -49,6 +49,15 @@ function fmt(n) {
   return n.toLocaleString();
 }
 
+// Format a YYYY-MM-DD string as "Mon D, YYYY" without timezone shifting.
+// new Date('2026-05-06') parses as UTC midnight which renders as May 5 in
+// most North American timezones — parse the parts directly to avoid that.
+function formatYmdLocal(ymd) {
+  const [y, m, d] = ymd.split('-').map(Number);
+  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  return `${months[m - 1]} ${d}, ${y}`;
+}
+
 // ── Observations engine — JS port of src/lib/observations.ts ──
 const APPS_QUOTA = 1500;
 const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -316,8 +325,7 @@ function buildEmailBody(latest, billing, raw) {
   const recsPct = (records / 50000000 * 100).toFixed(1);
   const srchPct = (searches / 75000000 * 100).toFixed(1);
 
-  const reportDate = new Date(latest.report_date);
-  const dateStr = reportDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  const dateStr = formatYmdLocal(latest.report_date);
 
   const barColor = (pct) => parseFloat(pct) >= 85 ? '#dc2626' : parseFloat(pct) >= 70 ? '#d97706' : '#16a34a';
 
@@ -529,8 +537,7 @@ async function main() {
   const prod = billing?.prod;
   const apps = prod ? prod.period_end_live_apps : latest.totals.active_apps;
 
-  const reportDate = new Date(latest.report_date);
-  const dateStr = reportDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  const dateStr = formatYmdLocal(latest.report_date);
 
   console.log(`Data through: ${dateStr}`);
   console.log(`Apps: ${apps} | Records: ${fmt(prod?.billable_records || latest.totals.latest_records)} | Searches: ${fmt(prod?.billable_search_requests || latest.totals.total_searches)}`);

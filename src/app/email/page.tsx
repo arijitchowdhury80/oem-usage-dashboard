@@ -87,8 +87,9 @@ export default function EmailPage() {
   const records = prod ? prod.billable_records : latest.records;
   const searches = prod ? prod.billable_search_requests : latest.searches;
 
-  const reportDate = new Date(latest.date);
-  const dateStr = reportDate.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+  const [y, m, d] = latest.date.split("-").map(Number);
+  const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  const dateStr = `${monthNames[m - 1]} ${d}, ${y}`;
 
   const totalEngagement = latest.activeBoth + latest.recordsNoSearch + latest.searchNoRecords + latest.zombie;
   const observations = computeObservations(data);
