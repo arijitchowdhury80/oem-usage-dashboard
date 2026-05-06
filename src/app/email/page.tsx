@@ -1,8 +1,9 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { loadDashboardData } from "@/lib/data";
 import { fmt } from "@/lib/formatters";
 import { CURRENT_CONTRACT } from "@/lib/contracts";
+import { computeObservations, type Observation } from "@/lib/observations";
 import type { DashboardData } from "@/lib/types";
 
 const C = CURRENT_CONTRACT;
@@ -41,6 +42,22 @@ function StatBlock({ label, value, sub, color = "#000033" }: { label: string; va
   );
 }
 
+function ObsRow({ o }: { o: Observation }) {
+  const fg = o.kind === "decline" ? "#dc2626" : o.kind === "growth" ? "#16a34a" : o.kind === "glimmer" ? "#7c3aed" : "#6b7280";
+  const bg = o.kind === "decline" ? "#fef2f2" : o.kind === "growth" ? "#f0fdf4" : o.kind === "glimmer" ? "#faf5ff" : "#f9fafb";
+  const border = o.kind === "decline" ? "#fecaca" : o.kind === "growth" ? "#bbf7d0" : o.kind === "glimmer" ? "#e9d5ff" : "#e5e7eb";
+  const arrow = o.deltaAbs > 0 ? "↑" : o.deltaAbs < 0 ? "↓" : "—";
+  return (
+    <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 10px", background: bg, border: `1px solid ${border}`, borderRadius: 6, marginBottom: 6 }}>
+      <span style={{ fontSize: 14, fontWeight: 700, color: fg, width: 14, textAlign: "center" }}>{arrow}</span>
+      <div style={{ flex: 1 }}>
+        <div style={{ fontSize: 13, fontWeight: 600, color: "#111827" }}>{o.headline}</div>
+        <div style={{ fontSize: 11, color: "#6b7280", marginTop: 1 }}>{o.detail}</div>
+      </div>
+    </div>
+  );
+}
+
 function EngagementRow({ color, label, count, total }: { color: string; label: string; count: number; total: number }) {
   const pct = total > 0 ? ((count / total) * 100).toFixed(0) : "0";
   return (
@@ -74,6 +91,7 @@ export default function EmailPage() {
   const dateStr = reportDate.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
 
   const totalEngagement = latest.activeBoth + latest.recordsNoSearch + latest.searchNoRecords + latest.zombie;
+  const observations = useMemo(() => computeObservations(data), [data]);
 
   return (
     <div style={{
@@ -90,6 +108,31 @@ export default function EmailPage() {
         <div style={{ fontSize: 15, fontWeight: 600, color: "#000033", marginTop: 4 }}>Data as of {dateStr}</div>
         <div style={{ fontSize: 12, color: "#7778AF", marginTop: 2 }}>{C.soNumber} · Billing period Feb 2024 – Jan 2027</div>
       </div>
+
+      {/* Observations — MoM */}
+      {observations.framing && (
+        <div style={{ marginBottom: 18 }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 8 }}>
+            <span style={{ fontSize: 11, fontWeight: 700, color: "#484C7A", textTransform: "uppercase", letterSpacing: 1.2 }}>Observations · MoM</span>
+            <span style={{ fontSize: 10, color: observations.framing.inProgress ? "#d97706" : "#7778AF", fontWeight: observations.framing.inProgress ? 600 : 400 }}>
+              {observations.framing.label}
+            </span>
+          </div>
+          {observations.headlines.map((o) => <ObsRow key={o.metric} o={o} />)}
+          {observations.concerns.map((o, i) => <ObsRow key={`c-${i}`} o={o} />)}
+          {observations.glimmers.length > 0 && (
+            <div style={{ background: "#faf5ff", border: "1px solid #e9d5ff", borderRadius: 6, padding: "10px 12px", marginTop: 8 }}>
+              <div style={{ fontSize: 11, fontWeight: 700, color: "#7c3aed", textTransform: "uppercase", letterSpacing: 1.2, marginBottom: 6 }}>✦ Glimmers</div>
+              {observations.glimmers.map((g, i) => (
+                <div key={i} style={{ marginBottom: i === observations.glimmers.length - 1 ? 0 : 6 }}>
+                  <div style={{ fontSize: 12, fontWeight: 600, color: "#111827" }}>• {g.headline}</div>
+                  <div style={{ fontSize: 11, color: "#6b7280", marginLeft: 10, marginTop: 1 }}>{g.detail}</div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Alert */}
       {(apps / C.appsQuota * 100) >= 85 && (
