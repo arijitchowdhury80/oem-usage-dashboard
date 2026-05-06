@@ -733,24 +733,6 @@ function DashboardInner({
     <>
       <ObservationsBanner result={observations} />
 
-      {/* CONTEXT STRIP — supporting facts that stay true regardless of MoM direction */}
-      <div style={{ background: "#003DFF08", borderLeft: "3px solid #003DFF", padding: "14px 18px", borderRadius: 6, marginBottom: 18 }}>
-        <p style={{ fontSize: 14, color: "#36395A", lineHeight: 1.7, marginBottom: 4 }}>
-          <strong>{latest.apps.toLocaleString()} apps</strong> at {(appsPct).toFixed(1)}% of quota — ceiling in <strong>{proj.appRunway > 20 ? ">12" : proj.appRunway.toFixed(1)} months</strong> at trailing 6-month rate.
-        </p>
-        <p style={{ fontSize: 14, color: "#36395A", lineHeight: 1.7, marginBottom: 4 }}>
-          <strong>1 app holds {topAppShare}%</strong> of all records. Top search app ≠ top records app — only {topByRecords.filter(r => topBySearches.some(s => s.id === r.id)).length} overlap in both top-10 lists.
-        </p>
-        {stageBilling && (
-          <p style={{ fontSize: 14, color: "#36395A", lineHeight: 1.7, marginBottom: 4 }}>
-            Staging generates <strong>{latest.searches > 0 ? ((stageBilling.billable_search_requests / (stageBilling.billable_search_requests + (prodBilling?.billable_search_requests ?? 0))) * 100).toFixed(0) : 0}%</strong> of searches but only <strong>{latest.records > 0 ? ((stageBilling.billable_records / (stageBilling.billable_records + (prodBilling?.billable_records ?? 0))) * 100).toFixed(1) : 0}%</strong> of records.
-          </p>
-        )}
-        <p style={{ fontSize: 14, color: "#36395A", lineHeight: 1.7 }}>
-          <strong>{emptyIndexApps + latest.zombie} apps</strong> ({latest.apps > 0 ? (((emptyIndexApps + latest.zombie) / latest.apps) * 100).toFixed(0) : 0}% of portfolio) are either empty or zombie — cleanup opportunity.
-        </p>
-      </div>
-
       {appsPct >= 85 && (
         <div className="alert">
           <span className="alert-icon">&#9888;</span>

@@ -56,6 +56,8 @@ export default function ObservationsBanner({ result }: { result: ObservationsRes
   const { framing, headlines, glimmers, concerns } = result;
   if (!framing) return null;
 
+  const hasGlimmers = glimmers.length > 0;
+
   return (
     <div style={{ marginBottom: 18 }}>
       {/* Period header */}
@@ -71,41 +73,40 @@ export default function ObservationsBanner({ result }: { result: ObservationsRes
         </div>
       </div>
 
-      {/* Headlines */}
-      <div>
-        {headlines.map((o) => <HeadlineRow key={o.metric} o={o} />)}
-      </div>
-
-      {/* Concerns (extra declines beyond headlines) */}
-      {concerns.length > 0 && (
-        <div style={{ marginTop: 10 }}>
+      {/* Two-column layout: headlines+concerns on left, glimmers on right */}
+      <div style={{
+        display: "grid",
+        gridTemplateColumns: hasGlimmers ? "1fr 1fr" : "1fr",
+        gap: 12,
+        alignItems: "start",
+      }}>
+        <div>
+          {headlines.map((o) => <HeadlineRow key={o.metric} o={o} />)}
           {concerns.map((o, i) => <HeadlineRow key={`concern-${i}`} o={o} />)}
         </div>
-      )}
 
-      {/* Glimmers */}
-      {glimmers.length > 0 && (
-        <div style={{
-          marginTop: 10,
-          padding: "12px 14px",
-          background: COLORS.glimmerBg,
-          border: `1px solid ${COLORS.glimmerBorder}`,
-          borderRadius: 6,
-        }}>
-          <div style={{ fontSize: 12, fontWeight: 700, color: COLORS.glimmerFg, textTransform: "uppercase", letterSpacing: 1.2, marginBottom: 8 }}>
-            ✦ Glimmers
-          </div>
-          {glimmers.map((g, i) => (
-            <div key={i} style={{ display: "flex", alignItems: "baseline", gap: 8, marginBottom: i === glimmers.length - 1 ? 0 : 6 }}>
-              <span style={{ fontSize: 14, color: COLORS.glimmerFg }}>•</span>
-              <div style={{ flex: 1 }}>
-                <div style={{ fontSize: 14, fontWeight: 600, color: "#23263B" }}>{g.headline}</div>
-                <div style={{ fontSize: 12, color: "#6b7280", marginTop: 2 }}>{g.detail}</div>
-              </div>
+        {hasGlimmers && (
+          <div style={{
+            padding: "12px 14px",
+            background: COLORS.glimmerBg,
+            border: `1px solid ${COLORS.glimmerBorder}`,
+            borderRadius: 6,
+          }}>
+            <div style={{ fontSize: 12, fontWeight: 700, color: COLORS.glimmerFg, textTransform: "uppercase", letterSpacing: 1.2, marginBottom: 8 }}>
+              ✦ Glimmers
             </div>
-          ))}
-        </div>
-      )}
+            {glimmers.map((g, i) => (
+              <div key={i} style={{ display: "flex", alignItems: "baseline", gap: 8, marginBottom: i === glimmers.length - 1 ? 0 : 8 }}>
+                <span style={{ fontSize: 14, color: COLORS.glimmerFg }}>•</span>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: 14, fontWeight: 600, color: "#23263B" }}>{g.headline}</div>
+                  <div style={{ fontSize: 12, color: "#6b7280", marginTop: 2 }}>{g.detail}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

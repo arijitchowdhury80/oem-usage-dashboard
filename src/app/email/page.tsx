@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { loadDashboardData } from "@/lib/data";
 import { fmt } from "@/lib/formatters";
 import { CURRENT_CONTRACT } from "@/lib/contracts";
@@ -91,7 +91,7 @@ export default function EmailPage() {
   const dateStr = reportDate.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
 
   const totalEngagement = latest.activeBoth + latest.recordsNoSearch + latest.searchNoRecords + latest.zombie;
-  const observations = useMemo(() => computeObservations(data), [data]);
+  const observations = computeObservations(data);
 
   return (
     <div style={{
