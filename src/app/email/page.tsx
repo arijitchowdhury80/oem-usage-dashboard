@@ -102,6 +102,12 @@ export default function EmailPage() {
       margin: "0 auto",
       padding: "20px 16px",
     }}>
+      {/* Intro */}
+      <div style={{ fontSize: 14, color: "#23263B", lineHeight: 1.6, marginBottom: 18 }}>
+        Hello everyone,<br /><br />
+        Below is the Adobe&lt;&gt;Algolia usage summary as of {dateStr}.
+      </div>
+
       {/* Header */}
       <div style={{ textAlign: "center", marginBottom: 20 }}>
         <div style={{ fontSize: 11, fontWeight: 600, color: "#9698C3", textTransform: "uppercase", letterSpacing: 1.5 }}>Adobe × Algolia Usage Report</div>
@@ -178,15 +184,15 @@ export default function EmailPage() {
         <EngagementRow color="#dc2626" label="Zombie" count={latest.zombie} total={totalEngagement} />
       </div>
 
-      {/* Sign-off */}
-      <div style={{ fontSize: 14, color: "#36395A", padding: "8px 0 16px" }}>
-        CSV + PDF attached.<br /><br />
-        Happy to jump on a call if anything needs discussion.<br /><br />Arijit
-      </div>
-
       {/* Footer */}
       <div style={{ textAlign: "center", fontSize: 11, color: "#9698C3", paddingTop: 12, borderTop: "1px solid #f3f4f6" }}>
         Adobe OEM Analytics · Algolia Strategic Partnerships
+      </div>
+
+      {/* Closing */}
+      <div style={{ fontSize: 14, color: "#23263B", lineHeight: 1.6, marginTop: 18 }}>
+        Detailed reports are attached.<br /><br />
+        Arijit
       </div>
     </div>
   );

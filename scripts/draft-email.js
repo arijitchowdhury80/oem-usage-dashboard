@@ -351,6 +351,13 @@ function buildEmailBody(latest, billing, raw) {
   return `<!DOCTYPE html>
 <html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"></head>
 <body style="margin:0;padding:0;background:#f8f9fb;font-family:-apple-system,'Segoe UI',Helvetica,Arial,sans-serif;color:#111827">
+
+<!-- INTRO -->
+<div style="max-width:520px;margin:0 auto;padding:18px 20px 14px;font-size:14px;color:#23263B;line-height:1.6">
+  Hello everyone,<br><br>
+  Below is the Adobe&lt;&gt;Algolia usage summary as of ${dateStr}.
+</div>
+
 <table width="100%" cellpadding="0" cellspacing="0" style="max-width:520px;margin:0 auto;background:#ffffff">
 
 <!-- HEADER -->
@@ -419,18 +426,19 @@ ${prod && stage ? `
 </td></tr>
 ` : ''}
 
-<!-- SIGN OFF -->
-<tr><td style="padding:16px 20px 14px;font-size:13px;color:#36395A;border-top:1px solid #f3f4f6">
-  CSV + PDF attached.<br><br>
-  Happy to jump on a call if anything needs discussion.<br><br>Arijit
-</td></tr>
-
 <!-- FOOTER -->
 <tr><td style="padding:10px 20px;text-align:center;font-size:9px;color:#9698C3;border-top:1px solid #f3f4f6">
   Adobe OEM Analytics · Algolia Strategic Partnerships
 </td></tr>
 
 </table>
+
+<!-- CLOSING -->
+<div style="max-width:520px;margin:0 auto;padding:18px 20px 24px;font-size:14px;color:#23263B;line-height:1.6">
+  Detailed reports are attached.<br><br>
+  Arijit
+</div>
+
 </body></html>`;
 }
 
