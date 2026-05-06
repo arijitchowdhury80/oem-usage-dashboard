@@ -295,6 +295,14 @@ function findFileInFolder(folder, extension, excludePrefix) {
   return files.length > 0 ? { path: path.join(folder, files[0]), name: files[0] } : null;
 }
 
+function findFilesInFolderByPrefix(folder, extension, prefix) {
+  if (!folder) return null;
+  const files = fs.readdirSync(folder).filter(f =>
+    f.toLowerCase().endsWith(extension) && f.startsWith(prefix)
+  );
+  return files.length > 0 ? { path: path.join(folder, files[0]), name: files[0] } : null;
+}
+
 function buildEmailBody(latest, billing, raw) {
   const observations = raw ? computeObservations(raw) : { framing: null, headlines: [], glimmers: [], concerns: [] };
   const observationsHtml = renderObservationsBlock(observations);
@@ -532,6 +540,12 @@ async function main() {
     if (csv) {
       attachments.push({ path: csv.path, filename: csv.name, mimeType: 'text/csv' });
       console.log(`  CSV: ${csv.name}`);
+    }
+
+    const stageProdCsv = findFilesInFolderByPrefix(latestFolder, '.csv', 'stage_prod_parent_agg_stat');
+    if (stageProdCsv) {
+      attachments.push({ path: stageProdCsv.path, filename: stageProdCsv.name, mimeType: 'text/csv' });
+      console.log(`  CSV: ${stageProdCsv.name}`);
     }
 
     const pdf = findFileInFolder(latestFolder, '.pdf', []);
