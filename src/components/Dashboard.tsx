@@ -995,7 +995,15 @@ function DashboardInner({
               <thead>
                 <tr>
                   <th>#</th><th>App ID</th><th>Name</th><th>Records</th>
-                  <th>Share</th><th>Searches</th><th>Ratio</th>
+                  <th>Share</th><th>Searches</th>
+                  <th>
+                    <span
+                      title={"Ratio = Searches ÷ Records (search calls per record indexed).\n⚠ = below 0.01 — under 1 search per 100 records (idle data, paying for storage that's barely queried).\nAmber = 0.01 – 0.10\nGreen = ≥ 0.10"}
+                      style={{ borderBottom: "1px dotted #9698C3", cursor: "help" }}
+                    >
+                      Ratio <span style={{ color: "#9698C3", fontSize: 11, fontWeight: 400 }}>&#9432;</span>
+                    </span>
+                  </th>
                 </tr>
               </thead>
               <tbody>

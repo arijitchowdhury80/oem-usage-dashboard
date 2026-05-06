@@ -17,7 +17,6 @@ const { getAuthClient } = require('./gmail-auth');
 const PROJECT_DIR = path.resolve(__dirname, '..');
 const DATA_PATH = path.join(PROJECT_DIR, 'data', 'adobe_oem_consolidated.json');
 const REPORTS_DIR = process.env.REPORTS_DIR || '';
-const DASHBOARD_URL = 'https://oem-usage-dashboard.vercel.app';
 
 // ── Recipients ──
 const TO = [
@@ -313,8 +312,6 @@ function buildEmailBody(latest, billing, raw) {
   const dateStr = reportDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 
   const barColor = (pct) => parseFloat(pct) >= 85 ? '#dc2626' : parseFloat(pct) >= 70 ? '#d97706' : '#16a34a';
-  const statusText = (pct) => parseFloat(pct) >= 85 ? 'CRITICAL' : parseFloat(pct) >= 70 ? 'WARNING' : 'HEALTHY';
-  const appsPctNum = apps / 1500 * 100;
 
   // Engagement
   const eng = [
@@ -325,15 +322,10 @@ function buildEmailBody(latest, billing, raw) {
   ];
   const engTotal = eng.reduce((s, e) => s + e.count, 0);
 
-  // Staging info line
-  const stageApps = stage ? stage.period_end_live_apps : 0;
-  const stageRec = stage ? fmt(stage.billable_records) : '—';
-  const stageSrch = stage ? fmt(stage.billable_search_requests) : '—';
-
-  function quotaRow(label, pct, current, quota, color, prodVal, stageVal) {
+  function quotaRow(label, pct, current, quota, color) {
     const w = Math.min(parseFloat(pct), 100);
     return `
-    <tr><td style="padding:14px 0;border-bottom:1px solid #f3f4f6">
+    <tr><td style="padding:12px 0;border-bottom:1px solid #f3f4f6">
       <table width="100%" cellpadding="0" cellspacing="0"><tr>
         <td style="font-size:13px;font-weight:600;color:#36395A">${label}</td>
         <td style="text-align:right"><span style="font-size:18px;font-weight:700;color:${color}">${pct}%</span> <span style="font-size:12px;color:#7778AF">${fmt(current)} / ${fmt(quota)}</span></td>
@@ -344,10 +336,6 @@ function buildEmailBody(latest, billing, raw) {
             <td style="background:${color};border-radius:4px;height:6px"></td>
           </tr></table>
         </td>
-      </tr></table>
-      <table width="100%" cellpadding="0" cellspacing="0" style="margin-top:4px"><tr>
-        <td style="font-size:11px;color:#7778AF">Prod: ${prodVal}</td>
-        <td style="font-size:11px;color:#7778AF;text-align:right">Stage: ${stageVal}</td>
       </tr></table>
     </td></tr>`;
   }
@@ -366,21 +354,12 @@ function buildEmailBody(latest, billing, raw) {
 <!-- OBSERVATIONS · MoM -->
 ${observationsHtml}
 
-<!-- ALERT -->
-${appsPctNum >= 85 ? `
-<tr><td style="padding:12px 20px">
-  <table width="100%" cellpadding="0" cellspacing="0" style="background:#fef2f2;border:1px solid #fecaca;border-radius:6px"><tr>
-    <td style="padding:10px 14px;font-size:13px;font-weight:700;color:#dc2626">${apps.toLocaleString()} of 1,500 apps — ${appsPct}% of quota</td>
-  </tr></table>
-</td></tr>
-` : ''}
-
-<!-- QUOTA BARS WITH PROD/STAGE SPLIT -->
+<!-- QUOTA STATUS -->
 <tr><td style="padding:12px 20px">
   <table width="100%" cellpadding="0" cellspacing="0">
-    ${quotaRow('Applications', appsPct, apps, 1500, barColor(appsPct), prod ? prod.period_end_live_apps.toLocaleString() : fmt(apps), stageApps.toString())}
-    ${quotaRow('Records', recsPct, records, 50000000, barColor(recsPct), prod ? fmt(prod.billable_records) : fmt(records), stageRec)}
-    ${quotaRow('Searches', srchPct, searches, 75000000, barColor(srchPct), prod ? fmt(prod.billable_search_requests) : fmt(searches), stageSrch + ' ⚠')}
+    ${quotaRow('Applications', appsPct, apps, 1500, barColor(appsPct))}
+    ${quotaRow('Records', recsPct, records, 50000000, barColor(recsPct))}
+    ${quotaRow('Searches', srchPct, searches, 75000000, barColor(srchPct))}
   </table>
 </td></tr>
 
@@ -432,53 +411,9 @@ ${prod && stage ? `
 </td></tr>
 ` : ''}
 
-<!-- KEY METRICS -->
-<tr><td style="padding:8px 20px 14px">
-  <div style="font-size:10px;font-weight:600;color:#9698C3;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">Key Metrics</div>
-  <table width="100%" cellpadding="0" cellspacing="0">
-    <tr>
-      <td style="padding:5px 0;font-size:12px;color:#36395A">Top App Record Share</td>
-      <td style="padding:5px 0;text-align:right;font-size:13px;font-weight:600;color:#d97706">${latest.totals.latest_records > 0 ? ((latest.top15_by_records[0]?.records || 0) / latest.totals.latest_records * 100).toFixed(1) : 0}%</td>
-    </tr>
-    <tr>
-      <td style="padding:5px 0;font-size:12px;color:#36395A;border-top:1px solid #f3f4f6">Top 10 Concentration</td>
-      <td style="padding:5px 0;text-align:right;font-size:13px;font-weight:600;color:#484C7A;border-top:1px solid #f3f4f6">${latest.concentration.top10_records_pct}%</td>
-    </tr>
-    <tr>
-      <td style="padding:5px 0;font-size:12px;color:#36395A;border-top:1px solid #f3f4f6">Empty Index Apps</td>
-      <td style="padding:5px 0;text-align:right;font-size:13px;font-weight:600;color:#dc2626;border-top:1px solid #f3f4f6">${latest.engagement.search_no_records.toLocaleString()}</td>
-    </tr>
-    <tr>
-      <td style="padding:5px 0;font-size:12px;color:#36395A;border-top:1px solid #f3f4f6">Zombie Apps</td>
-      <td style="padding:5px 0;text-align:right;font-size:13px;font-weight:600;color:#dc2626;border-top:1px solid #f3f4f6">${latest.engagement.zombie.toLocaleString()}</td>
-    </tr>
-  </table>
-</td></tr>
-
-<!-- DASHBOARD CTA -->
-<tr><td style="padding:16px 20px;text-align:center;border-top:1px solid #f3f4f6">
-  <div style="font-size:10px;font-weight:600;color:#9698C3;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">More in the Dashboard</div>
-  <div style="font-size:12px;color:#484C7A;margin-bottom:14px;line-height:1.5">
-    Interactive trend charts · Engagement drill-down with CSV export · 1,425 child app details · App naming tag breakdown · Production vs staging deep dive
-  </div>
-  <!--[if mso]>
-  <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="https://oem-usage-dashboard.vercel.app" style="height:40px;v-text-anchor:middle;width:220px;" arcsize="15%" strokecolor="#003DFF" fillcolor="#003DFF">
-    <w:anchorlock/>
-    <center style="color:#ffffff;font-family:sans-serif;font-size:14px;font-weight:bold;">Open Dashboard →</center>
-  </v:roundrect>
-  <![endif]-->
-  <!--[if !mso]><!-->
-  <a href="${DASHBOARD_URL}" target="_blank" style="display:inline-block;background:#003DFF;color:#ffffff;padding:10px 28px;border-radius:6px;font-size:13px;font-weight:600;text-decoration:none;mso-hide:all">Open Dashboard →</a>
-  <!--<![endif]-->
-</td></tr>
-
-<!-- ATTACHMENTS -->
-<tr><td style="padding:8px 20px;text-align:center;font-size:11px;color:#7778AF">
-  CSV and PDF reports attached.
-</td></tr>
-
 <!-- SIGN OFF -->
-<tr><td style="padding:14px 20px;font-size:13px;color:#36395A">
+<tr><td style="padding:16px 20px 14px;font-size:13px;color:#36395A;border-top:1px solid #f3f4f6">
+  CSV + PDF attached.<br><br>
   Happy to jump on a call if anything needs discussion.<br><br>Arijit
 </td></tr>
 

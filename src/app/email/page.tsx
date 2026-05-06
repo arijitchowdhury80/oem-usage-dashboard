@@ -134,16 +134,6 @@ export default function EmailPage() {
         </div>
       )}
 
-      {/* Alert */}
-      {(apps / C.appsQuota * 100) >= 85 && (
-        <div style={{ background: "#fef2f2", border: "1px solid #fecaca", borderRadius: 8, padding: "12px 14px", marginBottom: 20 }}>
-          <div style={{ fontSize: 15, fontWeight: 700, color: "#dc2626" }}>
-            {apps.toLocaleString()} of {C.appsQuota.toLocaleString()} apps used
-          </div>
-          <div style={{ fontSize: 13, color: "#484C7A", marginTop: 2 }}>App quota at {(apps / C.appsQuota * 100).toFixed(1)}% — approaching ceiling</div>
-        </div>
-      )}
-
       {/* Quota Progress Bars */}
       <div style={{ background: "#f8f9fb", borderRadius: 8, padding: "16px 14px", marginBottom: 20 }}>
         <ProgressBar label="Applications" current={apps} quota={C.appsQuota} color="#dc2626" />
@@ -188,20 +178,10 @@ export default function EmailPage() {
         <EngagementRow color="#dc2626" label="Zombie" count={latest.zombie} total={totalEngagement} />
       </div>
 
-      {/* Key Metrics */}
-      <div style={{ background: "#f8f9fb", borderRadius: 8, padding: "14px", marginBottom: 20 }}>
-        <StatBlock label="Top App Share" value={latest.records > 0 ? ((data.topByRecords[0]?.records ?? 0) / latest.records * 100).toFixed(1) + "%" : "—"} color="#d97706" />
-        <StatBlock label="Empty Index Apps" value={latest.searchNoRecords.toLocaleString()} color="#dc2626" />
-        <StatBlock label="Zombie Apps" value={latest.zombie.toLocaleString()} color="#dc2626" />
-        <StatBlock label="Concentration" value={latest.c10r + "%"} sub="top 10 share" />
-      </div>
-
-      {/* Dashboard Link */}
-      <div style={{ textAlign: "center", padding: "16px 0" }}>
-        <a href="https://oem-usage-dashboard.vercel.app"
-          style={{ display: "inline-block", background: "#003DFF", color: "#fff", padding: "12px 28px", borderRadius: 6, fontSize: 14, fontWeight: 600, textDecoration: "none" }}>
-          Open Live Dashboard →
-        </a>
+      {/* Sign-off */}
+      <div style={{ fontSize: 14, color: "#36395A", padding: "8px 0 16px" }}>
+        CSV + PDF attached.<br /><br />
+        Happy to jump on a call if anything needs discussion.<br /><br />Arijit
       </div>
 
       {/* Footer */}
