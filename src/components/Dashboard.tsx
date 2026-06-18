@@ -729,6 +729,37 @@ function DashboardInner({
   const zombiePct = ((latest.zombie / CONTRACT.appsQuota) * 100).toFixed(0);
   const observations = useMemo(() => computeObservations(data), [data]);
 
+  // ── Term-relative quota usage (combined prod+staging basis) — matches the weekly email ──
+  // Search is metered FROM the contract term start (CONTRACT.start), not the lifetime
+  // billing counter, so subtract the term-start baseline. Records is a current-monthly
+  // measure (no baseline); apps is production-parent point-in-time.
+  const combinedSearchLifetime = prodBilling && stageBilling
+    ? prodBilling.billable_search_requests + stageBilling.billable_search_requests
+    : null;
+  const termSearch = combinedSearchLifetime != null
+    ? combinedSearchLifetime - CONTRACT.termStartSearchBaseline
+    : searchesCurrent;
+  const termSearchProd = prodBilling
+    ? prodBilling.billable_search_requests - CONTRACT.termStartSearchBaselineProd
+    : 0;
+  const termSearchStaging = stageBilling
+    ? stageBilling.billable_search_requests - CONTRACT.termStartSearchBaselineStaging
+    : 0;
+  const combinedRecords = prodBilling && stageBilling
+    ? prodBilling.billable_records + stageBilling.billable_records
+    : latest.records;
+  // Search pacing / projection vs the term
+  const _dayMs = 86_400_000;
+  const _elapsedDays = Math.max(1, (new Date(latest.date).getTime() - new Date(CONTRACT.start).getTime()) / _dayMs);
+  const _termDays = (new Date(CONTRACT.end).getTime() - new Date(CONTRACT.start).getTime()) / _dayMs + 1;
+  const _searchRatePerDay = termSearch / _elapsedDays;
+  const _searchDaysToQuota = _searchRatePerDay > 0 ? (CONTRACT.searchesQuota - termSearch) / _searchRatePerDay : Infinity;
+  const searchHit = isFinite(_searchDaysToQuota)
+    ? new Date(new Date(latest.date).getTime() + _searchDaysToQuota * _dayMs).toLocaleDateString("en-US", { month: "short", year: "numeric" })
+    : "Not projected";
+  const searchElapsedPct = (_elapsedDays / _termDays) * 100;
+  const termSearchPct = (termSearch / CONTRACT.searchesQuota) * 100;
+
   const Tab1 = () => (
     <>
       <ObservationsBanner result={observations} />
@@ -750,11 +781,15 @@ function DashboardInner({
 
       {/* QUOTA GAUGES WITH ENVIRONMENT BREAKDOWN */}
       <div className="sec">
-        <div className="sec-t">Quota Consumption — SO {CONTRACT.soNumber}</div>
+        <div className="sec-t">Quota Consumption — SO {CONTRACT.soNumber} · this term ({CONTRACT.start} → {CONTRACT.end})</div>
         <div className="flex">
           <Gauge label="Customer Apps" current={latest.apps} quota={CONTRACT.appsQuota} hitDate={proj.appHit} />
-          <Gauge label="Records (max)" current={latest.records} quota={CONTRACT.recordsQuota} hitDate={proj.recHit} />
-          <Gauge label="Search Requests" current={searchesCurrent} quota={CONTRACT.searchesQuota} hitDate="Not projected" />
+          <Gauge label="Records (combined)" current={combinedRecords} quota={CONTRACT.recordsQuota} hitDate={proj.recHit} />
+          <Gauge label="Search · this term" current={termSearch} quota={CONTRACT.searchesQuota} hitDate={searchHit} />
+        </div>
+        <div style={{ fontSize: 12, color: "#7778AF", marginTop: 8 }}>
+          Search &amp; records are combined prod + staging; apps is the production parent. Search is term-to-date
+          ({termSearchPct.toFixed(0)}% used at ~{searchElapsedPct.toFixed(0)}% of the term) — on current pace it reaches the 75M allowance {searchHit === "Not projected" ? "beyond term end" : `~${searchHit}`}.
         </div>
         {/* Tag breakdown removed — Prod vs Staging panel below covers this */}
       </div>
@@ -787,9 +822,9 @@ function DashboardInner({
                     <div style={{ fontSize: 12, color: "#7778AF" }}>{((prodBilling.billable_records / (prodBilling.billable_records + stageBilling.billable_records)) * 100).toFixed(1)}% of total</div>
                   </div>
                   <div>
-                    <div style={{ fontSize: 12, color: "#9698C3", fontWeight: 600, textTransform: "uppercase" as const, letterSpacing: 1 }}>Searches</div>
-                    <div style={{ fontSize: 22, fontWeight: 600, color: "#000033" }}>{fmt(prodBilling.billable_search_requests)}</div>
-                    <div style={{ fontSize: 12, color: "#7778AF" }}>{((prodBilling.billable_search_requests / (prodBilling.billable_search_requests + stageBilling.billable_search_requests)) * 100).toFixed(1)}% of total</div>
+                    <div style={{ fontSize: 12, color: "#9698C3", fontWeight: 600, textTransform: "uppercase" as const, letterSpacing: 1 }}>Searches · term</div>
+                    <div style={{ fontSize: 22, fontWeight: 600, color: "#000033" }}>{fmt(termSearchProd)}</div>
+                    <div style={{ fontSize: 12, color: "#7778AF" }}>{((termSearchProd / (termSearchProd + termSearchStaging)) * 100).toFixed(1)}% of total</div>
                   </div>
                 </div>
                 <div style={{ fontSize: 13, color: "#7778AF", marginTop: 12, paddingTop: 10, borderTop: "1px solid #f3f4f6" }}>
@@ -818,9 +853,9 @@ function DashboardInner({
                     <div style={{ fontSize: 12, color: "#7778AF" }}>{((stageBilling.billable_records / (prodBilling.billable_records + stageBilling.billable_records)) * 100).toFixed(1)}% of total</div>
                   </div>
                   <div>
-                    <div style={{ fontSize: 12, color: "#9698C3", fontWeight: 600, textTransform: "uppercase" as const, letterSpacing: 1 }}>Searches</div>
-                    <div style={{ fontSize: 22, fontWeight: 600, color: "#d97706" }}>{fmt(stageBilling.billable_search_requests)} ⚠</div>
-                    <div style={{ fontSize: 12, color: "#7778AF" }}>{((stageBilling.billable_search_requests / (prodBilling.billable_search_requests + stageBilling.billable_search_requests)) * 100).toFixed(1)}% of total</div>
+                    <div style={{ fontSize: 12, color: "#9698C3", fontWeight: 600, textTransform: "uppercase" as const, letterSpacing: 1 }}>Searches · term</div>
+                    <div style={{ fontSize: 22, fontWeight: 600, color: "#d97706" }}>{fmt(termSearchStaging)} ⚠</div>
+                    <div style={{ fontSize: 12, color: "#7778AF" }}>{((termSearchStaging / (termSearchProd + termSearchStaging)) * 100).toFixed(1)}% of total</div>
                   </div>
                 </div>
                 <div style={{ fontSize: 13, color: "#7778AF", marginTop: 12, paddingTop: 10, borderTop: "1px solid #f3f4f6" }}>
@@ -830,7 +865,7 @@ function DashboardInner({
             </div>
             {/* Summary footer */}
             <div style={{ padding: "12px 20px", background: "#f8f9fb", borderTop: "1px solid #e5e7eb", fontSize: 13, color: "#484C7A", lineHeight: 1.6 }}>
-              Staging generates <strong>{((stageBilling.billable_search_requests / (prodBilling.billable_search_requests + stageBilling.billable_search_requests)) * 100).toFixed(0)}%</strong> of all search traffic on <strong>{((stageBilling.period_end_live_apps / (prodBilling.period_end_live_apps + stageBilling.period_end_live_apps)) * 100).toFixed(0)}%</strong> of apps.
+              Staging generates <strong>{((termSearchStaging / (termSearchProd + termSearchStaging)) * 100).toFixed(0)}%</strong> of this term's search on <strong>{((stageBilling.period_end_live_apps / (prodBilling.period_end_live_apps + stageBilling.period_end_live_apps)) * 100).toFixed(0)}%</strong> of apps.
               {" "}This is QA/test automation — not real user traffic.
               {" "}<strong>{((stageBilling.deleted_in_period_apps / stageBilling.provisioned_apps) * 100).toFixed(0)}%</strong> of staging apps are created and deleted within weeks.
             </div>

@@ -1,5 +1,5 @@
 export const PARENT_APPS = {
-  production: { id: "EKVXKN7L76", label: "Production" },
+  production: { id: "EX9JOVML7S", label: "Production" },
   staging: { id: "J50O6J0MJP", label: "Staging / Non-Production" },
 };
 
@@ -16,6 +16,14 @@ export const CURRENT_CONTRACT = {
     perRecordUnit: 4.80,
     perSearchUnit: 0.70,
   },
+  // Quota basis: search & records are COMBINED (prod + staging) per the SO; apps is the
+  // production parent only. The 75M search allowance is metered FROM the term start
+  // (2026-02-01), not the lifetime billing counter — so term-to-date search = current
+  // combined billable_search_requests minus this baseline (the cumulative-since-2024
+  // value as of the term start, from the 3-Feb-2026 parent-summary report).
+  termStartSearchBaseline: 68_412_433,        // combined prod + staging, as of 2026-02-01
+  termStartSearchBaselineProd: 29_229_775,
+  termStartSearchBaselineStaging: 39_182_658,
 };
 
 export const PREVIOUS_CONTRACT = {

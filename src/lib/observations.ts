@@ -261,5 +261,35 @@ export function computeObservations(data: DashboardData): ObservationsResult {
   const glimmers = buildGlimmers(cur, prev, data);
   const concerns = buildConcerns(cur, prev);
 
+  // Term-relative search-pace concern (combined prod+staging, metered from the term start).
+  // Lifetime MoM understates this; the term allowance can be on pace to blow out even when
+  // the monthly delta looks normal.
+  const billing = data.billing;
+  if (billing?.prod && billing?.staging) {
+    const combined = billing.prod.billable_search_requests + billing.staging.billable_search_requests;
+    const termSearch = combined - CURRENT_CONTRACT.termStartSearchBaseline;
+    const quota = CURRENT_CONTRACT.searchesQuota;
+    const usedPct = (termSearch / quota) * 100;
+    const dayMs = 86_400_000;
+    const elapsed = Math.max(1, (new Date(cur.date).getTime() - new Date(CURRENT_CONTRACT.start).getTime()) / dayMs);
+    const total = (new Date(CURRENT_CONTRACT.end).getTime() - new Date(CURRENT_CONTRACT.start).getTime()) / dayMs + 1;
+    const elapsedPct = (elapsed / total) * 100;
+    const projected = Math.round((termSearch / elapsed) * total);
+    const projectedPct = (projected / quota) * 100;
+    if (projectedPct >= 100 && usedPct > elapsedPct + 5) {
+      concerns.push({
+        kind: "decline",
+        severity: "high",
+        metric: "Search quota",
+        headline: `Search at ${usedPct.toFixed(0)}% of term allowance at ~${elapsedPct.toFixed(0)}% elapsed — ahead of pace`,
+        detail: `${fmtCompact(termSearch)} of ${fmtCompact(quota)} used; on current pace ~${fmtCompact(projected)} (${projectedPct.toFixed(0)}%) by term end — staging/test is the bulk`,
+        current: termSearch,
+        prior: 0,
+        deltaAbs: termSearch,
+        deltaPct: usedPct,
+      });
+    }
+  }
+
   return { framing, headlines, glimmers, concerns };
 }

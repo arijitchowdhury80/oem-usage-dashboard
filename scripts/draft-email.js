@@ -12,6 +12,7 @@ const fs = require('fs');
 const path = require('path');
 const { google } = require('googleapis');
 const { getAuthClient } = require('./gmail-auth');
+const { buildEmailBody } = require('./render-email'); // term-relative email body (new format)
 // No screenshot needed — email body is pure HTML
 
 const PROJECT_DIR = path.resolve(__dirname, '..');
@@ -312,7 +313,10 @@ function findFilesInFolderByPrefix(folder, extension, prefix) {
   return files.length > 0 ? { path: path.join(folder, files[0]), name: files[0] } : null;
 }
 
-function buildEmailBody(latest, billing, raw) {
+// DEPRECATED — superseded by buildEmailBody imported from render-email.js (term-relative
+// format). Kept temporarily for reference; safe to remove along with the observations
+// engine helpers above (computeObservations etc.), which only this function used.
+function buildEmailBodyLegacy(latest, billing, raw) {
   const observations = raw ? computeObservations(raw) : { framing: null, headlines: [], glimmers: [], concerns: [] };
   const observationsHtml = renderObservationsBlock(observations);
   const prod = billing?.prod;
@@ -577,7 +581,7 @@ async function main() {
   const subject = appsPctNum >= 90
     ? `Adobe<>Algolia usage report - ${dateStr} - (${apps.toLocaleString()}/1500 Apps used)`
     : `Adobe<>Algolia usage report - ${dateStr}`;
-  const htmlBody = buildEmailBody(latest, billing, data);
+  const htmlBody = buildEmailBody(data);
 
   console.log(`\nSubject: ${subject}`);
   console.log(`To: ${TO.split(',').length} Adobe recipients`);

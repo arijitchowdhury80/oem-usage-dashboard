@@ -317,14 +317,21 @@ def process_csv(csv_info):
     legacy_searches = sum(a['total_searches'] for a in active_list
                          if not a['name'].startswith('cm-') and not a['name'].startswith('gs-'))
 
-    # Concentration
-    sorted_rec = sorted(apps.values(), key=lambda x: x['latest_records'], reverse=True)
-    sorted_srch = sorted(apps.values(), key=lambda x: x['total_searches'], reverse=True)
+    # Concentration — top-10 share of the ACTIVE-app distribution.
+    # The numerator and denominator MUST be drawn from the same set (active apps,
+    # CSV per-app sum). Earlier this divided a numerator over ALL apps (incl. deleted)
+    # by the billing-overridden total_latest_records, which counts only LIVE records —
+    # a deleted app retaining a large record peak (e.g. 14.5M) then pushed the share
+    # above 100%. Use active_list for both sides so the share is always 0–100%.
+    active_records_total = sum(a['latest_records'] for a in active_list)
+    active_searches_total = sum(a['total_searches'] for a in active_list)
+    sorted_rec = sorted(active_list, key=lambda x: x['latest_records'], reverse=True)
+    sorted_srch = sorted(active_list, key=lambda x: x['total_searches'], reverse=True)
 
     top10_rec = sum(a['latest_records'] for a in sorted_rec[:10])
-    top10_rec_pct = round(top10_rec / total_latest_records * 100, 1) if total_latest_records > 0 else 0
+    top10_rec_pct = round(top10_rec / active_records_total * 100, 1) if active_records_total > 0 else 0
     top10_srch = sum(a['total_searches'] for a in sorted_srch[:10])
-    top10_srch_pct = round(top10_srch / total_searches * 100, 1) if total_searches > 0 else 0
+    top10_srch_pct = round(top10_srch / active_searches_total * 100, 1) if active_searches_total > 0 else 0
 
     # Classify environment for an app
     def env_tag(name):
@@ -519,6 +526,23 @@ def build_app_master(snapshots):
 # MAIN
 # ═══════════════════════════════════════════════════════════
 
+def dedupe_snapshots(snapshots):
+    """Keep ONE snapshot per report_date — the one built from the most complete CSV.
+
+    Some weekly folders contain a stray partial export (e.g. child_app_daily_*.csv,
+    "* MOM.csv") alongside the full all_children_daily_usage CSV. Both have an
+    extractable date, so both get processed, and the partial one yields a degenerate
+    snapshot (wrong zombie/engagement counts) for the same date. Resolve by keeping the
+    snapshot with the most csv_rows. Returns a new list sorted by report_date.
+    """
+    by_date = {}
+    for s in snapshots:
+        cur = by_date.get(s['report_date'])
+        if cur is None or s.get('csv_rows', 0) > cur.get('csv_rows', 0):
+            by_date[s['report_date']] = s
+    return sorted(by_date.values(), key=lambda x: x['report_date'])
+
+
 def main():
     # Determine root directory
     if len(sys.argv) > 1:
@@ -556,6 +580,12 @@ def main():
 
     print()
     print(f"Successfully processed {len(snapshots)} of {len(csv_files)} files")
+
+    # Drop stray partial duplicates so each report_date has one complete snapshot.
+    before = len(snapshots)
+    snapshots = dedupe_snapshots(snapshots)
+    if len(snapshots) < before:
+        print(f"  Deduped {before - len(snapshots)} partial/duplicate snapshot(s) — kept the most complete per date.")
 
     # Check how many snapshots had billing files
     with_billing = sum(1 for s in snapshots if s.get('billing'))
@@ -605,6 +635,25 @@ def main():
             'records_quota': 50000000,
             'searches_quota': 75000000,
             'annual_rate': 739520,
+            # Search/record quota is the COMBINED Subscriber basis (prod + staging) per
+            # the signed SO; apps quota is the Production parent only. The 75M search
+            # allowance is metered FROM the term start (2026-02-01), not the lifetime
+            # billing counter (which runs since the 2024-02-02 MSA). Term-to-date search =
+            # current combined billable_search_requests minus this baseline. Baseline is
+            # the parent-summary total as of 2026-02-01 (source: 3-Feb-2026 report; that
+            # week's folder has no billing CSV, so the value is from the report's
+            # parent-summary view; corroborated by the surrounding billing CSVs:
+            # 2025-10-26=48,092,924 and 2026-03-15=83,964,411).
+            'term_search_basis': 'combined',
+            'term_records_basis': 'combined',
+            'apps_basis': 'prod',
+            'term_start_baseline': {
+                'as_of': '2026-02-01',
+                'source': '3-Feb-2026 report parent-summary view (no billing CSV that week)',
+                'search_prod': 29229775,
+                'search_staging': 39182658,
+                'search_combined': 68412433,
+            },
         },
     }
 

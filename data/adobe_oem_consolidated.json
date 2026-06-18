@@ -1,9 +1,9 @@
 {
   "_metadata": {
-    "generated_at": "2026-06-15T18:27:15.450747",
+    "generated_at": "2026-06-18T00:49:08.412575",
     "root_dir": "/Users/arijitchowdhury/Library/CloudStorage/GoogleDrive-arijit.chowdhury@algolia.com/My Drive/Partners/Adobe/Data/Reports Sent to Adobe",
     "files_found": 90,
-    "files_processed": 89,
+    "files_processed": 86,
     "date_range_start": "2024-07-22",
     "date_range_end": "2026-06-15"
   },
@@ -40,8 +40,8 @@
         "active_both": 57
       },
       "concentration": {
-        "top10_records_pct": 99.3,
-        "top10_searches_pct": 91.5
+        "top10_records_pct": 99.4,
+        "top10_searches_pct": 92.3
       },
       "environment": {
         "prod_apps": 85,
@@ -702,7 +702,7 @@
       },
       "concentration": {
         "top10_records_pct": 99.2,
-        "top10_searches_pct": 90.9
+        "top10_searches_pct": 91.7
       },
       "environment": {
         "prod_apps": 97,
@@ -1362,8 +1362,8 @@
         "active_both": 68
       },
       "concentration": {
-        "top10_records_pct": 99.1,
-        "top10_searches_pct": 91.0
+        "top10_records_pct": 99.2,
+        "top10_searches_pct": 91.7
       },
       "environment": {
         "prod_apps": 113,
@@ -2023,8 +2023,8 @@
         "active_both": 83
       },
       "concentration": {
-        "top10_records_pct": 99.1,
-        "top10_searches_pct": 90.2
+        "top10_records_pct": 99.2,
+        "top10_searches_pct": 90.9
       },
       "environment": {
         "prod_apps": 144,
@@ -2684,8 +2684,8 @@
         "active_both": 91
       },
       "concentration": {
-        "top10_records_pct": 99.0,
-        "top10_searches_pct": 90.1
+        "top10_records_pct": 99.1,
+        "top10_searches_pct": 91.0
       },
       "environment": {
         "prod_apps": 161,
@@ -3346,7 +3346,7 @@
       },
       "concentration": {
         "top10_records_pct": 99.0,
-        "top10_searches_pct": 90.1
+        "top10_searches_pct": 90.9
       },
       "environment": {
         "prod_apps": 172,
@@ -4006,8 +4006,8 @@
         "active_both": 111
       },
       "concentration": {
-        "top10_records_pct": 98.8,
-        "top10_searches_pct": 89.8
+        "top10_records_pct": 98.9,
+        "top10_searches_pct": 90.5
       },
       "environment": {
         "prod_apps": 186,
@@ -4667,8 +4667,8 @@
         "active_both": 122
       },
       "concentration": {
-        "top10_records_pct": 98.7,
-        "top10_searches_pct": 89.2
+        "top10_records_pct": 98.8,
+        "top10_searches_pct": 89.8
       },
       "environment": {
         "prod_apps": 198,
@@ -5329,7 +5329,7 @@
       },
       "concentration": {
         "top10_records_pct": 98.4,
-        "top10_searches_pct": 88.6
+        "top10_searches_pct": 89.2
       },
       "environment": {
         "prod_apps": 212,
@@ -5990,7 +5990,7 @@
       },
       "concentration": {
         "top10_records_pct": 97.8,
-        "top10_searches_pct": 87.7
+        "top10_searches_pct": 88.2
       },
       "environment": {
         "prod_apps": 224,
@@ -6651,7 +6651,7 @@
       },
       "concentration": {
         "top10_records_pct": 97.5,
-        "top10_searches_pct": 86.5
+        "top10_searches_pct": 86.9
       },
       "environment": {
         "prod_apps": 240,
@@ -7312,7 +7312,7 @@
       },
       "concentration": {
         "top10_records_pct": 96.9,
-        "top10_searches_pct": 85.1
+        "top10_searches_pct": 85.6
       },
       "environment": {
         "prod_apps": 261,
@@ -7972,8 +7972,8 @@
         "active_both": 168
       },
       "concentration": {
-        "top10_records_pct": 96.8,
-        "top10_searches_pct": 83.6
+        "top10_records_pct": 96.9,
+        "top10_searches_pct": 84.0
       },
       "environment": {
         "prod_apps": 268,
@@ -8633,8 +8633,8 @@
         "active_both": 185
       },
       "concentration": {
-        "top10_records_pct": 95.5,
-        "top10_searches_pct": 83.0
+        "top10_records_pct": 95.6,
+        "top10_searches_pct": 83.4
       },
       "environment": {
         "prod_apps": 288,
@@ -9294,8 +9294,8 @@
         "active_both": 195
       },
       "concentration": {
-        "top10_records_pct": 95.3,
-        "top10_searches_pct": 82.3
+        "top10_records_pct": 95.4,
+        "top10_searches_pct": 82.6
       },
       "environment": {
         "prod_apps": 311,
@@ -9955,8 +9955,8 @@
         "active_both": 214
       },
       "concentration": {
-        "top10_records_pct": 93.8,
-        "top10_searches_pct": 81.0
+        "top10_records_pct": 93.9,
+        "top10_searches_pct": 81.3
       },
       "environment": {
         "prod_apps": 325,
@@ -10616,8 +10616,8 @@
         "active_both": 221
       },
       "concentration": {
-        "top10_records_pct": 93.0,
-        "top10_searches_pct": 80.3
+        "top10_records_pct": 93.1,
+        "top10_searches_pct": 80.7
       },
       "environment": {
         "prod_apps": 334,
@@ -11278,7 +11278,7 @@
       },
       "concentration": {
         "top10_records_pct": 91.3,
-        "top10_searches_pct": 79.2
+        "top10_searches_pct": 79.5
       },
       "environment": {
         "prod_apps": 349,
@@ -11939,7 +11939,7 @@
       },
       "concentration": {
         "top10_records_pct": 90.6,
-        "top10_searches_pct": 78.5
+        "top10_searches_pct": 78.9
       },
       "environment": {
         "prod_apps": 373,
@@ -12599,8 +12599,8 @@
         "active_both": 257
       },
       "concentration": {
-        "top10_records_pct": 90.3,
-        "top10_searches_pct": 78.0
+        "top10_records_pct": 90.4,
+        "top10_searches_pct": 78.3
       },
       "environment": {
         "prod_apps": 390,
@@ -13261,7 +13261,7 @@
       },
       "concentration": {
         "top10_records_pct": 90.3,
-        "top10_searches_pct": 77.8
+        "top10_searches_pct": 78.1
       },
       "environment": {
         "prod_apps": 406,
@@ -13921,8 +13921,8 @@
         "active_both": 278
       },
       "concentration": {
-        "top10_records_pct": 90.2,
-        "top10_searches_pct": 77.6
+        "top10_records_pct": 90.3,
+        "top10_searches_pct": 77.9
       },
       "environment": {
         "prod_apps": 423,
@@ -14583,7 +14583,7 @@
       },
       "concentration": {
         "top10_records_pct": 90.0,
-        "top10_searches_pct": 77.2
+        "top10_searches_pct": 77.5
       },
       "environment": {
         "prod_apps": 445,
@@ -15244,7 +15244,7 @@
       },
       "concentration": {
         "top10_records_pct": 89.6,
-        "top10_searches_pct": 76.8
+        "top10_searches_pct": 77.1
       },
       "environment": {
         "prod_apps": 453,
@@ -15904,8 +15904,8 @@
         "active_both": 304
       },
       "concentration": {
-        "top10_records_pct": 89.7,
-        "top10_searches_pct": 76.6
+        "top10_records_pct": 89.8,
+        "top10_searches_pct": 76.8
       },
       "environment": {
         "prod_apps": 460,
@@ -16566,7 +16566,7 @@
       },
       "concentration": {
         "top10_records_pct": 89.4,
-        "top10_searches_pct": 75.9
+        "top10_searches_pct": 76.1
       },
       "environment": {
         "prod_apps": 484,
@@ -17226,8 +17226,8 @@
         "active_both": 335
       },
       "concentration": {
-        "top10_records_pct": 88.5,
-        "top10_searches_pct": 74.9
+        "top10_records_pct": 88.6,
+        "top10_searches_pct": 75.1
       },
       "environment": {
         "prod_apps": 499,
@@ -17888,7 +17888,7 @@
       },
       "concentration": {
         "top10_records_pct": 88.5,
-        "top10_searches_pct": 74.5
+        "top10_searches_pct": 74.7
       },
       "environment": {
         "prod_apps": 511,
@@ -18549,7 +18549,7 @@
       },
       "concentration": {
         "top10_records_pct": 85.6,
-        "top10_searches_pct": 73.8
+        "top10_searches_pct": 74.0
       },
       "environment": {
         "prod_apps": 530,
@@ -19210,7 +19210,7 @@
       },
       "concentration": {
         "top10_records_pct": 86.5,
-        "top10_searches_pct": 73.6
+        "top10_searches_pct": 73.8
       },
       "environment": {
         "prod_apps": 534,
@@ -19870,8 +19870,8 @@
         "active_both": 398
       },
       "concentration": {
-        "top10_records_pct": 96.5,
-        "top10_searches_pct": 72.6
+        "top10_records_pct": 96.6,
+        "top10_searches_pct": 72.8
       },
       "environment": {
         "prod_apps": 552,
@@ -20532,7 +20532,7 @@
       },
       "concentration": {
         "top10_records_pct": 87.4,
-        "top10_searches_pct": 72.5
+        "top10_searches_pct": 72.7
       },
       "environment": {
         "prod_apps": 559,
@@ -21192,8 +21192,8 @@
         "active_both": 421
       },
       "concentration": {
-        "top10_records_pct": 88.6,
-        "top10_searches_pct": 72.3
+        "top10_records_pct": 88.7,
+        "top10_searches_pct": 72.5
       },
       "environment": {
         "prod_apps": 578,
@@ -21854,7 +21854,7 @@
       },
       "concentration": {
         "top10_records_pct": 89.0,
-        "top10_searches_pct": 71.9
+        "top10_searches_pct": 72.1
       },
       "environment": {
         "prod_apps": 585,
@@ -22515,7 +22515,7 @@
       },
       "concentration": {
         "top10_records_pct": 90.4,
-        "top10_searches_pct": 71.7
+        "top10_searches_pct": 71.9
       },
       "environment": {
         "prod_apps": 594,
@@ -23144,667 +23144,6 @@
       ]
     },
     {
-      "report_date": "2025-04-28",
-      "report_month": "2025-04",
-      "csv_rows": 695,
-      "totals": {
-        "apps": 694,
-        "active_apps": 694,
-        "deleted_apps": 0,
-        "latest_records": 0,
-        "total_searches": 0
-      },
-      "segmentation": {
-        "prod": 0,
-        "nonprod": 0,
-        "genstudio": 0,
-        "legacy": 694
-      },
-      "name_tags": {
-        "base": 0,
-        "nonprod_shared": 0,
-        "cmprd_genstudio": 0,
-        "cmstg_genstudio": 0,
-        "genstudio": 0,
-        "legacy": 694
-      },
-      "engagement": {
-        "zombie": 694,
-        "records_no_search": 0,
-        "search_no_records": 0,
-        "active_both": 0
-      },
-      "concentration": {
-        "top10_records_pct": 0,
-        "top10_searches_pct": 0
-      },
-      "environment": {
-        "prod_apps": 0,
-        "prod_records": 0,
-        "prod_searches": 0,
-        "nonprod_apps": 0,
-        "nonprod_records": 0,
-        "nonprod_searches": 0,
-        "legacy_apps": 694,
-        "legacy_records": 0,
-        "legacy_searches": 0
-      },
-      "billing": null,
-      "age_distribution": {
-        "0_3mo": 0,
-        "3_6mo": 0,
-        "6_12mo": 0,
-        "12mo_plus": 0,
-        "unknown": 694
-      },
-      "top15_by_records": [
-        {
-          "id": "1CMA1NNM6L",
-          "name": "",
-          "records": 0,
-          "searches": 0,
-          "created": "",
-          "env": "legacy"
-        },
-        {
-          "id": "OEOILPJ8JM",
-          "name": "",
-          "records": 0,
-          "searches": 0,
-          "created": "",
-          "env": "legacy"
-        },
-        {
-          "id": "M4T2C8PMV4",
-          "name": "",
-          "records": 0,
-          "searches": 0,
-          "created": "",
-          "env": "legacy"
-        },
-        {
-          "id": "IAX0EAOGQK",
-          "name": "",
-          "records": 0,
-          "searches": 0,
-          "created": "",
-          "env": "legacy"
-        },
-        {
-          "id": "IKRPY86K23",
-          "name": "",
-          "records": 0,
-          "searches": 0,
-          "created": "",
-          "env": "legacy"
-        },
-        {
-          "id": "H6PAJ8513P",
-          "name": "",
-          "records": 0,
-          "searches": 0,
-          "created": "",
-          "env": "legacy"
-        },
-        {
-          "id": "Q1NIF9CKEC",
-          "name": "",
-          "records": 0,
-          "searches": 0,
-          "created": "",
-          "env": "legacy"
-        },
-        {
-          "id": "V0WRQXZDFF",
-          "name": "",
-          "records": 0,
-          "searches": 0,
-          "created": "",
-          "env": "legacy"
-        },
-        {
-          "id": "PZ9D87WX0S",
-          "name": "",
-          "records": 0,
-          "searches": 0,
-          "created": "",
-          "env": "legacy"
-        },
-        {
-          "id": "C2IH7NN6MG",
-          "name": "",
-          "records": 0,
-          "searches": 0,
-          "created": "",
-          "env": "legacy"
-        },
-        {
-          "id": "FENDKTX353",
-          "name": "",
-          "records": 0,
-          "searches": 0,
-          "created": "",
-          "env": "legacy"
-        },
-        {
-          "id": "BP4F29YQDW",
-          "name": "",
-          "records": 0,
-          "searches": 0,
-          "created": "",
-          "env": "legacy"
-        },
-        {
-          "id": "RM23XD8STN",
-          "name": "",
-          "records": 0,
-          "searches": 0,
-          "created": "",
-          "env": "legacy"
-        },
-        {
-          "id": "SIGQEJB9YT",
-          "name": "",
-          "records": 0,
-          "searches": 0,
-          "created": "",
-          "env": "legacy"
-        },
-        {
-          "id": "BA3WHH8CFK",
-          "name": "",
-          "records": 0,
-          "searches": 0,
-          "created": "",
-          "env": "legacy"
-        }
-      ],
-      "top15_by_searches": [
-        {
-          "id": "1CMA1NNM6L",
-          "name": "",
-          "records": 0,
-          "searches": 0,
-          "created": "",
-          "env": "legacy"
-        },
-        {
-          "id": "OEOILPJ8JM",
-          "name": "",
-          "records": 0,
-          "searches": 0,
-          "created": "",
-          "env": "legacy"
-        },
-        {
-          "id": "M4T2C8PMV4",
-          "name": "",
-          "records": 0,
-          "searches": 0,
-          "created": "",
-          "env": "legacy"
-        },
-        {
-          "id": "IAX0EAOGQK",
-          "name": "",
-          "records": 0,
-          "searches": 0,
-          "created": "",
-          "env": "legacy"
-        },
-        {
-          "id": "IKRPY86K23",
-          "name": "",
-          "records": 0,
-          "searches": 0,
-          "created": "",
-          "env": "legacy"
-        },
-        {
-          "id": "H6PAJ8513P",
-          "name": "",
-          "records": 0,
-          "searches": 0,
-          "created": "",
-          "env": "legacy"
-        },
-        {
-          "id": "Q1NIF9CKEC",
-          "name": "",
-          "records": 0,
-          "searches": 0,
-          "created": "",
-          "env": "legacy"
-        },
-        {
-          "id": "V0WRQXZDFF",
-          "name": "",
-          "records": 0,
-          "searches": 0,
-          "created": "",
-          "env": "legacy"
-        },
-        {
-          "id": "PZ9D87WX0S",
-          "name": "",
-          "records": 0,
-          "searches": 0,
-          "created": "",
-          "env": "legacy"
-        },
-        {
-          "id": "C2IH7NN6MG",
-          "name": "",
-          "records": 0,
-          "searches": 0,
-          "created": "",
-          "env": "legacy"
-        },
-        {
-          "id": "FENDKTX353",
-          "name": "",
-          "records": 0,
-          "searches": 0,
-          "created": "",
-          "env": "legacy"
-        },
-        {
-          "id": "BP4F29YQDW",
-          "name": "",
-          "records": 0,
-          "searches": 0,
-          "created": "",
-          "env": "legacy"
-        },
-        {
-          "id": "RM23XD8STN",
-          "name": "",
-          "records": 0,
-          "searches": 0,
-          "created": "",
-          "env": "legacy"
-        },
-        {
-          "id": "SIGQEJB9YT",
-          "name": "",
-          "records": 0,
-          "searches": 0,
-          "created": "",
-          "env": "legacy"
-        },
-        {
-          "id": "BA3WHH8CFK",
-          "name": "",
-          "records": 0,
-          "searches": 0,
-          "created": "",
-          "env": "legacy"
-        }
-      ],
-      "app_detail": [
-        {
-          "id": "1CMA1NNM6L",
-          "name": "",
-          "env": "legacy",
-          "tag": "legacy",
-          "records": 0,
-          "max_records": 0,
-          "searches": 0,
-          "max_rsum": 0,
-          "created": "",
-          "status": "zombie"
-        },
-        {
-          "id": "OEOILPJ8JM",
-          "name": "",
-          "env": "legacy",
-          "tag": "legacy",
-          "records": 0,
-          "max_records": 0,
-          "searches": 0,
-          "max_rsum": 0,
-          "created": "",
-          "status": "zombie"
-        },
-        {
-          "id": "M4T2C8PMV4",
-          "name": "",
-          "env": "legacy",
-          "tag": "legacy",
-          "records": 0,
-          "max_records": 0,
-          "searches": 0,
-          "max_rsum": 0,
-          "created": "",
-          "status": "zombie"
-        },
-        {
-          "id": "IAX0EAOGQK",
-          "name": "",
-          "env": "legacy",
-          "tag": "legacy",
-          "records": 0,
-          "max_records": 0,
-          "searches": 0,
-          "max_rsum": 0,
-          "created": "",
-          "status": "zombie"
-        },
-        {
-          "id": "IKRPY86K23",
-          "name": "",
-          "env": "legacy",
-          "tag": "legacy",
-          "records": 0,
-          "max_records": 0,
-          "searches": 0,
-          "max_rsum": 0,
-          "created": "",
-          "status": "zombie"
-        },
-        {
-          "id": "H6PAJ8513P",
-          "name": "",
-          "env": "legacy",
-          "tag": "legacy",
-          "records": 0,
-          "max_records": 0,
-          "searches": 0,
-          "max_rsum": 0,
-          "created": "",
-          "status": "zombie"
-        },
-        {
-          "id": "Q1NIF9CKEC",
-          "name": "",
-          "env": "legacy",
-          "tag": "legacy",
-          "records": 0,
-          "max_records": 0,
-          "searches": 0,
-          "max_rsum": 0,
-          "created": "",
-          "status": "zombie"
-        },
-        {
-          "id": "V0WRQXZDFF",
-          "name": "",
-          "env": "legacy",
-          "tag": "legacy",
-          "records": 0,
-          "max_records": 0,
-          "searches": 0,
-          "max_rsum": 0,
-          "created": "",
-          "status": "zombie"
-        },
-        {
-          "id": "PZ9D87WX0S",
-          "name": "",
-          "env": "legacy",
-          "tag": "legacy",
-          "records": 0,
-          "max_records": 0,
-          "searches": 0,
-          "max_rsum": 0,
-          "created": "",
-          "status": "zombie"
-        },
-        {
-          "id": "C2IH7NN6MG",
-          "name": "",
-          "env": "legacy",
-          "tag": "legacy",
-          "records": 0,
-          "max_records": 0,
-          "searches": 0,
-          "max_rsum": 0,
-          "created": "",
-          "status": "zombie"
-        },
-        {
-          "id": "FENDKTX353",
-          "name": "",
-          "env": "legacy",
-          "tag": "legacy",
-          "records": 0,
-          "max_records": 0,
-          "searches": 0,
-          "max_rsum": 0,
-          "created": "",
-          "status": "zombie"
-        },
-        {
-          "id": "BP4F29YQDW",
-          "name": "",
-          "env": "legacy",
-          "tag": "legacy",
-          "records": 0,
-          "max_records": 0,
-          "searches": 0,
-          "max_rsum": 0,
-          "created": "",
-          "status": "zombie"
-        },
-        {
-          "id": "RM23XD8STN",
-          "name": "",
-          "env": "legacy",
-          "tag": "legacy",
-          "records": 0,
-          "max_records": 0,
-          "searches": 0,
-          "max_rsum": 0,
-          "created": "",
-          "status": "zombie"
-        },
-        {
-          "id": "SIGQEJB9YT",
-          "name": "",
-          "env": "legacy",
-          "tag": "legacy",
-          "records": 0,
-          "max_records": 0,
-          "searches": 0,
-          "max_rsum": 0,
-          "created": "",
-          "status": "zombie"
-        },
-        {
-          "id": "BA3WHH8CFK",
-          "name": "",
-          "env": "legacy",
-          "tag": "legacy",
-          "records": 0,
-          "max_records": 0,
-          "searches": 0,
-          "max_rsum": 0,
-          "created": "",
-          "status": "zombie"
-        },
-        {
-          "id": "MU8WJT85CL",
-          "name": "",
-          "env": "legacy",
-          "tag": "legacy",
-          "records": 0,
-          "max_records": 0,
-          "searches": 0,
-          "max_rsum": 0,
-          "created": "",
-          "status": "zombie"
-        },
-        {
-          "id": "NYCI7NR0FR",
-          "name": "",
-          "env": "legacy",
-          "tag": "legacy",
-          "records": 0,
-          "max_records": 0,
-          "searches": 0,
-          "max_rsum": 0,
-          "created": "",
-          "status": "zombie"
-        },
-        {
-          "id": "DLAQ71VC61",
-          "name": "",
-          "env": "legacy",
-          "tag": "legacy",
-          "records": 0,
-          "max_records": 0,
-          "searches": 0,
-          "max_rsum": 0,
-          "created": "",
-          "status": "zombie"
-        },
-        {
-          "id": "6173A7NF57",
-          "name": "",
-          "env": "legacy",
-          "tag": "legacy",
-          "records": 0,
-          "max_records": 0,
-          "searches": 0,
-          "max_rsum": 0,
-          "created": "",
-          "status": "zombie"
-        },
-        {
-          "id": "OFIC6T2SX8",
-          "name": "",
-          "env": "legacy",
-          "tag": "legacy",
-          "records": 0,
-          "max_records": 0,
-          "searches": 0,
-          "max_rsum": 0,
-          "created": "",
-          "status": "zombie"
-        },
-        {
-          "id": "SN2AY24JHB",
-          "name": "",
-          "env": "legacy",
-          "tag": "legacy",
-          "records": 0,
-          "max_records": 0,
-          "searches": 0,
-          "max_rsum": 0,
-          "created": "",
-          "status": "zombie"
-        },
-        {
-          "id": "LMG3WOW75S",
-          "name": "",
-          "env": "legacy",
-          "tag": "legacy",
-          "records": 0,
-          "max_records": 0,
-          "searches": 0,
-          "max_rsum": 0,
-          "created": "",
-          "status": "zombie"
-        },
-        {
-          "id": "2Y73KEPFLO",
-          "name": "",
-          "env": "legacy",
-          "tag": "legacy",
-          "records": 0,
-          "max_records": 0,
-          "searches": 0,
-          "max_rsum": 0,
-          "created": "",
-          "status": "zombie"
-        },
-        {
-          "id": "MHV0RU0UE1",
-          "name": "",
-          "env": "legacy",
-          "tag": "legacy",
-          "records": 0,
-          "max_records": 0,
-          "searches": 0,
-          "max_rsum": 0,
-          "created": "",
-          "status": "zombie"
-        },
-        {
-          "id": "0BJBWLDHP2",
-          "name": "",
-          "env": "legacy",
-          "tag": "legacy",
-          "records": 0,
-          "max_records": 0,
-          "searches": 0,
-          "max_rsum": 0,
-          "created": "",
-          "status": "zombie"
-        },
-        {
-          "id": "H5VB7IUWBY",
-          "name": "",
-          "env": "legacy",
-          "tag": "legacy",
-          "records": 0,
-          "max_records": 0,
-          "searches": 0,
-          "max_rsum": 0,
-          "created": "",
-          "status": "zombie"
-        },
-        {
-          "id": "WV8IVCVEEQ",
-          "name": "",
-          "env": "legacy",
-          "tag": "legacy",
-          "records": 0,
-          "max_records": 0,
-          "searches": 0,
-          "max_rsum": 0,
-          "created": "",
-          "status": "zombie"
-        },
-        {
-          "id": "HWIFX3FLXC",
-          "name": "",
-          "env": "legacy",
-          "tag": "legacy",
-          "records": 0,
-          "max_records": 0,
-          "searches": 0,
-          "max_rsum": 0,
-          "created": "",
-          "status": "zombie"
-        },
-        {
-          "id": "8ERYRF0QPB",
-          "name": "",
-          "env": "legacy",
-          "tag": "legacy",
-          "records": 0,
-          "max_records": 0,
-          "searches": 0,
-          "max_rsum": 0,
-          "created": "",
-          "status": "zombie"
-        },
-        {
-          "id": "NQAFT8EGFT",
-          "name": "",
-          "env": "legacy",
-          "tag": "legacy",
-          "records": 0,
-          "max_records": 0,
-          "searches": 0,
-          "max_rsum": 0,
-          "created": "",
-          "status": "zombie"
-        }
-      ]
-    },
-    {
       "report_date": "2025-05-07",
       "report_month": "2025-05",
       "csv_rows": 188087,
@@ -23836,8 +23175,8 @@
         "active_both": 453
       },
       "concentration": {
-        "top10_records_pct": 91.9,
-        "top10_searches_pct": 71.8
+        "top10_records_pct": 92.0,
+        "top10_searches_pct": 72.1
       },
       "environment": {
         "prod_apps": 610,
@@ -24498,7 +23837,7 @@
       },
       "concentration": {
         "top10_records_pct": 91.8,
-        "top10_searches_pct": 71.9
+        "top10_searches_pct": 72.1
       },
       "environment": {
         "prod_apps": 620,
@@ -25159,7 +24498,7 @@
       },
       "concentration": {
         "top10_records_pct": 92.1,
-        "top10_searches_pct": 72.0
+        "top10_searches_pct": 72.2
       },
       "environment": {
         "prod_apps": 625,
@@ -25820,7 +25159,7 @@
       },
       "concentration": {
         "top10_records_pct": 92.4,
-        "top10_searches_pct": 72.2
+        "top10_searches_pct": 72.5
       },
       "environment": {
         "prod_apps": 642,
@@ -26481,7 +25820,7 @@
       },
       "concentration": {
         "top10_records_pct": 92.6,
-        "top10_searches_pct": 72.8
+        "top10_searches_pct": 73.0
       },
       "environment": {
         "prod_apps": 651,
@@ -27142,7 +26481,7 @@
       },
       "concentration": {
         "top10_records_pct": 92.5,
-        "top10_searches_pct": 73.1
+        "top10_searches_pct": 73.3
       },
       "environment": {
         "prod_apps": 663,
@@ -27803,7 +27142,7 @@
       },
       "concentration": {
         "top10_records_pct": 92.2,
-        "top10_searches_pct": 74.1
+        "top10_searches_pct": 74.3
       },
       "environment": {
         "prod_apps": 672,
@@ -28464,7 +27803,7 @@
       },
       "concentration": {
         "top10_records_pct": 92.2,
-        "top10_searches_pct": 75.0
+        "top10_searches_pct": 75.2
       },
       "environment": {
         "prod_apps": 678,
@@ -29125,7 +28464,7 @@
       },
       "concentration": {
         "top10_records_pct": 91.3,
-        "top10_searches_pct": 75.4
+        "top10_searches_pct": 75.6
       },
       "environment": {
         "prod_apps": 697,
@@ -29785,8 +29124,8 @@
         "active_both": 596
       },
       "concentration": {
-        "top10_records_pct": 90.6,
-        "top10_searches_pct": 75.5
+        "top10_records_pct": 90.7,
+        "top10_searches_pct": 75.6
       },
       "environment": {
         "prod_apps": 712,
@@ -30447,7 +29786,7 @@
       },
       "concentration": {
         "top10_records_pct": 90.3,
-        "top10_searches_pct": 75.5
+        "top10_searches_pct": 75.7
       },
       "environment": {
         "prod_apps": 723,
@@ -31076,667 +30415,6 @@
       ]
     },
     {
-      "report_date": "2025-07-14",
-      "report_month": "2025-07",
-      "csv_rows": 164,
-      "totals": {
-        "apps": 163,
-        "active_apps": 163,
-        "deleted_apps": 0,
-        "latest_records": 0,
-        "total_searches": 0
-      },
-      "segmentation": {
-        "prod": 0,
-        "nonprod": 0,
-        "genstudio": 0,
-        "legacy": 163
-      },
-      "name_tags": {
-        "base": 0,
-        "nonprod_shared": 0,
-        "cmprd_genstudio": 0,
-        "cmstg_genstudio": 0,
-        "genstudio": 0,
-        "legacy": 163
-      },
-      "engagement": {
-        "zombie": 163,
-        "records_no_search": 0,
-        "search_no_records": 0,
-        "active_both": 0
-      },
-      "concentration": {
-        "top10_records_pct": 0,
-        "top10_searches_pct": 0
-      },
-      "environment": {
-        "prod_apps": 0,
-        "prod_records": 0,
-        "prod_searches": 0,
-        "nonprod_apps": 0,
-        "nonprod_records": 0,
-        "nonprod_searches": 0,
-        "legacy_apps": 163,
-        "legacy_records": 0,
-        "legacy_searches": 0
-      },
-      "billing": null,
-      "age_distribution": {
-        "0_3mo": 0,
-        "3_6mo": 0,
-        "6_12mo": 0,
-        "12mo_plus": 0,
-        "unknown": 163
-      },
-      "top15_by_records": [
-        {
-          "id": "RY8Y37NBX4",
-          "name": "",
-          "records": 0,
-          "searches": 0,
-          "created": "",
-          "env": "legacy"
-        },
-        {
-          "id": "KNE8PBHBJ5",
-          "name": "",
-          "records": 0,
-          "searches": 0,
-          "created": "",
-          "env": "legacy"
-        },
-        {
-          "id": "6Q9XY5AXE0",
-          "name": "",
-          "records": 0,
-          "searches": 0,
-          "created": "",
-          "env": "legacy"
-        },
-        {
-          "id": "H9F579RHOQ",
-          "name": "",
-          "records": 0,
-          "searches": 0,
-          "created": "",
-          "env": "legacy"
-        },
-        {
-          "id": "HDNFKFFVA1",
-          "name": "",
-          "records": 0,
-          "searches": 0,
-          "created": "",
-          "env": "legacy"
-        },
-        {
-          "id": "VY1IYFLL3Z",
-          "name": "",
-          "records": 0,
-          "searches": 0,
-          "created": "",
-          "env": "legacy"
-        },
-        {
-          "id": "68O0TLAJBL",
-          "name": "",
-          "records": 0,
-          "searches": 0,
-          "created": "",
-          "env": "legacy"
-        },
-        {
-          "id": "JPGXXG89OG",
-          "name": "",
-          "records": 0,
-          "searches": 0,
-          "created": "",
-          "env": "legacy"
-        },
-        {
-          "id": "4TT293SG9D",
-          "name": "",
-          "records": 0,
-          "searches": 0,
-          "created": "",
-          "env": "legacy"
-        },
-        {
-          "id": "6VSDM9QROM",
-          "name": "",
-          "records": 0,
-          "searches": 0,
-          "created": "",
-          "env": "legacy"
-        },
-        {
-          "id": "OGIM5DN6A6",
-          "name": "",
-          "records": 0,
-          "searches": 0,
-          "created": "",
-          "env": "legacy"
-        },
-        {
-          "id": "YTCZZ8YPUC",
-          "name": "",
-          "records": 0,
-          "searches": 0,
-          "created": "",
-          "env": "legacy"
-        },
-        {
-          "id": "4F653U5REM",
-          "name": "",
-          "records": 0,
-          "searches": 0,
-          "created": "",
-          "env": "legacy"
-        },
-        {
-          "id": "PGNU41A9QI",
-          "name": "",
-          "records": 0,
-          "searches": 0,
-          "created": "",
-          "env": "legacy"
-        },
-        {
-          "id": "BC762RAPCS",
-          "name": "",
-          "records": 0,
-          "searches": 0,
-          "created": "",
-          "env": "legacy"
-        }
-      ],
-      "top15_by_searches": [
-        {
-          "id": "RY8Y37NBX4",
-          "name": "",
-          "records": 0,
-          "searches": 0,
-          "created": "",
-          "env": "legacy"
-        },
-        {
-          "id": "KNE8PBHBJ5",
-          "name": "",
-          "records": 0,
-          "searches": 0,
-          "created": "",
-          "env": "legacy"
-        },
-        {
-          "id": "6Q9XY5AXE0",
-          "name": "",
-          "records": 0,
-          "searches": 0,
-          "created": "",
-          "env": "legacy"
-        },
-        {
-          "id": "H9F579RHOQ",
-          "name": "",
-          "records": 0,
-          "searches": 0,
-          "created": "",
-          "env": "legacy"
-        },
-        {
-          "id": "HDNFKFFVA1",
-          "name": "",
-          "records": 0,
-          "searches": 0,
-          "created": "",
-          "env": "legacy"
-        },
-        {
-          "id": "VY1IYFLL3Z",
-          "name": "",
-          "records": 0,
-          "searches": 0,
-          "created": "",
-          "env": "legacy"
-        },
-        {
-          "id": "68O0TLAJBL",
-          "name": "",
-          "records": 0,
-          "searches": 0,
-          "created": "",
-          "env": "legacy"
-        },
-        {
-          "id": "JPGXXG89OG",
-          "name": "",
-          "records": 0,
-          "searches": 0,
-          "created": "",
-          "env": "legacy"
-        },
-        {
-          "id": "4TT293SG9D",
-          "name": "",
-          "records": 0,
-          "searches": 0,
-          "created": "",
-          "env": "legacy"
-        },
-        {
-          "id": "6VSDM9QROM",
-          "name": "",
-          "records": 0,
-          "searches": 0,
-          "created": "",
-          "env": "legacy"
-        },
-        {
-          "id": "OGIM5DN6A6",
-          "name": "",
-          "records": 0,
-          "searches": 0,
-          "created": "",
-          "env": "legacy"
-        },
-        {
-          "id": "YTCZZ8YPUC",
-          "name": "",
-          "records": 0,
-          "searches": 0,
-          "created": "",
-          "env": "legacy"
-        },
-        {
-          "id": "4F653U5REM",
-          "name": "",
-          "records": 0,
-          "searches": 0,
-          "created": "",
-          "env": "legacy"
-        },
-        {
-          "id": "PGNU41A9QI",
-          "name": "",
-          "records": 0,
-          "searches": 0,
-          "created": "",
-          "env": "legacy"
-        },
-        {
-          "id": "BC762RAPCS",
-          "name": "",
-          "records": 0,
-          "searches": 0,
-          "created": "",
-          "env": "legacy"
-        }
-      ],
-      "app_detail": [
-        {
-          "id": "RY8Y37NBX4",
-          "name": "",
-          "env": "legacy",
-          "tag": "legacy",
-          "records": 0,
-          "max_records": 0,
-          "searches": 0,
-          "max_rsum": 0,
-          "created": "",
-          "status": "zombie"
-        },
-        {
-          "id": "KNE8PBHBJ5",
-          "name": "",
-          "env": "legacy",
-          "tag": "legacy",
-          "records": 0,
-          "max_records": 0,
-          "searches": 0,
-          "max_rsum": 0,
-          "created": "",
-          "status": "zombie"
-        },
-        {
-          "id": "6Q9XY5AXE0",
-          "name": "",
-          "env": "legacy",
-          "tag": "legacy",
-          "records": 0,
-          "max_records": 0,
-          "searches": 0,
-          "max_rsum": 0,
-          "created": "",
-          "status": "zombie"
-        },
-        {
-          "id": "H9F579RHOQ",
-          "name": "",
-          "env": "legacy",
-          "tag": "legacy",
-          "records": 0,
-          "max_records": 0,
-          "searches": 0,
-          "max_rsum": 0,
-          "created": "",
-          "status": "zombie"
-        },
-        {
-          "id": "HDNFKFFVA1",
-          "name": "",
-          "env": "legacy",
-          "tag": "legacy",
-          "records": 0,
-          "max_records": 0,
-          "searches": 0,
-          "max_rsum": 0,
-          "created": "",
-          "status": "zombie"
-        },
-        {
-          "id": "VY1IYFLL3Z",
-          "name": "",
-          "env": "legacy",
-          "tag": "legacy",
-          "records": 0,
-          "max_records": 0,
-          "searches": 0,
-          "max_rsum": 0,
-          "created": "",
-          "status": "zombie"
-        },
-        {
-          "id": "68O0TLAJBL",
-          "name": "",
-          "env": "legacy",
-          "tag": "legacy",
-          "records": 0,
-          "max_records": 0,
-          "searches": 0,
-          "max_rsum": 0,
-          "created": "",
-          "status": "zombie"
-        },
-        {
-          "id": "JPGXXG89OG",
-          "name": "",
-          "env": "legacy",
-          "tag": "legacy",
-          "records": 0,
-          "max_records": 0,
-          "searches": 0,
-          "max_rsum": 0,
-          "created": "",
-          "status": "zombie"
-        },
-        {
-          "id": "4TT293SG9D",
-          "name": "",
-          "env": "legacy",
-          "tag": "legacy",
-          "records": 0,
-          "max_records": 0,
-          "searches": 0,
-          "max_rsum": 0,
-          "created": "",
-          "status": "zombie"
-        },
-        {
-          "id": "6VSDM9QROM",
-          "name": "",
-          "env": "legacy",
-          "tag": "legacy",
-          "records": 0,
-          "max_records": 0,
-          "searches": 0,
-          "max_rsum": 0,
-          "created": "",
-          "status": "zombie"
-        },
-        {
-          "id": "OGIM5DN6A6",
-          "name": "",
-          "env": "legacy",
-          "tag": "legacy",
-          "records": 0,
-          "max_records": 0,
-          "searches": 0,
-          "max_rsum": 0,
-          "created": "",
-          "status": "zombie"
-        },
-        {
-          "id": "YTCZZ8YPUC",
-          "name": "",
-          "env": "legacy",
-          "tag": "legacy",
-          "records": 0,
-          "max_records": 0,
-          "searches": 0,
-          "max_rsum": 0,
-          "created": "",
-          "status": "zombie"
-        },
-        {
-          "id": "4F653U5REM",
-          "name": "",
-          "env": "legacy",
-          "tag": "legacy",
-          "records": 0,
-          "max_records": 0,
-          "searches": 0,
-          "max_rsum": 0,
-          "created": "",
-          "status": "zombie"
-        },
-        {
-          "id": "PGNU41A9QI",
-          "name": "",
-          "env": "legacy",
-          "tag": "legacy",
-          "records": 0,
-          "max_records": 0,
-          "searches": 0,
-          "max_rsum": 0,
-          "created": "",
-          "status": "zombie"
-        },
-        {
-          "id": "BC762RAPCS",
-          "name": "",
-          "env": "legacy",
-          "tag": "legacy",
-          "records": 0,
-          "max_records": 0,
-          "searches": 0,
-          "max_rsum": 0,
-          "created": "",
-          "status": "zombie"
-        },
-        {
-          "id": "QMUNBJTCVW",
-          "name": "",
-          "env": "legacy",
-          "tag": "legacy",
-          "records": 0,
-          "max_records": 0,
-          "searches": 0,
-          "max_rsum": 0,
-          "created": "",
-          "status": "zombie"
-        },
-        {
-          "id": "GO1UZTU81D",
-          "name": "",
-          "env": "legacy",
-          "tag": "legacy",
-          "records": 0,
-          "max_records": 0,
-          "searches": 0,
-          "max_rsum": 0,
-          "created": "",
-          "status": "zombie"
-        },
-        {
-          "id": "XZ14PMUIL4",
-          "name": "",
-          "env": "legacy",
-          "tag": "legacy",
-          "records": 0,
-          "max_records": 0,
-          "searches": 0,
-          "max_rsum": 0,
-          "created": "",
-          "status": "zombie"
-        },
-        {
-          "id": "T33H2ZHXK4",
-          "name": "",
-          "env": "legacy",
-          "tag": "legacy",
-          "records": 0,
-          "max_records": 0,
-          "searches": 0,
-          "max_rsum": 0,
-          "created": "",
-          "status": "zombie"
-        },
-        {
-          "id": "HXXDCWJSP5",
-          "name": "",
-          "env": "legacy",
-          "tag": "legacy",
-          "records": 0,
-          "max_records": 0,
-          "searches": 0,
-          "max_rsum": 0,
-          "created": "",
-          "status": "zombie"
-        },
-        {
-          "id": "NF09XKO887",
-          "name": "",
-          "env": "legacy",
-          "tag": "legacy",
-          "records": 0,
-          "max_records": 0,
-          "searches": 0,
-          "max_rsum": 0,
-          "created": "",
-          "status": "zombie"
-        },
-        {
-          "id": "25OVZV4XKB",
-          "name": "",
-          "env": "legacy",
-          "tag": "legacy",
-          "records": 0,
-          "max_records": 0,
-          "searches": 0,
-          "max_rsum": 0,
-          "created": "",
-          "status": "zombie"
-        },
-        {
-          "id": "2YX5LEIGGW",
-          "name": "",
-          "env": "legacy",
-          "tag": "legacy",
-          "records": 0,
-          "max_records": 0,
-          "searches": 0,
-          "max_rsum": 0,
-          "created": "",
-          "status": "zombie"
-        },
-        {
-          "id": "53Z9Q59MZX",
-          "name": "",
-          "env": "legacy",
-          "tag": "legacy",
-          "records": 0,
-          "max_records": 0,
-          "searches": 0,
-          "max_rsum": 0,
-          "created": "",
-          "status": "zombie"
-        },
-        {
-          "id": "O0KNC15GPL",
-          "name": "",
-          "env": "legacy",
-          "tag": "legacy",
-          "records": 0,
-          "max_records": 0,
-          "searches": 0,
-          "max_rsum": 0,
-          "created": "",
-          "status": "zombie"
-        },
-        {
-          "id": "5HEOA9BNT2",
-          "name": "",
-          "env": "legacy",
-          "tag": "legacy",
-          "records": 0,
-          "max_records": 0,
-          "searches": 0,
-          "max_rsum": 0,
-          "created": "",
-          "status": "zombie"
-        },
-        {
-          "id": "H7JAU6YO7X",
-          "name": "",
-          "env": "legacy",
-          "tag": "legacy",
-          "records": 0,
-          "max_records": 0,
-          "searches": 0,
-          "max_rsum": 0,
-          "created": "",
-          "status": "zombie"
-        },
-        {
-          "id": "BDA9R20WQM",
-          "name": "",
-          "env": "legacy",
-          "tag": "legacy",
-          "records": 0,
-          "max_records": 0,
-          "searches": 0,
-          "max_rsum": 0,
-          "created": "",
-          "status": "zombie"
-        },
-        {
-          "id": "H8NFFVH00Q",
-          "name": "",
-          "env": "legacy",
-          "tag": "legacy",
-          "records": 0,
-          "max_records": 0,
-          "searches": 0,
-          "max_rsum": 0,
-          "created": "",
-          "status": "zombie"
-        },
-        {
-          "id": "UCXFG2R21Z",
-          "name": "",
-          "env": "legacy",
-          "tag": "legacy",
-          "records": 0,
-          "max_records": 0,
-          "searches": 0,
-          "max_rsum": 0,
-          "created": "",
-          "status": "zombie"
-        }
-      ]
-    },
-    {
       "report_date": "2025-07-21",
       "report_month": "2025-07",
       "csv_rows": 268484,
@@ -31769,7 +30447,7 @@
       },
       "concentration": {
         "top10_records_pct": 90.1,
-        "top10_searches_pct": 75.9
+        "top10_searches_pct": 76.1
       },
       "environment": {
         "prod_apps": 728,
@@ -32430,7 +31108,7 @@
       },
       "concentration": {
         "top10_records_pct": 89.5,
-        "top10_searches_pct": 76.0
+        "top10_searches_pct": 76.2
       },
       "environment": {
         "prod_apps": 736,
@@ -33090,8 +31768,8 @@
         "active_both": 641
       },
       "concentration": {
-        "top10_records_pct": 88.1,
-        "top10_searches_pct": 76.5
+        "top10_records_pct": 88.2,
+        "top10_searches_pct": 76.7
       },
       "environment": {
         "prod_apps": 756,
@@ -33752,7 +32430,7 @@
       },
       "concentration": {
         "top10_records_pct": 87.9,
-        "top10_searches_pct": 75.9
+        "top10_searches_pct": 76.0
       },
       "environment": {
         "prod_apps": 765,
@@ -34413,7 +33091,7 @@
       },
       "concentration": {
         "top10_records_pct": 86.1,
-        "top10_searches_pct": 78.4
+        "top10_searches_pct": 78.5
       },
       "environment": {
         "prod_apps": 789,
@@ -35074,7 +33752,7 @@
       },
       "concentration": {
         "top10_records_pct": 84.4,
-        "top10_searches_pct": 78.6
+        "top10_searches_pct": 78.7
       },
       "environment": {
         "prod_apps": 799,
@@ -35735,7 +34413,7 @@
       },
       "concentration": {
         "top10_records_pct": 84.3,
-        "top10_searches_pct": 79.2
+        "top10_searches_pct": 79.3
       },
       "environment": {
         "prod_apps": 805,
@@ -36396,7 +35074,7 @@
       },
       "concentration": {
         "top10_records_pct": 84.0,
-        "top10_searches_pct": 79.3
+        "top10_searches_pct": 79.4
       },
       "environment": {
         "prod_apps": 827,
@@ -37057,7 +35735,7 @@
       },
       "concentration": {
         "top10_records_pct": 83.8,
-        "top10_searches_pct": 79.1
+        "top10_searches_pct": 79.2
       },
       "environment": {
         "prod_apps": 831,
@@ -37718,7 +36396,7 @@
       },
       "concentration": {
         "top10_records_pct": 83.6,
-        "top10_searches_pct": 79.0
+        "top10_searches_pct": 79.2
       },
       "environment": {
         "prod_apps": 843,
@@ -38379,7 +37057,7 @@
       },
       "concentration": {
         "top10_records_pct": 83.5,
-        "top10_searches_pct": 78.8
+        "top10_searches_pct": 79.0
       },
       "environment": {
         "prod_apps": 855,
@@ -39040,7 +37718,7 @@
       },
       "concentration": {
         "top10_records_pct": 83.3,
-        "top10_searches_pct": 78.4
+        "top10_searches_pct": 78.6
       },
       "environment": {
         "prod_apps": 863,
@@ -39700,8 +38378,8 @@
         "active_both": 703
       },
       "concentration": {
-        "top10_records_pct": 83.8,
-        "top10_searches_pct": 57.6
+        "top10_records_pct": 82.5,
+        "top10_searches_pct": 78.6
       },
       "environment": {
         "prod_apps": 868,
@@ -40384,7 +39062,7 @@
       },
       "concentration": {
         "top10_records_pct": 81.5,
-        "top10_searches_pct": 78.3
+        "top10_searches_pct": 78.5
       },
       "environment": {
         "prod_apps": 872,
@@ -41045,7 +39723,7 @@
       },
       "concentration": {
         "top10_records_pct": 81.0,
-        "top10_searches_pct": 78.0
+        "top10_searches_pct": 78.2
       },
       "environment": {
         "prod_apps": 880,
@@ -41706,7 +40384,7 @@
       },
       "concentration": {
         "top10_records_pct": 80.1,
-        "top10_searches_pct": 77.3
+        "top10_searches_pct": 77.5
       },
       "environment": {
         "prod_apps": 881,
@@ -42367,7 +41045,7 @@
       },
       "concentration": {
         "top10_records_pct": 79.6,
-        "top10_searches_pct": 76.7
+        "top10_searches_pct": 76.9
       },
       "environment": {
         "prod_apps": 915,
@@ -43028,7 +41706,7 @@
       },
       "concentration": {
         "top10_records_pct": 79.5,
-        "top10_searches_pct": 76.1
+        "top10_searches_pct": 76.4
       },
       "environment": {
         "prod_apps": 928,
@@ -43688,8 +42366,8 @@
         "active_both": 779
       },
       "concentration": {
-        "top10_records_pct": 77.5,
-        "top10_searches_pct": 75.1
+        "top10_records_pct": 77.6,
+        "top10_searches_pct": 75.5
       },
       "environment": {
         "prod_apps": 943,
@@ -44350,7 +43028,7 @@
       },
       "concentration": {
         "top10_records_pct": 77.1,
-        "top10_searches_pct": 74.4
+        "top10_searches_pct": 74.8
       },
       "environment": {
         "prod_apps": 951,
@@ -45011,7 +43689,7 @@
       },
       "concentration": {
         "top10_records_pct": 76.3,
-        "top10_searches_pct": 73.7
+        "top10_searches_pct": 74.0
       },
       "environment": {
         "prod_apps": 962,
@@ -45672,7 +44350,7 @@
       },
       "concentration": {
         "top10_records_pct": 76.1,
-        "top10_searches_pct": 76.9
+        "top10_searches_pct": 77.1
       },
       "environment": {
         "prod_apps": 985,
@@ -46333,7 +45011,7 @@
       },
       "concentration": {
         "top10_records_pct": 75.0,
-        "top10_searches_pct": 76.2
+        "top10_searches_pct": 76.4
       },
       "environment": {
         "prod_apps": 991,
@@ -46993,8 +45671,8 @@
         "active_both": 807
       },
       "concentration": {
-        "top10_records_pct": 73.4,
-        "top10_searches_pct": 75.5
+        "top10_records_pct": 73.5,
+        "top10_searches_pct": 75.6
       },
       "environment": {
         "prod_apps": 1000,
@@ -47654,8 +46332,8 @@
         "active_both": 800
       },
       "concentration": {
-        "top10_records_pct": 73.4,
-        "top10_searches_pct": 75.6
+        "top10_records_pct": 73.5,
+        "top10_searches_pct": 75.7
       },
       "environment": {
         "prod_apps": 1000,
@@ -48315,8 +46993,8 @@
         "active_both": 797
       },
       "concentration": {
-        "top10_records_pct": 73.4,
-        "top10_searches_pct": 75.5
+        "top10_records_pct": 73.5,
+        "top10_searches_pct": 75.7
       },
       "environment": {
         "prod_apps": 1000,
@@ -48976,8 +47654,8 @@
         "active_both": 848
       },
       "concentration": {
-        "top10_records_pct": 71.9,
-        "top10_searches_pct": 68.1
+        "top10_records_pct": 72.0,
+        "top10_searches_pct": 68.3
       },
       "environment": {
         "prod_apps": 1043,
@@ -49637,8 +48315,8 @@
         "active_both": 866
       },
       "concentration": {
-        "top10_records_pct": 71.5,
-        "top10_searches_pct": 67.9
+        "top10_records_pct": 71.6,
+        "top10_searches_pct": 68.0
       },
       "environment": {
         "prod_apps": 1053,
@@ -50298,8 +48976,8 @@
         "active_both": 878
       },
       "concentration": {
-        "top10_records_pct": 71.5,
-        "top10_searches_pct": 67.5
+        "top10_records_pct": 71.6,
+        "top10_searches_pct": 67.6
       },
       "environment": {
         "prod_apps": 1079,
@@ -50959,8 +49637,8 @@
         "active_both": 866
       },
       "concentration": {
-        "top10_records_pct": 71.5,
-        "top10_searches_pct": 67.9
+        "top10_records_pct": 71.6,
+        "top10_searches_pct": 68.0
       },
       "environment": {
         "prod_apps": 1053,
@@ -51620,8 +50298,8 @@
         "active_both": 901
       },
       "concentration": {
-        "top10_records_pct": 71.7,
-        "top10_searches_pct": 30.7
+        "top10_records_pct": 71.5,
+        "top10_searches_pct": 66.7
       },
       "environment": {
         "prod_apps": 1108,
@@ -52303,8 +50981,8 @@
         "active_both": 860
       },
       "concentration": {
-        "top10_records_pct": 72.0,
-        "top10_searches_pct": 31.6
+        "top10_records_pct": 71.6,
+        "top10_searches_pct": 68.0
       },
       "environment": {
         "prod_apps": 1053,
@@ -52986,8 +51664,8 @@
         "active_both": 932
       },
       "concentration": {
-        "top10_records_pct": 71.9,
-        "top10_searches_pct": 30.5
+        "top10_records_pct": 70.5,
+        "top10_searches_pct": 66.9
       },
       "environment": {
         "prod_apps": 1122,
@@ -53669,8 +52347,8 @@
         "active_both": 934
       },
       "concentration": {
-        "top10_records_pct": 72.2,
-        "top10_searches_pct": 30.7
+        "top10_records_pct": 57.7,
+        "top10_searches_pct": 66.8
       },
       "environment": {
         "prod_apps": 1117,
@@ -54352,8 +53030,8 @@
         "active_both": 953
       },
       "concentration": {
-        "top10_records_pct": 109.6,
-        "top10_searches_pct": 30.8
+        "top10_records_pct": 57.1,
+        "top10_searches_pct": 66.8
       },
       "environment": {
         "prod_apps": 1088,
@@ -55035,8 +53713,8 @@
         "active_both": 959
       },
       "concentration": {
-        "top10_records_pct": 109.1,
-        "top10_searches_pct": 30.5
+        "top10_records_pct": 57.1,
+        "top10_searches_pct": 66.4
       },
       "environment": {
         "prod_apps": 1098,
@@ -55718,8 +54396,8 @@
         "active_both": 963
       },
       "concentration": {
-        "top10_records_pct": 108.4,
-        "top10_searches_pct": 30.2
+        "top10_records_pct": 56.4,
+        "top10_searches_pct": 66.2
       },
       "environment": {
         "prod_apps": 1121,
@@ -56370,117 +55048,6 @@
       ]
     },
     {
-      "report_date": "2026-05-19",
-      "report_month": "2026-05",
-      "csv_rows": 675,
-      "totals": {
-        "apps": 1,
-        "active_apps": 1481,
-        "deleted_apps": 0,
-        "latest_records": 27134206,
-        "total_searches": 42247788
-      },
-      "segmentation": {
-        "prod": 1,
-        "nonprod": 0,
-        "genstudio": 0,
-        "legacy": 0
-      },
-      "name_tags": {
-        "base": 1,
-        "nonprod_shared": 0,
-        "cmprd_genstudio": 0,
-        "cmstg_genstudio": 0,
-        "genstudio": 0,
-        "legacy": 0
-      },
-      "engagement": {
-        "zombie": 0,
-        "records_no_search": 0,
-        "search_no_records": 0,
-        "active_both": 1481
-      },
-      "concentration": {
-        "top10_records_pct": 0.0,
-        "top10_searches_pct": 0.0
-      },
-      "environment": {
-        "prod_apps": 1,
-        "prod_records": 67,
-        "prod_searches": 825,
-        "nonprod_apps": 0,
-        "nonprod_records": 0,
-        "nonprod_searches": 0,
-        "legacy_apps": 0,
-        "legacy_records": 0,
-        "legacy_searches": 0
-      },
-      "billing": {
-        "source": "stage_prod_parent_agg_stat",
-        "prod": {
-          "parent_id": "EX9JOVML7S",
-          "billing_period_start": "2024-02-02",
-          "billing_period_end": "2026-05-17",
-          "billable_search_requests": 42247788,
-          "billable_records": 27134206,
-          "period_end_live_apps": 1481,
-          "deleted_in_period_apps": 473,
-          "provisioned_apps": 1842
-        },
-        "staging": {
-          "parent_id": "J50O6J0MJP",
-          "billing_period_start": "2024-02-02",
-          "billing_period_end": "2026-05-17",
-          "billable_search_requests": 68283250,
-          "billable_records": 597461,
-          "period_end_live_apps": 91,
-          "deleted_in_period_apps": 842,
-          "provisioned_apps": 881
-        }
-      },
-      "age_distribution": {
-        "0_3mo": 0,
-        "3_6mo": 0,
-        "6_12mo": 0,
-        "12mo_plus": 1,
-        "unknown": 0
-      },
-      "top15_by_records": [
-        {
-          "id": "LPQPXALQ8O",
-          "name": "cm-p131724-e1287479",
-          "records": 67,
-          "searches": 825,
-          "created": "2024-07-12",
-          "env": "prod"
-        }
-      ],
-      "top15_by_searches": [
-        {
-          "id": "LPQPXALQ8O",
-          "name": "cm-p131724-e1287479",
-          "records": 67,
-          "searches": 825,
-          "created": "2024-07-12",
-          "env": "prod"
-        }
-      ],
-      "app_detail": [
-        {
-          "id": "LPQPXALQ8O",
-          "name": "cm-p131724-e1287479",
-          "env": "prod",
-          "tag": "base",
-          "records": 67,
-          "max_records": 71,
-          "searches": 825,
-          "max_rsum": 825,
-          "created": "2024-07-12",
-          "status": "active"
-        }
-      ]
-    },
-    {
       "report_date": "2026-05-31",
       "report_month": "2026-05",
       "csv_rows": 242762,
@@ -56512,8 +55079,8 @@
         "active_both": 1157
       },
       "concentration": {
-        "top10_records_pct": 106.4,
-        "top10_searches_pct": 29.9
+        "top10_records_pct": 54.6,
+        "top10_searches_pct": 65.7
       },
       "environment": {
         "prod_apps": 1099,
@@ -57195,8 +55762,8 @@
         "active_both": 1178
       },
       "concentration": {
-        "top10_records_pct": 105.3,
-        "top10_searches_pct": 30.0
+        "top10_records_pct": 54.1,
+        "top10_searches_pct": 65.8
       },
       "environment": {
         "prod_apps": 1107,
@@ -75350,8 +73917,8 @@
         "active_both": 1183
       },
       "concentration": {
-        "top10_records_pct": 101.1,
-        "top10_searches_pct": 30.0
+        "top10_records_pct": 55.7,
+        "top10_searches_pct": 65.7
       },
       "environment": {
         "prod_apps": 1112,
@@ -93500,7 +92067,7 @@
       "genstudio": 0,
       "zombie": 20,
       "top10_rec_pct": 99.2,
-      "top10_srch_pct": 90.9,
+      "top10_srch_pct": 91.7,
       "prod_records": 605854,
       "prod_searches": 169590,
       "nonprod_records": 0,
@@ -93518,8 +92085,8 @@
       "nonprod": 0,
       "genstudio": 0,
       "zombie": 42,
-      "top10_rec_pct": 99.0,
-      "top10_srch_pct": 90.1,
+      "top10_rec_pct": 99.1,
+      "top10_srch_pct": 91.0,
       "prod_records": 610715,
       "prod_searches": 245915,
       "nonprod_records": 0,
@@ -93538,7 +92105,7 @@
       "genstudio": 0,
       "zombie": 55,
       "top10_rec_pct": 97.8,
-      "top10_srch_pct": 87.7,
+      "top10_srch_pct": 88.2,
       "prod_records": 1421899,
       "prod_searches": 403974,
       "nonprod_records": 0,
@@ -93556,8 +92123,8 @@
       "nonprod": 0,
       "genstudio": 0,
       "zombie": 74,
-      "top10_rec_pct": 95.5,
-      "top10_srch_pct": 83.0,
+      "top10_rec_pct": 95.6,
+      "top10_srch_pct": 83.4,
       "prod_records": 1546078,
       "prod_searches": 656260,
       "nonprod_records": 0,
@@ -93575,8 +92142,8 @@
       "nonprod": 0,
       "genstudio": 0,
       "zombie": 76,
-      "top10_rec_pct": 93.0,
-      "top10_srch_pct": 80.3,
+      "top10_rec_pct": 93.1,
+      "top10_srch_pct": 80.7,
       "prod_records": 2228641,
       "prod_searches": 828741,
       "nonprod_records": 0,
@@ -93594,8 +92161,8 @@
       "nonprod": 1,
       "genstudio": 0,
       "zombie": 87,
-      "top10_rec_pct": 90.3,
-      "top10_srch_pct": 78.0,
+      "top10_rec_pct": 90.4,
+      "top10_srch_pct": 78.3,
       "prod_records": 3155663,
       "prod_searches": 1046669,
       "nonprod_records": 0,
@@ -93614,7 +92181,7 @@
       "genstudio": 0,
       "zombie": 105,
       "top10_rec_pct": 89.6,
-      "top10_srch_pct": 76.8,
+      "top10_srch_pct": 77.1,
       "prod_records": 3246790,
       "prod_searches": 1364691,
       "nonprod_records": 16006,
@@ -93633,7 +92200,7 @@
       "genstudio": 0,
       "zombie": 111,
       "top10_rec_pct": 88.5,
-      "top10_srch_pct": 74.5,
+      "top10_srch_pct": 74.7,
       "prod_records": 4266934,
       "prod_searches": 1882019,
       "nonprod_records": 16265,
@@ -93652,7 +92219,7 @@
       "genstudio": 0,
       "zombie": 108,
       "top10_rec_pct": 87.4,
-      "top10_srch_pct": 72.5,
+      "top10_srch_pct": 72.7,
       "prod_records": 9219709,
       "prod_searches": 2773391,
       "nonprod_records": 24859,
@@ -93661,7 +92228,7 @@
     {
       "month": "2025-04",
       "report_date": "2025-04-28",
-      "weeks_in_month": 4,
+      "weeks_in_month": 3,
       "apps": 658,
       "records": 20229648,
       "searches": 5474668,
@@ -93671,7 +92238,7 @@
       "genstudio": 0,
       "zombie": 125,
       "top10_rec_pct": 90.4,
-      "top10_srch_pct": 71.7,
+      "top10_srch_pct": 71.9,
       "prod_records": 16390661,
       "prod_searches": 3817388,
       "nonprod_records": 27227,
@@ -93690,7 +92257,7 @@
       "genstudio": 0,
       "zombie": 136,
       "top10_rec_pct": 92.4,
-      "top10_srch_pct": 72.2,
+      "top10_srch_pct": 72.5,
       "prod_records": 22686273,
       "prod_searches": 5162846,
       "nonprod_records": 33287,
@@ -93709,7 +92276,7 @@
       "genstudio": 0,
       "zombie": 146,
       "top10_rec_pct": 91.3,
-      "top10_srch_pct": 75.4,
+      "top10_srch_pct": 75.6,
       "prod_records": 26344763,
       "prod_searches": 7939484,
       "nonprod_records": 43537,
@@ -93718,7 +92285,7 @@
     {
       "month": "2025-07",
       "report_date": "2025-07-28",
-      "weeks_in_month": 5,
+      "weeks_in_month": 4,
       "apps": 885,
       "records": 31226216,
       "searches": 12719219,
@@ -93728,7 +92295,7 @@
       "genstudio": 0,
       "zombie": 158,
       "top10_rec_pct": 89.5,
-      "top10_srch_pct": 76.0,
+      "top10_srch_pct": 76.2,
       "prod_records": 27241563,
       "prod_searches": 9949570,
       "nonprod_records": 157356,
@@ -93747,7 +92314,7 @@
       "genstudio": 0,
       "zombie": 160,
       "top10_rec_pct": 87.9,
-      "top10_srch_pct": 75.9,
+      "top10_srch_pct": 76.0,
       "prod_records": 25113443,
       "prod_searches": 11268231,
       "nonprod_records": 242452,
@@ -93766,7 +92333,7 @@
       "genstudio": 0,
       "zombie": 201,
       "top10_rec_pct": 83.8,
-      "top10_srch_pct": 79.1,
+      "top10_srch_pct": 79.2,
       "prod_records": 25869423,
       "prod_searches": 11179783,
       "nonprod_records": 341229,
@@ -93784,8 +92351,8 @@
       "nonprod": 191,
       "genstudio": 0,
       "zombie": 195,
-      "top10_rec_pct": 83.8,
-      "top10_srch_pct": 57.6,
+      "top10_rec_pct": 82.5,
+      "top10_srch_pct": 78.6,
       "prod_records": 26193402,
       "prod_searches": 12015867,
       "nonprod_records": 394290,
@@ -93804,7 +92371,7 @@
       "genstudio": 0,
       "zombie": 196,
       "top10_rec_pct": 80.1,
-      "top10_srch_pct": 77.3,
+      "top10_srch_pct": 77.5,
       "prod_records": 26717487,
       "prod_searches": 12538981,
       "nonprod_records": 429754,
@@ -93823,7 +92390,7 @@
       "genstudio": 0,
       "zombie": 216,
       "top10_rec_pct": 79.5,
-      "top10_srch_pct": 76.1,
+      "top10_srch_pct": 76.4,
       "prod_records": 27308628,
       "prod_searches": 12151527,
       "nonprod_records": 449936,
@@ -93842,7 +92409,7 @@
       "genstudio": 0,
       "zombie": 232,
       "top10_rec_pct": 76.3,
-      "top10_srch_pct": 73.7,
+      "top10_srch_pct": 74.0,
       "prod_records": 28224666,
       "prod_searches": 11224030,
       "nonprod_records": 1165820,
@@ -93860,8 +92427,8 @@
       "nonprod": 272,
       "genstudio": 0,
       "zombie": 242,
-      "top10_rec_pct": 73.4,
-      "top10_srch_pct": 75.6,
+      "top10_rec_pct": 73.5,
+      "top10_srch_pct": 75.7,
       "prod_records": 30457542,
       "prod_searches": 19203040,
       "nonprod_records": 1465729,
@@ -93879,8 +92446,8 @@
       "nonprod": 297,
       "genstudio": 0,
       "zombie": 247,
-      "top10_rec_pct": 71.5,
-      "top10_srch_pct": 67.9,
+      "top10_rec_pct": 71.6,
+      "top10_srch_pct": 68.0,
       "prod_records": 32786855,
       "prod_searches": 13271094,
       "nonprod_records": 2081196,
@@ -93898,8 +92465,8 @@
       "nonprod": 339,
       "genstudio": 0,
       "zombie": 256,
-      "top10_rec_pct": 72.2,
-      "top10_srch_pct": 30.7,
+      "top10_rec_pct": 57.7,
+      "top10_srch_pct": 66.8,
       "prod_records": 20012249,
       "prod_searches": 15834478,
       "nonprod_records": 2346033,
@@ -93908,7 +92475,7 @@
     {
       "month": "2026-05",
       "report_date": "2026-05-31",
-      "weeks_in_month": 5,
+      "weeks_in_month": 4,
       "apps": 1468,
       "records": 27742426,
       "searches": 44046070,
@@ -93917,8 +92484,8 @@
       "nonprod": 365,
       "genstudio": 0,
       "zombie": 29,
-      "top10_rec_pct": 106.4,
-      "top10_srch_pct": 29.9,
+      "top10_rec_pct": 54.6,
+      "top10_srch_pct": 65.7,
       "prod_records": 21751562,
       "prod_searches": 17834415,
       "nonprod_records": 3017993,
@@ -93936,8 +92503,8 @@
       "nonprod": 371,
       "genstudio": 0,
       "zombie": 37,
-      "top10_rec_pct": 101.1,
-      "top10_srch_pct": 30.0,
+      "top10_rec_pct": 55.7,
+      "top10_srch_pct": 65.7,
       "prod_records": 24819656,
       "prod_searches": 18588088,
       "nonprod_records": 3098024,
@@ -94163,6 +92730,13 @@
       "created": "2024-07-02"
     },
     {
+      "id": "BA3WHH8CFK",
+      "name": "cm-p55390-e390952",
+      "records": 63795,
+      "searches": 506,
+      "created": "2024-06-28"
+    },
+    {
       "id": "WAFADBF8DZ",
       "name": "cm-p64403-e544653-nonprod-shared",
       "records": 62063,
@@ -94287,13 +92861,6 @@
       "records": 10767,
       "searches": 75097,
       "created": "2024-06-28"
-    },
-    {
-      "id": "NYCI7NR0FR",
-      "name": "cm-p138888-e1411788",
-      "records": 9830,
-      "searches": 27,
-      "created": "7/31/24"
     }
   ],
   "contract": {
@@ -94304,6 +92871,16 @@
     "apps_quota": 1500,
     "records_quota": 50000000,
     "searches_quota": 75000000,
-    "annual_rate": 739520
+    "annual_rate": 739520,
+    "term_search_basis": "combined",
+    "term_records_basis": "combined",
+    "apps_basis": "prod",
+    "term_start_baseline": {
+      "as_of": "2026-02-01",
+      "source": "3-Feb-2026 report parent-summary view (no billing CSV that week)",
+      "search_prod": 29229775,
+      "search_staging": 39182658,
+      "search_combined": 68412433
+    }
   }
 }
