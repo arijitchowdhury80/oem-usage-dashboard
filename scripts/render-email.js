@@ -35,7 +35,7 @@ function fmtDate(ymd) {
 }
 function pct(n, q) { return q > 0 ? (n / q * 100) : 0; }
 
-// ── compute everything term-relative ──
+// ── compute model — lifetime prod-only basis (matches hex billing dashboard) ──
 function computeModel(data) {
   const c = data.contract;
   const latest = data.weekly_snapshots
@@ -43,31 +43,27 @@ function computeModel(data) {
     .sort((a, b) => b.report_date.localeCompare(a.report_date))[0];
   const prod = latest.billing.prod, stg = latest.billing.staging;
 
-  const baseline = c.term_start_baseline.search_combined;
-  const curSearchCombined = prod.billable_search_requests + stg.billable_search_requests;
-  const termSearch = curSearchCombined - baseline;            // searches used THIS term
-  const termSearchProd = prod.billable_search_requests - c.term_start_baseline.search_prod;
-  const termSearchStg = stg.billable_search_requests - c.term_start_baseline.search_staging;
+  const search = prod.billable_search_requests;               // lifetime prod-only
+  const records = prod.billable_records;                       // prod-only
+  const apps = prod.period_end_live_apps;                      // prod parent only
 
-  const recordsCombined = prod.billable_records + stg.billable_records; // monthly measure, not cumulative
-  const apps = prod.period_end_live_apps;                     // prod parent only
-
-  // pacing + projection (search)
+  // billing period info
+  const periodStart = prod.billing_period_start.slice(0, 10);
   const periodEnd = (prod.billing_period_end || latest.report_date).slice(0, 10);
-  const elapsedDays = dayNum(periodEnd) - dayNum(c.start);
+
+  // pacing + projection (search, lifetime basis)
+  const elapsedDays = dayNum(periodEnd) - dayNum(periodStart);
   const termDays = dayNum(c.end) - dayNum(c.start) + 1;
-  const ratePerDay = elapsedDays > 0 ? termSearch / elapsedDays : 0;
-  const remaining = c.searches_quota - termSearch;
+  const ratePerDay = elapsedDays > 0 ? search / elapsedDays : 0;
+  const remaining = c.searches_quota - search;
   const daysToQuota = ratePerDay > 0 ? remaining / ratePerDay : Infinity;
   const exhaustLabel = isFinite(daysToQuota) ? addDays(periodEnd, daysToQuota) : 'beyond term';
-  const fullTermProj = Math.round(ratePerDay * termDays);
-  const stgShareOfBurn = termSearch > 0 ? (termSearchStg / termSearch * 100) : 0;
+  const elapsedPct = pct(dayNum(periodEnd) - dayNum(c.start), termDays);
 
   // footprint env split (within production parent) — shares of active child apps
   const e = latest.environment, seg = latest.segmentation;
   const recTot = e.prod_records + e.nonprod_records + e.legacy_records || 1;
   const srcTot = e.prod_searches + e.nonprod_searches + e.legacy_searches || 1;
-  const appTot = seg.prod + seg.nonprod + seg.legacy || 1;
   const split = {
     prod:    { apps: seg.prod,    recPct: pct(e.prod_records, recTot),    srcPct: pct(e.prod_searches, srcTot) },
     nonprod: { apps: seg.nonprod, recPct: pct(e.nonprod_records, recTot), srcPct: pct(e.nonprod_searches, srcTot) },
@@ -78,15 +74,12 @@ function computeModel(data) {
   const engTotal = eng.active_both + eng.records_no_search + eng.search_no_records + eng.zombie || 1;
 
   return {
-    dateStr: fmtDate(latest.report_date), periodEnd, termStart: c.start, termEnd: c.end,
+    dateStr: fmtDate(latest.report_date), periodStart, periodEnd, termStart: c.start, termEnd: c.end,
     apps, appsPct: pct(apps, c.apps_quota), appsQuota: c.apps_quota,
-    recordsCombined, recordsPct: pct(recordsCombined, c.records_quota), recordsQuota: c.records_quota,
-    termSearch, searchPct: pct(termSearch, c.searches_quota), searchQuota: c.searches_quota,
-    termSearchProd, termSearchStg, stgShareOfBurn,
-    elapsedPct: pct(elapsedDays, termDays), exhaustLabel, fullTermProj,
-    fullTermPct: pct(fullTermProj, c.searches_quota), remaining,
-    prodSearch: prod.billable_search_requests, stgSearch: stg.billable_search_requests,
-    prodRecords: prod.billable_records, stgRecords: stg.billable_records, stgApps: stg.period_end_live_apps,
+    records, recordsPct: pct(records, c.records_quota), recordsQuota: c.records_quota,
+    search, searchPct: pct(search, c.searches_quota), searchQuota: c.searches_quota,
+    elapsedPct, exhaustLabel, remaining,
+    stgSearch: stg.billable_search_requests, stgRecords: stg.billable_records, stgApps: stg.period_end_live_apps,
     split, eng, engTotal,
   };
 }
@@ -127,11 +120,9 @@ function quotaRowNarrow(label, usedPct, sub, color) {
 
 function buildEmailBody(data) {
   const m = computeModel(data);
-  // Search color reflects the OUTLOOK, not just the point-in-time %: if it's projected to
-  // exceed the quota by term end, it's a watch (amber) even when current usage is < 70%.
-  const searchColor = m.searchPct >= 100 ? '#dc2626'
-    : (m.searchPct >= 85 || m.fullTermPct >= 100) ? '#d97706'
-    : '#16a34a';
+  const searchColor = m.searchPct >= 85 ? '#d97706' : m.searchPct >= 100 ? '#dc2626' : '#16a34a';
+  const recordsColor = m.recordsPct >= 85 ? '#d97706' : '#16a34a';
+  const appsColor = m.appsPct >= 95 ? '#dc2626' : m.appsPct >= 85 ? '#d97706' : '#16a34a';
   const splitRow = (dot, name, tag, s) => `
     <tr style="background:#fbfcfe">
       <td style="padding:5px 12px 5px 22px;font-size:12px;color:${dot}">● ${name} <span style="color:#9698C3">${tag}</span></td>
@@ -147,7 +138,7 @@ function buildEmailBody(data) {
   return `<!DOCTYPE html>
 <html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"></head>
 <body style="margin:0;padding:0;background:#f8f9fb;font-family:-apple-system,'Segoe UI',Helvetica,Arial,sans-serif;color:#23263B">
-<div style="max-width:520px;margin:0 auto;padding:18px 20px 12px;font-size:14px;color:#23263B;line-height:1.6">Hello everyone,<br><br>Below is the Adobe&lt;&gt;Algolia usage summary as of ${m.dateStr}, against the current contract term (${fmtDate(m.termStart)} – ${fmtDate(m.termEnd)}).</div>
+<div style="max-width:520px;margin:0 auto;padding:18px 20px 12px;font-size:14px;color:#23263B;line-height:1.6">Hello everyone,<br><br>Below is the Adobe&lt;&gt;Algolia usage summary as of ${m.dateStr} (billing period ${fmtDate(m.periodStart)} – ${fmtDate(m.periodEnd)}).</div>
 <table width="100%" cellpadding="0" cellspacing="0" style="max-width:520px;margin:0 auto;background:#ffffff;border:1px solid #e5e7eb;border-radius:8px">
 
 <tr><td style="padding:16px 22px;border-bottom:1px solid #eef0f4">
@@ -158,7 +149,7 @@ function buildEmailBody(data) {
 <!-- BOTTOM LINE -->
 <tr><td style="padding:16px 22px 4px">
   <div style="font-size:11px;font-weight:600;color:#003DFF;letter-spacing:0.6px;margin-bottom:6px">BOTTOM LINE</div>
-  <div style="font-size:14.5px;line-height:1.5;color:#1a1d35;font-weight:600">The one to watch is <span style="color:${searchColor}">search</span> — at the current pace it exhausts this term's full allowance well before renewal (see below), with staging/test driving the bulk of the burn. Apps are at the cap; records are comfortable.</div>
+  <div style="font-size:14.5px;line-height:1.5;color:#1a1d35;font-weight:600">Search is at <span style="color:${searchColor}">${m.searchPct.toFixed(0)}%</span> of quota, records at ${m.recordsPct.toFixed(0)}%, and apps at ${m.appsPct.toFixed(0)}% of the 1,500 cap. Apps remain near capacity; search and records have room.</div>
 </td></tr>
 
 <!-- QUOTA USAGE (40%) | APP HEALTH (60%) -->
@@ -166,10 +157,10 @@ function buildEmailBody(data) {
   <table width="100%" cellpadding="0" cellspacing="0"><tr>
     <td width="42%" valign="top" style="padding-right:16px;border-right:1px solid #eef0f4">
       <div style="font-size:11px;font-weight:600;color:#9698C3;letter-spacing:0.8px;margin-bottom:2px">QUOTA USAGE</div>
-      <div style="font-size:10px;color:#c2c5d8;margin-bottom:10px">This term · combined</div>
-      ${quotaRowNarrow('Search', m.searchPct, `${fmtM(m.termSearch)} / 75M`, searchColor)}
-      ${quotaRowNarrow('Records', m.recordsPct, `${fmtM(m.recordsCombined)} / 50M`, '#16a34a')}
-      ${quotaRowNarrow('Applications', m.appsPct, `${m.apps.toLocaleString()} / ${m.appsQuota.toLocaleString()}`, '#dc2626')}
+      <div style="font-size:10px;color:#c2c5d8;margin-bottom:10px">Production · billing period</div>
+      ${quotaRowNarrow('Search', m.searchPct, `${fmtM(m.search)} / 75M`, searchColor)}
+      ${quotaRowNarrow('Records', m.recordsPct, `${fmtM(m.records)} / 50M`, recordsColor)}
+      ${quotaRowNarrow('Applications', m.appsPct, `${m.apps.toLocaleString()} / ${m.appsQuota.toLocaleString()}`, appsColor)}
     </td>
     <td width="58%" valign="top" style="padding-left:16px">
       <div style="font-size:11px;font-weight:600;color:#9698C3;letter-spacing:0.8px;margin-bottom:2px">APP HEALTH</div>
@@ -185,18 +176,14 @@ function buildEmailBody(data) {
   </tr></table>
 </td></tr>
 
-<!-- SEARCH OUTLOOK (full width) -->
+<!-- SEARCH DETAIL (full width) -->
 <tr><td style="padding:6px 22px 4px">
-  <div style="font-size:11px;font-weight:600;color:#9698C3;letter-spacing:0.8px;margin:6px 0 8px;border-top:1px solid #f3f4f6;padding-top:12px">SEARCH OUTLOOK</div>
+  <div style="font-size:11px;font-weight:600;color:#9698C3;letter-spacing:0.8px;margin:6px 0 8px;border-top:1px solid #f3f4f6;padding-top:12px">SEARCH DETAIL</div>
   <table width="100%" cellpadding="0" cellspacing="0" style="font-size:12.5px;color:#36395A">
-    <tr><td style="padding:3px 0">Used this term</td><td style="text-align:right;font-weight:600;color:#000033">${fmtM(m.termSearch)} of 75M (${m.searchPct.toFixed(0)}%)</td></tr>
-    <tr><td style="padding:3px 0">Term elapsed</td><td style="text-align:right;color:#000033">~${m.elapsedPct.toFixed(0)}% — so usage is ahead of pace</td></tr>
+    <tr><td style="padding:3px 0">Total billable searches</td><td style="text-align:right;font-weight:600;color:#000033">${fmtM(m.search)} of 75M (${m.searchPct.toFixed(0)}%)</td></tr>
     <tr><td style="padding:3px 0">Remaining</td><td style="text-align:right;font-weight:600;color:#000033">${fmtM(m.remaining)}</td></tr>
-    <tr><td style="padding:3px 0">On pace to exhaust</td><td style="text-align:right;font-weight:700;color:${searchColor}">~${m.exhaustLabel}</td></tr>
-    <tr><td style="padding:3px 0">Full-term projection</td><td style="text-align:right;font-weight:600;color:#000033">~${fmtM(m.fullTermProj)} (${m.fullTermPct.toFixed(0)}% of quota)</td></tr>
-    <tr><td style="padding:3px 0">Staging vs production</td><td style="text-align:right;color:#000033">staging ${fmtM(m.termSearchStg)} · prod ${fmtM(m.termSearchProd)}</td></tr>
+    <tr><td style="padding:3px 0">On current pace, exhausts</td><td style="text-align:right;font-weight:700;color:${searchColor}">~${m.exhaustLabel}</td></tr>
   </table>
-  <div style="font-size:11px;color:#7778AF;margin-top:6px;line-height:1.45">Staging/test is ~${m.stgShareOfBurn.toFixed(0)}% of the search burned this term — worth a look on its own.</div>
 </td></tr>
 
 <tr><td style="padding:14px 22px 6px">
@@ -206,13 +193,13 @@ function buildEmailBody(data) {
       <td style="padding:7px 12px;font-weight:600;font-size:11px;color:#484C7A">Account</td>
       <td style="text-align:right;padding:7px 8px;font-weight:600;font-size:11px;color:#484C7A">Apps</td>
       <td style="text-align:right;padding:7px 8px;font-weight:600;font-size:11px;color:#484C7A">Records</td>
-      <td style="text-align:right;padding:7px 12px;font-weight:600;font-size:11px;color:#484C7A">Search·term</td>
+      <td style="text-align:right;padding:7px 12px;font-weight:600;font-size:11px;color:#484C7A">Search</td>
     </tr>
     <tr style="border-top:1px solid #eef0f4">
       <td style="padding:8px 12px;font-weight:600"><span style="color:#003DFF">Production</span> <span style="color:#9698C3;font-weight:400">(EX9JOVML7S)</span></td>
       <td style="text-align:right;padding:8px;font-weight:700;color:#000033">${m.apps.toLocaleString()}</td>
-      <td style="text-align:right;padding:8px;font-weight:700;color:#000033">${fmtM(m.prodRecords)}</td>
-      <td style="text-align:right;padding:8px 12px;font-weight:700;color:#000033">${fmtM(m.termSearchProd)}</td>
+      <td style="text-align:right;padding:8px;font-weight:700;color:#000033">${fmtM(m.records)}</td>
+      <td style="text-align:right;padding:8px 12px;font-weight:700;color:#000033">${fmtM(m.search)}</td>
     </tr>
     ${splitRow('#16a34a', 'Production', 'cm-', m.split.prod)}
     ${splitRow('#d97706', 'Non-production', 'nonprod', m.split.nonprod)}
@@ -221,17 +208,17 @@ function buildEmailBody(data) {
       <td style="padding:8px 12px;font-weight:600"><span style="color:#b8731c">Staging / Test</span> <span style="color:#9698C3;font-weight:400">(J5OO6J0MJP)</span></td>
       <td style="text-align:right;padding:8px;font-weight:700;color:#000033">${m.stgApps.toLocaleString()}</td>
       <td style="text-align:right;padding:8px;font-weight:700;color:#000033">${fmtM(m.stgRecords)}</td>
-      <td style="text-align:right;padding:8px 12px;font-weight:700;color:#000033">${fmtM(m.termSearchStg)}</td>
+      <td style="text-align:right;padding:8px 12px;font-weight:700;color:#000033">${fmtM(m.stgSearch)}</td>
     </tr>
     <tr style="border-top:1px solid #e5e7eb">
       <td style="padding:8px 12px;font-weight:700;color:#000033">Combined</td>
       <td style="text-align:right;padding:8px;font-weight:700;color:#9698C3">—</td>
-      <td style="text-align:right;padding:8px;font-weight:700;color:#000033">${fmtM(m.recordsCombined)}</td>
-      <td style="text-align:right;padding:8px 12px;font-weight:700;color:#000033">${fmtM(m.termSearch)}</td>
+      <td style="text-align:right;padding:8px;font-weight:700;color:#000033">${fmtM(m.records + m.stgRecords)}</td>
+      <td style="text-align:right;padding:8px 12px;font-weight:700;color:#000033">${fmtM(m.search + m.stgSearch)}</td>
     </tr>
   </table>
   <div style="font-size:12.5px;line-height:1.5;color:#1a1d35;margin-top:10px">A quarter of the production-account apps (${m.split.nonprod.apps}) are non-production environments, yet they drive only ~${m.split.nonprod.recPct.toFixed(0)}% of records and ~${m.split.nonprod.srcPct.toFixed(0)}% of search — the real load sits in the ${m.split.prod.apps.toLocaleString()} production apps.</div>
-  <div style="font-size:10.5px;color:#9698C3;margin-top:8px;line-height:1.45">Indented rows show each segment's share of the Production parent's active child apps. Staging / Test is a separate parent account (search &amp; records count toward the combined quota; its app count is tracked separately).</div>
+  <div style="font-size:10.5px;color:#9698C3;margin-top:8px;line-height:1.45">Indented rows show each segment's share of the Production parent's active child apps. Staging / Test is a separate parent account.</div>
 </td></tr>
 
 <tr><td style="padding:10px 22px;text-align:center;font-size:9px;color:#9698C3;border-top:1px solid #f3f4f6">Adobe OEM Analytics · Algolia Strategic Partnerships</td></tr>
@@ -250,11 +237,11 @@ if (require.main === module) {
   const out = '/tmp/email-preview.html';
   fs.writeFileSync(out, html);
   console.log('Wrote', out);
-  console.log('\nKey numbers (term-relative, from data):');
-  console.log('  as of:', m.dateStr, '| term', m.termStart, '→', m.termEnd, `(${m.elapsedPct.toFixed(0)}% elapsed)`);
-  console.log('  SEARCH: term-to-date', m.termSearch.toLocaleString(), `= ${m.searchPct.toFixed(1)}% of 75M`);
-  console.log('          on pace to hit 75M ~' + m.exhaustLabel + ', full-term proj ~' + fmtM(m.fullTermProj) + ` (${m.fullTermPct.toFixed(0)}%)`);
-  console.log('          staging share of burn:', m.stgShareOfBurn.toFixed(0) + '%', `(stg ${fmtM(m.termSearchStg)} / prod ${fmtM(m.termSearchProd)})`);
-  console.log('  RECORDS:', m.recordsCombined.toLocaleString(), `= ${m.recordsPct.toFixed(1)}% of 50M (combined)`);
-  console.log('  APPS:', m.apps, `= ${m.appsPct.toFixed(1)}% of 1500 (prod)`);
+  console.log('\nKey numbers (lifetime prod-only, matches hex):');
+  console.log('  as of:', m.dateStr, '| billing', m.periodStart, '→', m.periodEnd);
+  console.log('  SEARCH:', m.search.toLocaleString(), `= ${m.searchPct.toFixed(2)}% of 75M`);
+  console.log('          remaining:', fmtM(m.remaining), '| on pace to exhaust ~' + m.exhaustLabel);
+  console.log('  RECORDS:', m.records.toLocaleString(), `= ${m.recordsPct.toFixed(2)}% of 50M`);
+  console.log('  APPS:', m.apps, `= ${m.appsPct.toFixed(2)}% of 1500`);
+  console.log('  STAGING: search', m.stgSearch.toLocaleString(), '| records', m.stgRecords.toLocaleString(), '| apps', m.stgApps);
 }

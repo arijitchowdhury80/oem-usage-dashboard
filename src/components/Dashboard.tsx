@@ -340,7 +340,7 @@ function ChildAppMoMTable({ appDetail, prevMonth, billing }: { appDetail: AppDet
       );
     }
     return [...base].sort(sortFn);
-  }, [appDetail, tagFilter, sortCol, sortAsc, searchTerms]);
+  }, [appDetail, tagFilter, sortCol, sortAsc, searchTerms, sortFn]);
 
   const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
   const pageApps = filtered.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE);
@@ -865,7 +865,7 @@ function DashboardInner({
             </div>
             {/* Summary footer */}
             <div style={{ padding: "12px 20px", background: "#f8f9fb", borderTop: "1px solid #e5e7eb", fontSize: 13, color: "#484C7A", lineHeight: 1.6 }}>
-              Staging generates <strong>{((termSearchStaging / (termSearchProd + termSearchStaging)) * 100).toFixed(0)}%</strong> of this term's search on <strong>{((stageBilling.period_end_live_apps / (prodBilling.period_end_live_apps + stageBilling.period_end_live_apps)) * 100).toFixed(0)}%</strong> of apps.
+              Staging generates <strong>{((termSearchStaging / (termSearchProd + termSearchStaging)) * 100).toFixed(0)}%</strong> of this term&apos;s search on <strong>{((stageBilling.period_end_live_apps / (prodBilling.period_end_live_apps + stageBilling.period_end_live_apps)) * 100).toFixed(0)}%</strong> of apps.
               {" "}This is QA/test automation — not real user traffic.
               {" "}<strong>{((stageBilling.deleted_in_period_apps / stageBilling.provisioned_apps) * 100).toFixed(0)}%</strong> of staging apps are created and deleted within weeks.
             </div>
