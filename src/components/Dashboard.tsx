@@ -1,7 +1,7 @@
 "use client";
 import { useState, useMemo, useEffect } from "react";
 import {
-  Area, LineChart, Line, ComposedChart,
+  Area, LineChart, Line, ComposedChart, Bar,
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   Cell, PieChart, Pie, ReferenceLine,
 } from "recharts";
@@ -14,6 +14,17 @@ import KPI from "./KPI";
 import ChartTooltip from "./ChartTooltip";
 import MiniBar from "./MiniBar";
 import RDBrief from "./RDBrief";
+
+// Search consumption by contract year — Production vs Staging (billable search, excl. query suggestions).
+// Source: Hex "Adobe OEM Usage" warehouse query, validated 2026-07-07 — reproduces Hex billing totals to <0.1%
+// (staging cumulative 79.90M vs billed 79.81M; prod monthly matches Hex crosstab to the digit).
+// Our consolidated JSON has no staging-parent history before Oct 2025, so these annual figures come from the
+// warehouse directly. Query + validation in scripts/hex-search-trend.sql.
+const SEARCH_BY_YEAR = [
+  { period: "Year 1", sub: "Feb '24 – Jan '25", prod: 2_686_636, staging: 3_997_346 },
+  { period: "Year 2", sub: "Feb '25 – Jan '26", prod: 25_311_956, staging: 34_261_972 },
+  { period: "Term-to-date", sub: "Feb '26 – now (~5 mo)", prod: 19_870_222, staging: 41_645_180 },
+];
 import ObservationsBanner from "./ObservationsBanner";
 import { computeObservations } from "@/lib/observations";
 
@@ -646,7 +657,8 @@ function DashboardInner({
 }) {
 
   const { weeks, months, latest, topByRecords, topBySearches, appDetail, metadata, rates, billing } = data;
-  const tabs = ["Executive Summary", "Trends & Growth", "Portfolio Health", "R&D Brief"];
+  // R&D Brief hidden from nav (Jul 2026) — still reachable via direct #rnd-brief hash, just not shown as a tab.
+  const tabs = ["Executive Summary", "Trends & Growth", "Portfolio Health"];
 
   // Growth rate for projections (no longer editable — What-If removed)
   const appRate = rates.appRate;
@@ -989,20 +1001,24 @@ function DashboardInner({
       </div>
 
       <div className="sec">
-        <div className="sec-t">Concentration Trend</div>
+        <div className="sec-t">Search Consumption — Production vs Staging</div>
         <div className="card">
-          <ResponsiveContainer width="100%" height={200}>
-            <LineChart data={filteredChartData} margin={{ top: 5, right: 20, bottom: 5, left: 10 }}>
+          <ResponsiveContainer width="100%" height={280}>
+            <ComposedChart data={SEARCH_BY_YEAR} margin={{ top: 10, right: 30, bottom: 5, left: 10 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" />
-              <XAxis dataKey="m" tick={{ fill: "#9ca3af", fontSize: 11 }} interval={2} />
-              <YAxis tick={{ fill: "#9ca3af", fontSize: 11 }} domain={[60, 100]} unit="%" />
+              <XAxis dataKey="period" tick={{ fill: "#6b7280", fontSize: 12 }} interval={0} />
+              <YAxis tick={{ fill: "#9ca3af", fontSize: 11 }} tickFormatter={fmt} />
               <Tooltip content={<ChartTooltip />} />
-              <Line dataKey="c10r" stroke="#8b5cf6" strokeWidth={2} dot={false} name="Records %" />
-              <Line dataKey="c10s" stroke="#003DFF" strokeWidth={2} dot={false} name="Searches %" />
-            </LineChart>
+              <ReferenceLine y={75000000} stroke="#dc2626" strokeDasharray="6 3" label={{ value: "75M annual allocation", position: "insideTopRight", fill: "#dc2626", fontSize: 11 }} />
+              <Bar dataKey="prod" stackId="s" fill="#003DFF" name="Production" />
+              <Bar dataKey="staging" stackId="s" fill="#d97706" name="Staging" radius={[3, 3, 0, 0]} />
+            </ComposedChart>
           </ResponsiveContainer>
-          <div style={{ textAlign: "center", color: "#16a34a", fontSize: 13, marginTop: 4 }}>
-            Records: {monthEnds[0]?.c10r}% → {latest.c10r}% · Searches: {monthEnds[0]?.c10s}% → {latest.c10s}% — healthier distribution
+          <div style={{ fontSize: 13, color: "#1a1d35", marginTop: 8, lineHeight: 1.55 }}>
+            Staging has out-consumed Production <strong>every contract year</strong> — 4.0M vs 2.7M in Y1, 34.3M vs 25.3M in Y2, and <strong>41.6M vs 19.9M</strong> term-to-date (staging is now ~2× prod). Combined this term is <strong>61.5M in just ~5 months</strong> against the 75M annual allocation — an annualized pace of <strong>~148M/yr (~197% of quota)</strong>.
+          </div>
+          <div style={{ fontSize: 10.5, color: "#9698C3", marginTop: 6, lineHeight: 1.45 }}>
+            Billable search excluding query suggestions. Source: Hex warehouse, validated 2026-07-07 (reproduces billing totals to &lt;0.1%). Prior-term (Y1–Y2) allocation was ~80M/yr; current term is 75M/yr.
           </div>
         </div>
       </div>
