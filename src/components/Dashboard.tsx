@@ -1,7 +1,7 @@
 "use client";
 import { useState, useMemo, useEffect } from "react";
 import {
-  Area, LineChart, Line, ComposedChart, Bar,
+  Area, LineChart, Line, ComposedChart, Bar, LabelList,
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   Cell, PieChart, Pie, ReferenceLine,
 } from "recharts";
@@ -21,10 +21,11 @@ import RDBrief from "./RDBrief";
 // Our consolidated JSON has no staging-parent history before Oct 2025, so these annual figures come from the
 // warehouse directly. Query + validation in scripts/hex-search-trend.sql.
 const SEARCH_BY_YEAR = [
-  { period: "Year 1", sub: "Feb '24 – Jan '25", prod: 2_686_636, staging: 3_997_346 },
-  { period: "Year 2", sub: "Feb '25 – Jan '26", prod: 25_311_956, staging: 34_261_972 },
-  { period: "Term-to-date", sub: "Feb '26 – now (~5 mo)", prod: 19_870_222, staging: 41_645_180 },
+  { period: "Year 1", sub: "Feb '24 – Jan '25", prod: 2_686_636, staging: 3_997_346, combined: 6_683_982 },
+  { period: "Year 2", sub: "Feb '25 – Jan '26", prod: 25_311_956, staging: 34_261_972, combined: 59_573_928 },
+  { period: "Term-to-date", sub: "Feb '26 – now (~5 mo)", prod: 19_870_222, staging: 41_645_180, combined: 61_515_402 },
 ];
+const labelM = (v: unknown) => (Number(v) / 1e6).toFixed(1) + "M";
 import ObservationsBanner from "./ObservationsBanner";
 import { computeObservations } from "@/lib/observations";
 
@@ -1010,8 +1011,13 @@ function DashboardInner({
               <YAxis tick={{ fill: "#9ca3af", fontSize: 11 }} tickFormatter={fmt} />
               <Tooltip content={<ChartTooltip />} />
               <ReferenceLine y={75000000} stroke="#dc2626" strokeDasharray="6 3" label={{ value: "75M annual allocation", position: "insideTopRight", fill: "#dc2626", fontSize: 11 }} />
-              <Bar dataKey="prod" stackId="s" fill="#003DFF" name="Production" />
-              <Bar dataKey="staging" stackId="s" fill="#d97706" name="Staging" radius={[3, 3, 0, 0]} />
+              <Bar dataKey="prod" stackId="s" fill="#003DFF" name="Production">
+                <LabelList dataKey="prod" position="center" formatter={labelM} fill="#ffffff" fontSize={12} fontWeight={600} />
+              </Bar>
+              <Bar dataKey="staging" stackId="s" fill="#d97706" name="Staging" radius={[3, 3, 0, 0]}>
+                <LabelList dataKey="staging" position="center" formatter={labelM} fill="#ffffff" fontSize={12} fontWeight={600} />
+                <LabelList dataKey="combined" position="top" formatter={labelM} fill="#000033" fontSize={12} fontWeight={700} />
+              </Bar>
             </ComposedChart>
           </ResponsiveContainer>
           <div style={{ fontSize: 13, color: "#1a1d35", marginTop: 8, lineHeight: 1.55 }}>
