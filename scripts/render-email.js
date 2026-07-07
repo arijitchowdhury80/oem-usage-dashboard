@@ -231,7 +231,7 @@ function buildEmailBody(data) {
 
 <tr><td style="padding:10px 22px;text-align:center;font-size:9px;color:#9698C3;border-top:1px solid #f3f4f6">Adobe OEM Analytics · Algolia Strategic Partnerships</td></tr>
 </table>
-<div style="max-width:520px;margin:0 auto;padding:16px 20px 24px;font-size:14px;color:#23263B;line-height:1.6">Full app-level detail is on the live dashboard, and the usual reports are attached. Happy to dig into anything here.<br><br>— Arijit</div>
+<div style="max-width:520px;margin:0 auto;padding:16px 20px 24px;font-size:14px;color:#23263B;line-height:1.6">Full app-level detail is on the <a href="https://oem-usage-dashboard.vercel.app" style="color:#003DFF;text-decoration:none">live dashboard</a>, and the usual reports are attached. Happy to dig into anything here.<br><br>— Arijit</div>
 </body></html>`;
 }
 
