@@ -1,7 +1,7 @@
 # SESSION — Adobe OEM Dashboard
 
-## Status
-Email template updated to **combined term-relative** basis. Jul 6 data consolidated. Changes committed locally — push pending user confirmation.
+## Status (2026-07-07)
+Email template on **combined term-relative** basis. Jul 6 email SENT to Adobe (correct numbers: search 78.8%, records 68.8%, apps 91.5%). All commits pushed to GitHub main (777c2e3); Vercel redeployed to Production (Ready). Draft CLI now prints combined term-relative numbers matching the email body. Fully live and in sync.
 
 ## Resume Action
 1. Read this file
@@ -24,8 +24,7 @@ Email template updated to **combined term-relative** basis. Jul 6 data consolida
 3. **Staging visibility** — email shows staging share of search burn (69% as of Jul 6) and footprint table breaks out prod vs staging
 
 ## Remaining Work
-- Push to main (needs user's explicit yes)
-- Gmail draft for Jul 6 report not yet created
+- Jul 6 send DONE. Push DONE. Vercel DONE. Nothing blocking.
 - Email redesign spec items still outstanding (P1/P2): two-year arc microbars, recognition mechanic, capacity/renewal CTA, GenStudio detector — user has not prioritized these
 
 ## Files Written/Modified This Session
