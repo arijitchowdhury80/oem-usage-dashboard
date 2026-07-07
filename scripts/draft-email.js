@@ -12,7 +12,7 @@ const fs = require('fs');
 const path = require('path');
 const { google } = require('googleapis');
 const { getAuthClient } = require('./gmail-auth');
-const { buildEmailBody } = require('./render-email'); // term-relative email body (new format)
+const { buildEmailBody, computeModel } = require('./render-email'); // combined term-relative email body + model
 // No screenshot needed — email body is pure HTML
 
 const PROJECT_DIR = path.resolve(__dirname, '..');
@@ -543,8 +543,15 @@ async function main() {
 
   const dateStr = formatYmdLocal(latest.report_date);
 
+  // Print the SAME combined term-relative numbers the email body shows (via computeModel),
+  // NOT prod-only raw — so weekly verification matches the email and the hex combined view.
+  const m = computeModel(data);
   console.log(`Data through: ${dateStr}`);
-  console.log(`Apps: ${apps} | Records: ${fmt(prod?.billable_records || latest.totals.latest_records)} | Searches: ${fmt(prod?.billable_search_requests || latest.totals.total_searches)}`);
+  console.log(`── Email numbers (combined term-relative, matches body) ──`);
+  console.log(`  Search:  ${m.searchPct.toFixed(1)}%  (${fmt(m.termSearch)} / 75M)  — combined minus Feb baseline`);
+  console.log(`  Records: ${m.recordsPct.toFixed(1)}%  (${fmt(m.combinedRecords)} / 50M)  — combined`);
+  console.log(`  Apps:    ${m.appsPct.toFixed(1)}%  (${m.apps.toLocaleString()} / 1,500)  — prod only`);
+  console.log(`  Staging share of search burn: ${m.stgShareOfBurn.toFixed(0)}%`);
   console.log(`Billing source: ${billing ? 'stage_prod_parent_agg_stat' : 'estimated'}`);
   console.log('');
 
