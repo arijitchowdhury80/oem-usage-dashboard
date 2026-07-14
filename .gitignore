@@ -41,3 +41,9 @@ scripts/token.json
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# secret backups + local junk
+*.bak
+__pycache__/
+.playwright-mcp/
+*.png

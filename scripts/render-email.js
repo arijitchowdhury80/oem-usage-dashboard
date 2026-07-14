@@ -45,11 +45,19 @@ function computeModel(data) {
     .sort((a, b) => b.report_date.localeCompare(a.report_date))[0];
   const prod = latest.billing.prod, stg = latest.billing.staging;
 
-  const baseline = c.term_start_baseline.search_combined;
-  const combinedSearchLifetime = prod.billable_search_requests + stg.billable_search_requests;
-  const termSearch = combinedSearchLifetime - baseline;
-  const termSearchProd = prod.billable_search_requests - c.term_start_baseline.search_prod;
-  const termSearchStg = stg.billable_search_requests - c.term_start_baseline.search_staging;
+  // Basis-aware: Adobe's export used to count search from account inception (period_start
+  // 2024-02-02), so we subtracted the Feb-2026 term-start baseline to get term consumption.
+  // As of 2026-07-13 Adobe re-scoped the export to start at the contract term (period_start
+  // = c.start), i.e. it now hands us the term figure directly. Subtracting the baseline then
+  // would double-count and go negative. Detect the basis from period_start and only subtract
+  // when the feed predates the term. Self-heals if Adobe ever flips back.
+  const prodStart = (prod.billing_period_start || '').slice(0, 10);
+  const feedIsAlreadyTermScoped = prodStart >= c.start; // ISO dates compare lexicographically
+  const baseProd = feedIsAlreadyTermScoped ? 0 : c.term_start_baseline.search_prod;
+  const baseStg  = feedIsAlreadyTermScoped ? 0 : c.term_start_baseline.search_staging;
+  const termSearchProd = prod.billable_search_requests - baseProd;
+  const termSearchStg = stg.billable_search_requests - baseStg;
+  const termSearch = termSearchProd + termSearchStg;
 
   const combinedRecords = prod.billable_records + stg.billable_records;
   const apps = prod.period_end_live_apps;
@@ -62,6 +70,8 @@ function computeModel(data) {
   const daysToQuota = ratePerDay > 0 ? remaining / ratePerDay : Infinity;
   const exhaustLabel = isFinite(daysToQuota) ? addDays(periodEnd, daysToQuota) : 'beyond term';
   const elapsedPct = pct(elapsedDays, termDays);
+  // Pace signal: is search projected to hit the 75M quota before the term ends?
+  const exhaustsBeforeTerm = isFinite(daysToQuota) && (dayNum(periodEnd) + daysToQuota) < dayNum(c.end);
   const stgShareOfBurn = termSearch > 0 ? (termSearchStg / termSearch * 100) : 0;
 
   // footprint env split (within production parent)
@@ -83,7 +93,7 @@ function computeModel(data) {
     combinedRecords, recordsPct: pct(combinedRecords, c.records_quota), recordsQuota: c.records_quota,
     termSearch, searchPct: pct(termSearch, c.searches_quota), searchQuota: c.searches_quota,
     termSearchProd, termSearchStg, stgShareOfBurn,
-    elapsedPct, exhaustLabel, remaining,
+    elapsedPct, exhaustLabel, remaining, exhaustsBeforeTerm,
     prodSearch: prod.billable_search_requests, prodRecords: prod.billable_records,
     stgSearch: stg.billable_search_requests, stgRecords: stg.billable_records, stgApps: stg.period_end_live_apps,
     split, eng, engTotal,
@@ -126,9 +136,20 @@ function quotaRowNarrow(label, usedPct, sub, color) {
 
 function buildEmailBody(data) {
   const m = computeModel(data);
-  const searchColor = m.searchPct >= 85 ? '#d97706' : m.searchPct >= 100 ? '#dc2626' : '#16a34a';
+  // Pace-aware: red if over quota, amber if near quota OR projected to exhaust before term end.
+  const searchColor = m.searchPct >= 100 ? '#dc2626' : (m.searchPct >= 85 || m.exhaustsBeforeTerm) ? '#d97706' : '#16a34a';
   const recordsColor = m.recordsPct >= 85 ? '#d97706' : '#16a34a';
   const appsColor = m.appsPct >= 95 ? '#dc2626' : m.appsPct >= 85 ? '#d97706' : '#16a34a';
+
+  // Pace-aware bottom-line narrative — derived from the numbers, so it self-corrects each week.
+  const headroom = [];
+  if (m.recordsPct < 80) headroom.push('records');
+  const searchClause = m.exhaustsBeforeTerm
+    ? `at ~${m.elapsedPct.toFixed(0)}% of the term elapsed, search is running ahead of pace — on track to reach the 75M quota around <span style="color:${searchColor};font-weight:700">${m.exhaustLabel}</span>, with staging driving ${m.stgShareOfBurn.toFixed(0)}% of the burn`
+    : `search has headroom`;
+  const appsClause = m.appsPct >= 85 ? 'apps sit near the 1,500 cap' : 'apps have room';
+  const headroomClause = headroom.length ? `; ${headroom.join(' and ')} still have room` : '';
+  const bottomLine = `Search is at <span style="color:${searchColor}">${m.searchPct.toFixed(0)}%</span> of quota, records at ${m.recordsPct.toFixed(0)}%, and apps at ${m.appsPct.toFixed(0)}% of the 1,500 cap. ${searchClause.charAt(0).toUpperCase() + searchClause.slice(1)}; ${appsClause}${headroomClause}.`;
   const splitRow = (dot, name, tag, s) => `
     <tr style="background:#fbfcfe">
       <td style="padding:5px 12px 5px 22px;font-size:12px;color:${dot}">● ${name} <span style="color:#9698C3">${tag}</span></td>
@@ -155,7 +176,7 @@ function buildEmailBody(data) {
 <!-- BOTTOM LINE -->
 <tr><td style="padding:16px 22px 4px">
   <div style="font-size:11px;font-weight:600;color:#003DFF;letter-spacing:0.6px;margin-bottom:6px">BOTTOM LINE</div>
-  <div style="font-size:14.5px;line-height:1.5;color:#1a1d35;font-weight:600">Search is at <span style="color:${searchColor}">${m.searchPct.toFixed(0)}%</span> of quota, records at ${m.recordsPct.toFixed(0)}%, and apps at ${m.appsPct.toFixed(0)}% of the 1,500 cap. Apps remain near capacity; search and records have room.</div>
+  <div style="font-size:14.5px;line-height:1.5;color:#1a1d35;font-weight:600">${bottomLine}</div>
 </td></tr>
 
 <!-- QUOTA USAGE (40%) | APP HEALTH (60%) -->
